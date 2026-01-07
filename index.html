@@ -1,11 +1,1604 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Vapo'Chill</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vapo'Chill – Suivi commandes</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --vc-dark:#0f2a22;
+      --vc-green:#2bb673;
+      --vc-mint:#e6f6ef;
+      --vc-danger:#b00020;
+      --vc-card:#ffffff;
+      --vc-border:#dfe7e3;
+      --vc-text:#10211b;
+      --vc-muted:#5d6b66;
+
+      --vc-blue:#4a7dff;
+      --vc-yellow:#f6c453;
+      --vc-red:#ff6b6b;
+      --vc-orange:#ff9a3c;
+      --vc-purple:#b9a7ff;
+    }
+
+    * { box-sizing:border-box; }
+    body { font-family: 'Inter', Arial, sans-serif; margin:0; background:var(--vc-mint); color:var(--vc-text); }
+
+    /* ===== TOP BAR (fixe) ===== */
+    .topbar{
+      position:fixed; top:0; left:0; right:0;
+      height:64px; background:var(--vc-dark); color:#fff;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 18px; z-index:1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,.15);
+      gap:10px;
+    }
+    .topbar-left{ display:flex; align-items:center; gap:12px; }
+    .topbar img{ height:40px; background:#fff; padding:4px; border-radius:10px; }
+    .topbar-title{ display:flex; flex-direction:column; line-height:1.1; }
+    .topbar-title b{ font-size:14px; }
+    .topbar-title span{ font-size:12px; opacity:.9; }
+
+    .topbar-right{
+      display:flex; gap:10px; font-size:12px; opacity:.98;
+      align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .chip{
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:999px;
+      padding:6px 10px;
+      display:flex; align-items:center; gap:8px;
+      background: rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+
+    .wrap { padding: 86px 18px 18px; max-width: 1280px; margin: 0 auto; }
+    .small { font-size: 12px; color:var(--vc-muted); }
+    .card { background:var(--vc-card); border:1px solid var(--vc-border); border-radius:16px; padding:14px; margin: 12px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+    label { font-size: 12px; color:#32423d; display:block; margin-bottom:4px; }
+
+    input, select, textarea {
+      padding: 8px; border:1px solid #cfd8d3; border-radius:12px;
+      width: 240px; background:#fff; font-family: inherit;
+    }
+    textarea { width: 520px; height: 70px; }
+
+    button { padding:10px 12px; border:0; border-radius:12px; cursor:pointer; font-weight:600; }
+    .primary { background:var(--vc-dark); color:#fff; }
+    .light { background:#eef1f0; }
+    .danger { background:var(--vc-danger); color:#fff; }
+    .ok { background:var(--vc-green); color:#fff; }
+
+    .hidden{ display:none !important; }
+
+    table { width:100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { border-bottom:1px solid #eef2f0; padding:10px; text-align:left; vertical-align: top; }
+    th { font-size: 12px; color:#3f4c48; }
+
+    .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid #d7e0db; background:#f6f8f7; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .right { margin-left:auto; }
+
+    /* Statuts */
+    .st { font-weight: 800; }
+    .st-mec { border-color:rgba(246,196,83,.55); background:rgba(246,196,83,.22); color:#6b4a00; }
+    .st-com { border-color:rgba(74,125,255,.45); background:rgba(74,125,255,.16); color:#1837a8; }
+    .st-rup { border-color:rgba(255,107,107,.55); background:rgba(255,107,107,.18); color:#8a1010; }
+    .st-par { border-color:rgba(185,167,255,.55); background:rgba(185,167,255,.18); color:#3c2aa8; }
+
+    /* Reçu */
+    .receivedTag { border-color: rgba(43,182,115,.35); background: rgba(43,182,115,.12); font-weight:900; }
+    .row-received { outline: 2px solid rgba(43,182,115,.25); outline-offset: -2px; animation: flash .35s ease; }
+    @keyframes flash { from { background: rgba(43,182,115,.10); } to { background: transparent; } }
+
+    /* Tabs */
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .tab { padding:8px 10px; border-radius:999px; border:1px solid #d7e0db; background:#f6f8f7; cursor:pointer; font-size:12px; user-select:none; }
+    .tab.active { background:var(--vc-dark); color:#fff; border-color:var(--vc-dark); }
+
+    /* Checkbox */
+    .cb { display:flex; align-items:center; gap:8px; font-size:12px; color:#2f3a36; user-select:none; }
+    .cb input { width:auto; transform: scale(1.15); }
+
+    /* Dashboard */
+    .dashboard{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap:12px;
+      margin: 12px 0;
+    }
+    .statCard{
+      background: var(--vc-card);
+      border:1px solid var(--vc-border);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .statCard .label{ font-size:12px; color:var(--vc-muted); font-weight:700; display:flex; align-items:center; gap:8px; }
+    .statCard .value{ font-size:22px; font-weight:900; }
+    .dot{ width:10px; height:10px; border-radius:50%; }
+    .dot.mec{ background: var(--vc-yellow); }
+    .dot.com{ background: var(--vc-blue); }
+    .dot.rup{ background: var(--vc-red); }
+    .dot.recu{ background: var(--vc-green); }
+
+    /* ===== MODALS ===== */
+    .modalBackdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      padding:16px;
+    }
+    .modal{
+      width:min(820px, 100%);
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--vc-border);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      overflow:hidden;
+      transform: translateY(6px);
+      animation: pop .14s ease-out;
+    }
+    @keyframes pop{
+      from{ transform: translateY(16px); opacity:.7; }
+      to{ transform: translateY(6px); opacity:1; }
+    }
+    .modalHeader{
+      background: #f6f8f7;
+      border-bottom:1px solid var(--vc-border);
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalHeader b{ font-size:14px; }
+    .modalBody{ padding:14px 16px; }
+    .modalFooter{
+      padding:14px 16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      border-top:1px solid var(--vc-border);
+      background:#fff;
+      align-items:center;
+    }
+
+    .waBox{
+      border:1px solid var(--vc-border);
+      background:#fbfcfb;
+      border-radius:14px;
+      padding:12px;
+      white-space:pre-wrap;
+      font-size:13px;
+      line-height:1.45;
+      width:100%;
+      min-height: 220px;
+      resize:vertical;
+      font-family: inherit;
+    }
+
+    .toggleRow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:12px;
+      font-size:12px;
+      color:#2f3a36;
+    }
+    .toggleRow input{ transform: scale(1.15); }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .field input, .field textarea, .field select{
+      width:100%;
+    }
+
+    @media (max-width: 900px){
+      .grid2{ grid-template-columns:1fr; }
+    }
+    @media (max-width: 700px){
+      input, select, textarea { width: 100%; }
+      textarea { width: 100%; }
+      .topbar-right { gap:6px; }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Vapo'Chill – GitHub Pages OK 🚀</h1>
-  <p>Si tu vois ce message, le déploiement fonctionne.</p>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <img src="./logo-vapochill.jpeg" alt="Vapo'Chill" onerror="this.style.display='none'">
+      <div class="topbar-title">
+        <b id="uiTitle">Vapo'Chill – Connexion</b>
+        <span id="uiSub">—</span>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <button class="light hidden" style="padding:8px 10px;border-radius:999px" id="btnSettings" type="button">⚙️ Paramètres</button>
+
+      <div class="chip">🕒 <span id="clock">--:--</span></div>
+      <div class="chip">👤 <span id="userLabel">non connecté</span></div>
+      <button class="light hidden" style="padding:8px 10px;border-radius:999px" id="btnLogout" type="button">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ====== LOGIN ====== -->
+    <div class="card" id="loginCard">
+      <h2 style="margin:0 0 8px">Connexion</h2>
+      <div class="small">Connecte-toi avec l’email de la boutique ou l’admin.</div>
+      <div style="height:12px"></div>
+
+      <div class="row">
+        <div>
+          <label>Email</label>
+          <input id="email" placeholder="boutique.toursnord@vapochill.fr">
+        </div>
+        <div>
+          <label>Mot de passe</label>
+          <input id="password" type="password" placeholder="••••••••">
+        </div>
+        <button id="btnLogin" class="primary" type="button">Se connecter</button>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button class="light" id="btnReset" type="button">Mot de passe oublié</button>
+        <span class="small" id="authMsg"></span>
+      </div>
+
+      <div class="card hidden" id="resetCard" style="margin-top:12px">
+        <b>🔒 Définir un nouveau mot de passe</b>
+        <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
+        <div style="height:10px"></div>
+        <label>Nouveau mot de passe</label>
+        <input id="newPassword" type="password" style="width:100%" placeholder="Nouveau mot de passe">
+        <div class="row" style="margin-top:10px">
+          <button class="ok" id="btnUpdatePass" type="button">Enregistrer</button>
+          <span class="small" id="resetMsg"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== APP ====== -->
+    <div class="hidden" id="appRoot">
+
+      <!-- ADMIN : select boutique -->
+      <div class="card hidden" id="adminCard">
+        <div class="row" style="justify-content:space-between; align-items:end;">
+          <div>
+            <b>Mode admin</b>
+            <div class="small">Choisis une boutique pour afficher ses commandes.</div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Boutique</label>
+              <select id="storeSelect" style="width:320px"></select>
+            </div>
+            <button class="light" id="btnReloadAdmin" type="button">Recharger</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="dashboard">
+        <div class="statCard">
+          <div>
+            <div class="label"><span class="dot mec"></span> Mettre en commande</div>
+            <div class="value" id="statMEC">0</div>
+          </div>
+          <div class="pill st st-mec">En attente</div>
+        </div>
+
+        <div class="statCard">
+          <div>
+            <div class="label"><span class="dot com"></span> Commander</div>
+            <div class="value" id="statCOM">0</div>
+          </div>
+          <div class="pill st st-com">Commandée</div>
+        </div>
+
+        <div class="statCard">
+          <div>
+            <div class="label"><span class="dot rup"></span> Rupture de stock</div>
+            <div class="value" id="statRUP">0</div>
+          </div>
+          <div class="pill st st-rup">Rupture</div>
+        </div>
+
+        <div class="statCard">
+          <div>
+            <div class="label"><span class="dot recu"></span> Reçu (coché)</div>
+            <div class="value" id="statRECU">0</div>
+          </div>
+          <div class="pill receivedTag">Reçu ✅</div>
+        </div>
+      </div>
+
+      <!-- AJOUT COMMANDE (SHOP ONLY) -->
+      <div class="card" id="addCard">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <h3 style="margin:0 0 10px;">Ajouter une commande</h3>
+            <div class="small">Choisis le vendeur (création).</div>
+          </div>
+
+          <div>
+            <label>Vendeur (création)</label>
+            <select id="seller"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Client *</label>
+            <input id="client" placeholder="Nom du client">
+          </div>
+
+          <div>
+            <label>Téléphone *</label>
+            <input id="tel" placeholder="06...">
+          </div>
+
+          <div>
+            <label>Article / Produit *</label>
+            <input id="article" placeholder="Ex: Liquide, Résistance...">
+          </div>
+
+          <div>
+            <label>Quantité</label>
+            <input id="qty" type="number" min="1" value="1">
+          </div>
+
+          <div>
+            <label>Date</label>
+            <input id="date" type="date">
+          </div>
+
+          <div>
+            <label>Statut</label>
+            <select id="statut">
+              <option>Mettre en commande</option>
+              <option>Commander</option>
+              <option>Rupture de stock</option>
+              <option>Reçu partiellement</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Notes</label>
+          <textarea id="notes" placeholder="Fournisseur, détails..."></textarea>
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <button class="primary" id="btnAdd">Ajouter</button>
+          <button class="light" id="btnClear">Vider</button>
+          <span class="small" id="msg"></span>
+
+          <div class="right"></div>
+
+          <div>
+            <label>Anti-erreur</label>
+            <select id="antiError" style="width:180px">
+              <option value="on" selected>ON (recommandé)</option>
+              <option value="off">OFF</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTE -->
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <h3 style="margin:0">Commandes</h3>
+            <div class="small">✅ Coche “Reçu” = choisir un template WhatsApp + modifier + ouvrir.</div>
+
+            <div class="tabs">
+              <div id="tabActive" class="tab active">En cours (<span id="countActive">0</span>)</div>
+              <div id="tabHistory" class="tab">Historique (<span id="countHistory">0</span>)</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Recherche</label>
+              <input id="search" placeholder="client / tel / article" />
+            </div>
+
+            <div>
+              <label>Filtre statut</label>
+              <select id="filterStatus">
+                <option value="">Tous</option>
+                <option>Mettre en commande</option>
+                <option>Commander</option>
+                <option>Rupture de stock</option>
+                <option>Reçu partiellement</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="small" style="margin-top:10px">
+          Total affiché : <b id="countShown">0</b>
+        </div>
+
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Commande</th>
+                <th>Statut</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="small" style="margin-top:10px">
+          ✅ Ensuite tu peux cliquer “Commande récupérée” pour archiver dans l’historique.
+        </div>
+      </div>
+
+      <div class="small" id="debug" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL WhatsApp ===== -->
+  <div id="waBackdrop" class="modalBackdrop">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modalHeader">
+        <b>💬 WhatsApp – message prêt</b>
+        <button class="light" id="btnCloseWA">Fermer</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="small" id="waMeta"></div>
+
+        <div style="height:12px"></div>
+
+        <div class="row" style="align-items:center; justify-content:space-between">
+          <div style="min-width:260px">
+            <label>Template</label>
+            <select id="waTemplate">
+              <option value="arrivee">✅ Arrivée boutique</option>
+              <option value="rupture">❌ Rupture / délai</option>
+              <option value="relance">⏳ Relance fournisseur</option>
+              <option value="partiel">📦 Reçu partiellement</option>
+            </select>
+          </div>
+
+          <div class="toggleRow" style="margin-top:22px;">
+            <input type="checkbox" id="waNoPreview">
+            <label for="waNoPreview" style="margin:0; cursor:pointer;">Ne plus afficher cette fenêtre (ouvrir WhatsApp direct)</label>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <label>Message (modifiable avant envoi)</label>
+        <textarea class="waBox" id="waText"></textarea>
+
+        <div class="row" style="margin-top:10px; align-items:center;">
+          <button class="light" type="button" id="btnResetWA">Réinitialiser</button>
+          <button class="light" type="button" id="btnCopyWA">📋 Copier</button>
+          <span class="small">Astuce : tu peux personnaliser puis ouvrir WhatsApp.</span>
+        </div>
+      </div>
+
+      <div class="modalFooter">
+        <div class="small">Le texte ouvert dans WhatsApp sera celui de la zone ci-dessus.</div>
+        <div class="actions">
+          <button class="light" id="btnCancelWA">Annuler</button>
+          <button class="ok" id="btnOpenWA">Ouvrir WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL Paramètres ===== -->
+  <div id="settingsBackdrop" class="modalBackdrop">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modalHeader">
+        <b>⚙️ Paramètres</b>
+        <button class="light" id="btnCloseSettings">Fermer</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="grid2">
+          <div class="field">
+            <label>Nom boutique</label>
+            <input id="setShopName" placeholder="Vapo'Chill">
+          </div>
+          <div class="field">
+            <label>Horaires (optionnel, ajouté dans la signature)</label>
+            <input id="setHours" placeholder="Ex: Lun-Sam 10h-19h">
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="field">
+          <label>Signature (utilise {vendeur})</label>
+          <input id="setSignature" placeholder="{vendeur} - Vapochill">
+          <div class="small">Ex: <b>{vendeur} - Vapo'Chill</b> ou juste <b>Vapo'Chill</b></div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <b style="font-size:13px;">Templates WhatsApp</b>
+        <div class="small">Variables : <b>{article}</b> <b>{client}</b> <b>{vendeur}</b> <b>{boutique}</b> <b>{horaires}</b></div>
+
+        <div style="height:10px"></div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>✅ Arrivée boutique</label>
+            <textarea id="tplArrivee" class="waBox" style="min-height:150px"></textarea>
+          </div>
+          <div class="field">
+            <label>❌ Rupture / délai</label>
+            <textarea id="tplRupture" class="waBox" style="min-height:150px"></textarea>
+          </div>
+          <div class="field">
+            <label>⏳ Relance fournisseur</label>
+            <textarea id="tplRelance" class="waBox" style="min-height:150px"></textarea>
+          </div>
+          <div class="field">
+            <label>📦 Reçu partiellement</label>
+            <textarea id="tplPartiel" class="waBox" style="min-height:150px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modalFooter">
+        <div class="small">Les paramètres WhatsApp sont sauvegardés sur ce PC (localStorage).</div>
+        <div class="actions">
+          <button class="light" id="btnResetSettings">Réinitialiser</button>
+          <button class="primary" id="btnSaveSettings">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+  (function(){
+    // =========================
+    // Helpers
+    // =========================
+    const $ = (id)=>document.getElementById(id);
+    const show = (el, yes)=> el.classList.toggle("hidden", !yes);
+    const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
+    const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
+    const setMsg = (t)=> { $("msg").textContent = t || ""; };
+    const setDebug = (t)=> { $("debug").textContent = t || ""; };
+
+    function escapeHtml(s) {
+      return (s || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
+    }
+
+    function isRecoveryFlow(){
+      const h=(location.hash||"").toLowerCase();
+      const q=(location.search||"").toLowerCase();
+      return h.includes("access_token=") || q.includes("type=recovery") || q.includes("recovery");
+    }
+
+    // =========================
+    // Supabase config
+    // =========================
+    const SUPABASE_URL = "https://lhddwfeaoxnlflqlihdg.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZGR3ZmVhb3hubGZscWxpaGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MTI0NjcsImV4cCI6MjA4MzE4ODQ2N30.5Po48JdTbLZhcXjyJ48Il511DpiYNPdUZq4H-HNPAa4";
+    const SITE_URL = "https://vapochill.netlify.app";
+
+    if(!window.supabase){
+      alert("❌ La librairie Supabase ne charge pas (CDN bloqué / réseau).");
+      return;
+    }
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let isLoggingOut = false;      // bloque enterApp pendant la déconnexion
+let hasBooted = false;         // évite de boot 2 fois (bootstrap + listener)
+
+
+    // =========================
+    // App config
+    // =========================
+    const USERS = ["Laetitia","Marco","Charlotte","Nico","Alan","Corentin","Mathieu","Romain"];
+
+    // WhatsApp modal mode
+    const WA_PREVIEW_KEY = "wa_preview_mode_v1"; // "direct" ou "preview"
+    if (!localStorage.getItem(WA_PREVIEW_KEY)) localStorage.setItem(WA_PREVIEW_KEY, "preview");
+
+    // Settings
+    const SETTINGS_KEY = "vc_settings_v1";
+
+    const DEFAULT_SETTINGS = {
+      shopName: "Vapo'Chill",
+      hours: "",
+      signature: "{vendeur} - Vapochill",
+      templates: {
+        arrivee:
+`Bonjour,
+
+Votre commande {article} est bien arrivée en boutique
+Vous pouvez passer quand vous voulez
+
+{signature}`,
+        rupture:
+`Bonjour,
+
+Petit retour pour votre commande {article} : elle est en rupture chez le fournisseur.
+Je vous tiens au courant dès que j’ai une date
+
+{signature}`,
+        relance:
+`Bonjour,
+
+Je reviens vers vous : votre commande {article} est toujours en attente.
+On relance le fournisseur et on vous tient informé
+
+{signature}`,
+        partiel:
+`Bonjour,
+
+Une partie de votre commande {article} est arrivée en boutique
+Je vous confirme le reste dès réception
+
+{signature}`
+      }
+    };
+
+    function loadSettings(){
+      try{
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        if (!raw) return structuredClone(DEFAULT_SETTINGS);
+        const obj = JSON.parse(raw);
+        return {
+          ...structuredClone(DEFAULT_SETTINGS),
+          ...obj,
+          templates: { ...structuredClone(DEFAULT_SETTINGS.templates), ...(obj.templates || {}) }
+        };
+      }catch{
+        return structuredClone(DEFAULT_SETTINGS);
+      }
+    }
+    function saveSettingsToStorage(settings){
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+    function applySettingsToUI(shopNameOverride){
+      const s = loadSettings();
+      const name = shopNameOverride || s.shopName || "Vapo'Chill";
+      $("uiTitle").textContent = `${name} – Suivi commandes`;
+      // uiSub est piloté par rôle (plus bas)
+    }
+
+    // =========================
+    // Clock
+    // =========================
+    function tickClock(){
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mm = String(d.getMinutes()).padStart(2,"0");
+      $("clock").textContent = `${hh}:${mm}`;
+    }
+    setInterval(tickClock, 1000);
+    tickClock();
+
+    // =========================
+    // State
+    // =========================
+    let currentView = "active";
+    let role = null; // "admin" | "shop"
+    let profile = null; // profiles row
+    let myStoreId = null;
+    let myStoreName = null;
+    let storesCache = [];
+    let ordersCache = [];
+    let waPendingOrderId = null;
+
+    // =========================
+    // UI: login/app
+    // =========================
+    function showLogin(){
+      $("uiTitle").textContent = "Vapo'Chill – Connexion";
+      $("uiSub").textContent = "—";
+      $("userLabel").textContent = "non connecté";
+
+      show($("btnLogout"), false);
+      show($("btnSettings"), false);
+
+      show($("loginCard"), true);
+      show($("appRoot"), false);
+
+      show($("resetCard"), isRecoveryFlow());
+      setAuthMsg("");
+      setResetMsg("");
+      setDebug("");
+
+hasBooted = false;
+
+    }
+
+    function showApp(email){
+      show($("loginCard"), false);
+      show($("appRoot"), true);
+      show($("btnLogout"), true);
+      show($("btnSettings"), true);
+
+      $("userLabel").textContent = email || "connecté";
+    }
+
+    // =========================
+    // Auth actions
+    // =========================
+    async function login(){
+      try{
+        setAuthMsg("");
+        const email = $("email").value.trim();
+        const password = $("password").value.trim();
+        if(!email || !password){ setAuthMsg("⚠️ Mets email + mot de passe."); return; }
+
+        setAuthMsg("⏳ Connexion…");
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if(error){ setAuthMsg("❌ " + error.message); return; }
+        setAuthMsg("✅ Connecté.");
+      }catch(e){
+        setAuthMsg("❌ " + (e?.message || e));
+      }
+    }
+
+async function logout(){
+  try{
+    isLoggingOut = true;
+    hasBooted = false;
+
+    // 1) Sign out supabase
+    await supabaseClient.auth.signOut();
+
+    // 2) Nettoyage HARD des tokens Supabase dans localStorage
+    // Supabase v2: sb-<project-ref>-auth-token
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith("sb-") && k.endsWith("-auth-token")) {
+        localStorage.removeItem(k);
+      }
+    }
+
+    // 3) Nettoyage optionnel (si tu as des comportements bizarres)
+    // sessionStorage.clear();
+
+  } finally {
+    showLogin();
+
+    // 4) petit délai pour éviter un onAuthStateChange tardif
+    setTimeout(()=>{ isLoggingOut = false; }, 800);
+  }
+}
+
+
+    async function updatePassword(){
+      try{
+        setResetMsg("");
+        const pass = $("newPassword").value.trim();
+        if(pass.length < 6){ setResetMsg("⚠️ Min 6 caractères."); return; }
+
+        const { error } = await supabaseClient.auth.updateUser({ password: pass });
+        if(error){ setResetMsg("❌ " + error.message); return; }
+        setResetMsg("✅ Mot de passe modifié. Reconnecte-toi.");
+      }catch(e){
+        setResetMsg("❌ " + (e?.message || e));
+      }
+    }
+
+    // =========================
+    // Data helpers
+    // =========================
+    function statusClass(statut) {
+      if (statut === "Mettre en commande") return "st st-mec";
+      if (statut === "Commander") return "st st-com";
+      if (statut === "Rupture de stock") return "st st-rup";
+      if (statut === "Reçu partiellement") return "st st-par";
+      return "st";
+    }
+
+    function setTodayDefault() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      $("date").value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function timeSince(iso) {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return "";
+      let diff = Math.max(0, Date.now() - d.getTime());
+      const min = Math.floor(diff / 60000);
+      const h = Math.floor(min / 60);
+      const m = min % 60;
+      const j = Math.floor(h / 24);
+      const hh = h % 24;
+      if (j > 0) return `il y a ${j}j ${hh}h`;
+      if (h > 0) return `il y a ${h}h ${m}m`;
+      return `il y a ${m}m`;
+    }
+
+    function phoneToWhatsAppNumber(phone) {
+      let p = (phone || "").replace(/[^\d+]/g, "");
+      p = p.replace(/\D/g, "");
+      if (!p) return "";
+      if (p.startsWith("0") && p.length === 10) return "33" + p.slice(1);
+      if (p.startsWith("33")) return p;
+      if (p.startsWith("0033")) return "33" + p.slice(4);
+      return p;
+    }
+
+    function getWAPreviewMode(){
+      return localStorage.getItem(WA_PREVIEW_KEY) || "preview";
+    }
+    function setWAPreviewMode(mode){
+      localStorage.setItem(WA_PREVIEW_KEY, mode);
+    }
+
+    function templateToMessage(template, order){
+      const s = loadSettings();
+      const shop = myStoreName || s.shopName || "Vapo'Chill";
+      const hours = s.hours || "";
+      const vendeur = ($("seller")?.value || "").trim();
+
+      const signature = (s.signature || "{vendeur} - Vapochill")
+        .replaceAll("{vendeur}", vendeur)
+        .replaceAll("{boutique}", shop)
+        .replaceAll("{horaires}", hours);
+
+      return (template || "")
+        .replaceAll("{article}", order.article || "votre commande")
+        .replaceAll("{client}", order.client || "")
+        .replaceAll("{vendeur}", vendeur)
+        .replaceAll("{boutique}", shop)
+        .replaceAll("{horaires}", hours)
+        .replaceAll("{signature}", signature);
+    }
+
+    function getTemplateByKey(key){
+      const s = loadSettings();
+      const t = s.templates || {};
+      return t[key] || "";
+    }
+
+    function openWhatsAppWithText(order, customText) {
+      const num = phoneToWhatsAppNumber(order.tel);
+      if (!num) { alert("⚠️ Numéro invalide pour WhatsApp."); return; }
+      const text = encodeURIComponent(customText || "");
+      const url = `https://wa.me/${num}?text=${text}`;
+      window.open(url, "_blank");
+    }
+
+    // =========================
+    // Supabase: profile / stores / orders
+    // =========================
+    async function fetchProfile(){
+      const { data: ures, error: uerr } = await supabaseClient.auth.getUser();
+      if(uerr) throw new Error(uerr.message);
+      const uid = ures?.user?.id;
+      if(!uid) return null;
+
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("role, store_id, display_name")
+        .eq("user_id", uid)
+        .maybeSingle();
+
+      if(error) throw new Error("profiles: " + error.message);
+      if(!data) throw new Error("Profil introuvable (table profiles).");
+      return data;
+    }
+
+    async function fetchStores(){
+      const { data, error } = await supabaseClient
+        .from("stores")
+        .select("id,name,slug,email")
+        .order("name");
+      if(error) throw new Error("stores: " + error.message);
+      storesCache = data || [];
+    }
+
+    function fillStoreSelect(){
+      $("storeSelect").innerHTML = storesCache.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
+      if(storesCache[0]) $("storeSelect").value = storesCache[0].id;
+    }
+
+    function getActiveAndHistory(list){
+      // History si picked_up_at existe (non null)
+      const active = [];
+      const history = [];
+      for(const o of list){
+        if(o.picked_up_at) history.push(o);
+        else active.push(o);
+      }
+      return { active, history };
+    }
+
+    async function loadOrders(){
+  setDebug("");
+  setMsg("");
+
+  // 1) déterminer le storeId selon le rôle
+  let storeId = myStoreId;
+
+  // ADMIN : si une boutique est sélectionnée, on filtre, sinon on affiche tout
+  if (role === "admin") {
+    storeId = $("storeSelect")?.value || ""; // peut être vide
+  }
+
+  // 2) construire la requête
+  let query = supabaseClient
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  // 3) appliquer le filtre UNIQUEMENT si storeId existe
+  if (storeId) {
+    query = query.eq("store_id", storeId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    setDebug("orders: " + error.message);
+    return;
+  }
+
+  ordersCache = data || [];
+  render();
+}
+
+
+    async function addOrder(){
+        // ✅ Déterminer la boutique sur laquelle on ajoute
+  let storeId = myStoreId;
+
+  // ADMIN : doit choisir une boutique
+  if (role === "admin") {
+    storeId = $("storeSelect")?.value || "";
+    if (!storeId) {
+      alert("⚠️ Admin : sélectionne une boutique avant d’ajouter une commande.");
+      return;
+    }
+  }
+
+  // SHOP : sécurité
+  if (!storeId) {
+    alert("⚠️ Boutique inconnue (storeId manquant).");
+    return;
+  }
+
+
+      const client = $("client").value.trim();
+      const tel = $("tel").value.trim();
+      const article = $("article").value.trim();
+      const qty = Number($("qty").value || 1);
+      const date = $("date").value;
+      const statut = $("statut").value;
+      const notes = $("notes").value.trim();
+      const seller = $("seller").value;
+
+      if (!client || !tel || !article) {
+        setMsg("⚠️ Client, Numéro et Article obligatoires.");
+        return;
+      }
+      if (qty <= 0) {
+        setMsg("⚠️ Qté minimum = 1.");
+        return;
+      }
+
+      setMsg("⏳ Ajout…");
+     const payload = {
+     store_id: storeId,
+        client, tel, article, qty, date, statut, notes,
+        seller,
+        received_checked: false,
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await supabaseClient.from("orders").insert([payload]);
+      if(error){
+        setMsg("❌ " + error.message);
+        return;
+      }
+
+      setMsg("✅ Ajoutée.");
+      resetForm();
+      await loadOrders();
+    }
+
+    async function updateStatus(id, newStatus){
+      if (role !== "shop" && role !== "admin") return;
+      
+      const seller = $("seller").value;
+      const { error } = await supabaseClient
+        .from("orders")
+        .update({ statut: newStatus, updated_at: new Date().toISOString(), updated_by: seller })
+        .eq("id", id);
+
+      if(error){
+        alert("❌ " + error.message);
+        return;
+      }
+      await loadOrders();
+    }
+
+    async function toggleReceived(id){
+      if(role !== "shop"){
+        return;
+      }
+
+      const o = ordersCache.find(x => String(x.id) === String(id));
+      if(!o) return;
+
+      const newVal = !Boolean(o.received_checked);
+      const seller = $("seller").value;
+
+      const { error } = await supabaseClient
+        .from("orders")
+        .update({ received_checked: newVal, updated_at: new Date().toISOString(), updated_by: seller })
+        .eq("id", id);
+
+      if(error){
+        alert("❌ " + error.message);
+        return;
+      }
+
+      await loadOrders();
+
+      // WhatsApp si on vient de cocher
+      const updated = ordersCache.find(x => String(x.id) === String(id));
+      if(updated && updated.received_checked){
+        if (getWAPreviewMode() === "direct") {
+          const msg = templateToMessage(getTemplateByKey("arrivee"), updated);
+          openWhatsAppWithText(updated, msg);
+        } else {
+          showWAModal(updated);
+        }
+      }
+    }
+
+    async function markPickedUp(id){
+      if(role !== "shop"){
+        return;
+      }
+
+      const o = ordersCache.find(x => String(x.id) === String(id));
+      if(!o) return;
+
+      if (antiErrorOn() && !Boolean(o.received_checked)) {
+        alert("⚠️ Coche d’abord la case “Reçu”.");
+        return;
+      }
+
+      if (!confirmDanger("Confirmer : commande récupérée / terminée ? (envoi à l’historique)")) return;
+
+      const seller = $("seller").value;
+
+      const { error } = await supabaseClient
+        .from("orders")
+        .update({
+          picked_up_at: new Date().toISOString(),
+          picked_up_by: seller,
+          updated_at: new Date().toISOString(),
+          updated_by: seller
+        })
+        .eq("id", id);
+
+      if(error){
+        alert("❌ " + error.message);
+        return;
+      }
+      await loadOrders();
+    }
+
+    async function deleteOrder(id){
+      if(role !== "shop"){
+        alert("⚠️ Admin : suppression désactivée.");
+        return;
+      }
+
+      const o = ordersCache.find(x => String(x.id) === String(id));
+      if(!o) return;
+
+      if (antiErrorOn() && currentView === "active" && !Boolean(o.received_checked)) {
+        alert("⚠️ Anti-erreur : impossible de supprimer tant que “Reçu” n’est pas coché.\n(Si tu veux vraiment, mets Anti-erreur sur OFF.)");
+        return;
+      }
+
+      if (!confirmDanger("Supprimer définitivement ?")) return;
+
+      const { error } = await supabaseClient.from("orders").delete().eq("id", id);
+      if(error){
+        alert("❌ " + error.message);
+        return;
+      }
+      await loadOrders();
+    }
+
+    // =========================
+    // WhatsApp modal
+    // =========================
+    function showWAModal(order){
+      waPendingOrderId = order.id;
+
+      $("waMeta").textContent = `Client: ${order.client || "-"} • Tel: ${order.tel || "-"} • Article: ${order.article || "-"}`;
+
+      $("waTemplate").value = "arrivee";
+      $("waText").value = templateToMessage(getTemplateByKey("arrivee"), order);
+
+      $("waNoPreview").checked = (getWAPreviewMode() === "direct");
+
+      $("waBackdrop").style.display = "flex";
+    }
+
+    function closeWAModal(){
+      if ($("waNoPreview")?.checked) setWAPreviewMode("direct");
+      else setWAPreviewMode("preview");
+
+      $("waBackdrop").style.display = "none";
+      waPendingOrderId = null;
+    }
+
+    function applySelectedTemplate(){
+      const id = waPendingOrderId;
+      if (!id) return;
+
+      const o = ordersCache.find(x => String(x.id) === String(id));
+      if (!o) return;
+
+      const key = $("waTemplate").value;
+      $("waText").value = templateToMessage(getTemplateByKey(key), o);
+    }
+
+    async function copyWAText(){
+      const val = $("waText").value || "";
+      try{
+        await navigator.clipboard.writeText(val);
+        alert("✅ Message copié.");
+      }catch{
+        $("waText").select();
+        document.execCommand("copy");
+        alert("✅ Message copié.");
+      }
+    }
+
+    function confirmOpenWhatsApp(){
+      const id = waPendingOrderId;
+      if (!id) return closeWAModal();
+
+      const o = ordersCache.find(x => String(x.id) === String(id));
+      if (!o) return closeWAModal();
+
+      openWhatsAppWithText(o, $("waText").value);
+      closeWAModal();
+    }
+
+    // =========================
+    // Settings modal
+    // =========================
+    function openSettings(){
+      const s = loadSettings();
+      $("setShopName").value = s.shopName || "";
+      $("setHours").value = s.hours || "";
+      $("setSignature").value = s.signature || "";
+
+      $("tplArrivee").value = s.templates.arrivee || "";
+      $("tplRupture").value = s.templates.rupture || "";
+      $("tplRelance").value = s.templates.relance || "";
+      $("tplPartiel").value = s.templates.partiel || "";
+
+      $("settingsBackdrop").style.display = "flex";
+    }
+    function closeSettings(){
+      $("settingsBackdrop").style.display = "none";
+    }
+    function resetSettingsDefaults(){
+      if (!confirm("Réinitialiser tous les paramètres et templates WhatsApp ?")) return;
+      saveSettingsToStorage(structuredClone(DEFAULT_SETTINGS));
+      openSettings();
+      applySettingsToUI(myStoreName || null);
+    }
+    function saveSettings(){
+      const s = loadSettings();
+      s.shopName = $("setShopName").value.trim() || DEFAULT_SETTINGS.shopName;
+      s.hours = $("setHours").value.trim();
+      s.signature = $("setSignature").value.trim() || DEFAULT_SETTINGS.signature;
+
+      s.templates.arrivee = $("tplArrivee").value;
+      s.templates.rupture = $("tplRupture").value;
+      s.templates.relance = $("tplRelance").value;
+      s.templates.partiel = $("tplPartiel").value;
+
+      saveSettingsToStorage(s);
+      applySettingsToUI(myStoreName || null);
+      alert("✅ Paramètres enregistrés.");
+      closeSettings();
+    }
+function resetForm(){
+  $("client").value = "";
+  $("tel").value = "";
+  $("article").value = "";
+  $("qty").value = 1;
+  $("notes").value = "";
+  $("statut").value = "Mettre en commande";
+
+  // Date = aujourd’hui
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  $("date").value = `${yyyy}-${mm}-${dd}`;
+
+  setMsg("");
+}
+
+    // =========================
+    // Render
+    // =========================
+    function updateDashboard(activeList){
+      let mec=0, com=0, rup=0, recu=0;
+      for (const o of activeList){
+        if (o.statut === "Mettre en commande") mec++;
+        if (o.statut === "Commander") com++;
+        if (o.statut === "Rupture de stock") rup++;
+        if (Boolean(o.received_checked)) recu++;
+      }
+      $("statMEC").textContent = mec;
+      $("statCOM").textContent = com;
+      $("statRUP").textContent = rup;
+      $("statRECU").textContent = recu;
+    }
+
+    function render(){
+      const { active, history } = getActiveAndHistory(ordersCache);
+
+      $("countActive").textContent = active.length;
+      $("countHistory").textContent = history.length;
+      updateDashboard(active);
+
+      const q = ($("search").value || "").trim().toLowerCase();
+      const filterStatus = $("filterStatus").value;
+
+      const base = (currentView === "history") ? history : active;
+
+      let list = base.filter(o=>{
+        if(filterStatus && o.statut !== filterStatus) return false;
+        if(!q) return true;
+        return (
+          (o.client || "").toLowerCase().includes(q) ||
+          (o.tel || "").toLowerCase().includes(q) ||
+          (o.article || "").toLowerCase().includes(q) ||
+          (o.notes || "").toLowerCase().includes(q)
+        );
+      });
+
+      // en cours : reçu en haut
+      if(currentView === "active"){
+        list = [...list].sort((a,b) => (Boolean(b.received_checked) - Boolean(a.received_checked)));
+      }
+
+      $("countShown").textContent = list.length;
+
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+
+      for(const o of list){
+        const tr = document.createElement("tr");
+        if(currentView === "active" && Boolean(o.received_checked)) tr.classList.add("row-received");
+
+        const since = timeSince(o.created_at || o.createdAt);
+        const receivedPill = (currentView === "active" && Boolean(o.received_checked))
+          ? `<span class="pill receivedTag">REÇU ✅</span>` : "";
+
+        const receivedControl = (currentView === "active" && role === "shop")
+          ? `<label class="cb"><input type="checkbox" ${Boolean(o.received_checked) ? "checked":""} data-action="received" data-id="${o.id}"> Reçu</label>`
+          : `<span class="small">—</span>`;
+
+        const actionsShop = (currentView === "active")
+          ? `
+            <div class="actions">
+              ${receivedControl}
+              <button class="ok" data-action="picked" data-id="${o.id}">Commande récupérée</button>
+              <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
+            </div>
+          `
+          : `
+            <div class="actions">
+              <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
+            </div>
+          `;
+
+        const actionsAdmin = `<div class="small">Lecture</div>`;
+
+        tr.innerHTML = `
+          <td>
+            <span class="pill">${escapeHtml(o.date || "")}</span><br/>
+            <span class="small">${escapeHtml(since)}</span><br/>
+            ${receivedPill}
+          </td>
+
+          <td>
+            <b>${escapeHtml(o.client || "")}</b><br/>
+            <span class="small">${escapeHtml(o.tel || "")}</span><br/>
+            <div class="small">Créée par: <b>${escapeHtml(o.seller || "-")}</b></div>
+          </td>
+
+          <td>
+            ${escapeHtml(o.article || "")}<br/>
+            <span class="small">Qté: ${Number(o.qty || 1)} • Vendeur: ${escapeHtml(o.seller || "-")}</span>
+          </td>
+
+          <td>
+            <span class="pill ${statusClass(o.statut)}">${escapeHtml(o.statut || "")}</span>
+            <div style="margin-top:6px">
+              <select ${role !== "shop" ? "disabled" : ""} data-action="status" data-id="${o.id}">
+                ${["Mettre en commande","Commander","Rupture de stock","Reçu partiellement"].map(s => `
+                  <option ${o.statut===s ? "selected":""}>${escapeHtml(s)}</option>
+                `).join("")}
+              </select>
+            </div>
+          </td>
+
+          <td>${escapeHtml(o.notes || "")}</td>
+
+          <td>${role === "shop" ? actionsShop : actionsAdmin}</td>
+        `;
+
+        tbody.appendChild(tr);
+      }
+    }
+
+    // =========================
+    // Enter app
+    // =========================
+    function initUsers(){
+      $("seller").innerHTML = USERS.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join("");
+      $("seller").value = USERS[0];
+    }
+
+ async function enterApp(email){
+  showApp(email);
+
+  initUsers();
+  setTodayDefault();
+  resetForm();
+
+  // 🔐 Charger le profil UNE SEULE FOIS
+  profile = await fetchProfile();
+  role = profile.role || "shop";
+  myStoreId = profile.store_id || null;
+
+  // 🪵 LOG TEMPORAIRE (DEBUG)
+  console.log("ROLE =", role);
+  console.log("STORE =", myStoreId);
+  console.log("EMAIL =", email);
+
+  await fetchStores();
+
+  if(role === "admin"){
+    $("uiSub").textContent = "ADMIN – toutes boutiques";
+    show($("adminCard"), true);
+    show($("addCard"), false);
+    fillStoreSelect();
+    await loadOrders();
+  } else {
+    // 🏪 SHOP
+    if(!myStoreId){
+      throw new Error("Ton profil n’a pas de store_id (profiles.store_id).");
+    }
+
+    const s = storesCache.find(x => x.id === myStoreId);
+    myStoreName = s?.name || "Boutique";
+    $("uiSub").textContent = myStoreName;
+
+    applySettingsToUI(myStoreName);
+
+    show($("adminCard"), false);
+    show($("addCard"), true);
+
+    await loadOrders();
+  }
+}
+
+// =========================
+// Reset password
+// =========================
+async function sendReset(){
+  try{
+    setAuthMsg("");
+    const email = $("email").value.trim();
+    if(!email){
+      setAuthMsg("⚠️ Mets l’email puis clique ici.");
+      return;
+    }
+
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL });
+    if(error){
+      setAuthMsg("❌ " + error.message);
+      return;
+    }
+    setAuthMsg("✅ Email de réinitialisation envoyé.");
+  }catch(e){
+    setAuthMsg("❌ " + (e?.message || e));
+  }
+}
+
+
+    // =========================
+    // Events
+    // =========================
+    $("btnLogin").addEventListener("click", login);
+    $("btnLogout").addEventListener("click", logout);
+    $("btnReset").addEventListener("click", sendReset);
+    $("btnUpdatePass").addEventListener("click", updatePassword);
+
+    $("btnAdd").addEventListener("click", addOrder);
+    $("btnClear").addEventListener("click", resetForm);
+
+    $("btnSettings").addEventListener("click", openSettings);
+
+    $("btnCloseSettings").addEventListener("click", closeSettings);
+    $("btnResetSettings").addEventListener("click", resetSettingsDefaults);
+    $("btnSaveSettings").addEventListener("click", saveSettings);
+
+    $("btnCloseWA").addEventListener("click", closeWAModal);
+    $("btnCancelWA").addEventListener("click", closeWAModal);
+    $("btnResetWA").addEventListener("click", applySelectedTemplate);
+    $("btnCopyWA").addEventListener("click", copyWAText);
+    $("btnOpenWA").addEventListener("click", confirmOpenWhatsApp);
+    $("waTemplate").addEventListener("change", applySelectedTemplate);
+
+    $("waBackdrop").addEventListener("click", closeWAModal);
+    $("settingsBackdrop").addEventListener("click", closeSettings);
+
+    $("tabActive").addEventListener("click", ()=>{ currentView="active"; $("tabActive").classList.add("active"); $("tabHistory").classList.remove("active"); render(); });
+    $("tabHistory").addEventListener("click", ()=>{ currentView="history"; $("tabHistory").classList.add("active"); $("tabActive").classList.remove("active"); render(); });
+
+    $("search").addEventListener("input", render);
+    $("filterStatus").addEventListener("change", render);
+
+    $("btnReloadAdmin").addEventListener("click", loadOrders);
+    $("storeSelect").addEventListener("change", loadOrders);
+
+    // Delegation actions table
+    $("tbody").addEventListener("change", async (e)=>{
+      const el = e.target;
+      const action = el?.dataset?.action;
+      const id = el?.dataset?.id;
+      if(action === "status"){
+        await updateStatus(id, el.value);
+      }
+    });
+
+    $("tbody").addEventListener("click", async (e)=>{
+      const el = e.target;
+      const action = el?.dataset?.action;
+      const id = el?.dataset?.id;
+
+      if(action === "picked") await markPickedUp(id);
+      if(action === "delete") await deleteOrder(id);
+    });
+
+    $("tbody").addEventListener("change", async (e)=>{
+      const el = e.target;
+      if(el?.dataset?.action === "received"){
+        await toggleReceived(el.dataset.id);
+      }
+    });
+
+    // ESC ferme les modals
+    document.addEventListener("keydown", (e)=>{
+      if (e.key !== "Escape") return;
+      if ($("waBackdrop").style.display === "flex") closeWAModal();
+      if ($("settingsBackdrop").style.display === "flex") closeSettings();
+    });
+
+    // Debug global erreurs
+    window.addEventListener("error", (e) => setDebug("JS error: " + (e.message || "inconnue")));
+    window.addEventListener("unhandledrejection", (e) => setDebug("Promise error: " + (e.reason?.message || e.reason || "inconnue")));
+
+    // =========================
+    // Auth listener + boot
+    // =========================
+
+supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+  // Si on est en train de se déconnecter, on ignore tout
+  if (isLoggingOut) return;
+
+  const user = session?.user;
+
+  // Si plus de session => login
+  if (!user) {
+    showLogin();
+    return;
+  }
+
+  // Empêche double lancement (bootstrap + auth listener)
+  if (hasBooted) return;
+  hasBooted = true;
+
+  try{
+    await enterApp(user.email || "connecté");
+  }catch(err){
+    console.error(err);
+    alert("❌ " + (err?.message || err));
+    showLogin();
+    hasBooted = false; // on autorise un nouvel essai
+  }
+});
+
+
+    (async ()=>{
+      if(isRecoveryFlow()) show($("resetCard"), true);
+
+     const { data } = await supabaseClient.auth.getSession();
+
+if (isLoggingOut) {
+  showLogin();
+  return;
+}
+
+if (data?.session?.user) {
+  // Evite double lancement si le listener a déjà boot
+  if (!hasBooted) {
+    hasBooted = true;
+    try{
+      await enterApp(data.session.user.email || "connecté");
+    }catch(err){
+      console.error(err);
+      alert("❌ " + (err?.message || err));
+      showLogin();
+      hasBooted = false;
+    }
+  }
+} else {
+  showLogin();
+}
+
+    })();
+
+  })();
+  </script>
 </body>
 </html>
