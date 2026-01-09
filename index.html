@@ -669,6 +669,7 @@ function canWrite(){
 
 let isLoggingOut = false;      // bloque enterApp pendant la déconnexion
 let hasBooted = false;         // évite de boot 2 fois (bootstrap + listener)
+let allowAutoLogin = false;    // bloque l'auto-connexion tant que l'utilisateur n'a pas choisi
 
 
     // =========================
@@ -809,9 +810,11 @@ hasBooted = false;
         const password = $("password").value.trim();
         if(!email || !password){ setAuthMsg("⚠️ Mets email + mot de passe."); return; }
 
+        setAuthMsg("⏳ Connexion…");
+        allowAutoLogin = true;
         const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if(error){ setAuthMsg("❌ " + error.message); return; }
-
+        setAuthMsg("✅ Connecté.");
       }catch(e){
         setAuthMsg("❌ " + (e?.message || e));
       }
@@ -819,9 +822,12 @@ hasBooted = false;
 
 async function logout(){
   try{
-    isLoggingOut = true; // bloque le listener
-    const { error } = await supabaseClient.auth.signOut();
-    if (error) console.warn("signOut error:", error.message);
+    isLoggingOut = true;
+    hasBooted = false;
+    allowAutoLogin = false;
+
+    // 1) tente la déconnexion
+    await supabaseClient.auth.signOut({ scope: "local" });
 
   } catch (e) {
     console.warn("signOut error (ignored):", e);
@@ -1148,6 +1154,8 @@ async function logout(){
       const { error } = await supabaseClient.from("orders").insert([payload]);
       if(error){
         setMsg("❌ " + error.message);
+        setDebug("orders insert: " + error.message);
+        alert("❌ Impossible d'ajouter : " + error.message);
         return;
       }
 
@@ -1675,6 +1683,11 @@ supabaseClient.auth.onAuthStateChange(async (_event, session) => {
     return;
   }
 
+  if (!allowAutoLogin) {
+    showLogin();
+    return;
+  }
+
   // Empêche double lancement (bootstrap + auth listener)
   if (hasBooted) return;
   hasBooted = true;
@@ -1701,6 +1714,10 @@ if (isLoggingOut) {
 }
 
 if (data?.session?.user) {
+  if (!allowAutoLogin) {
+    showLogin();
+    return;
+  }
   // Evite double lancement si le listener a déjà boot
   if (!hasBooted) {
     hasBooted = true;
