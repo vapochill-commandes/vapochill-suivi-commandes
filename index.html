@@ -211,9 +211,7 @@
       flex-direction:column;
       gap:6px;
     }
-    .field input, .field textarea, .field select{
-      width:100%;
-    }
+    .field input, .field textarea, .field select{ width:100%; }
 
     @media (max-width: 900px){
       .grid2{ grid-template-columns:1fr; }
@@ -223,9 +221,223 @@
       textarea { width: 100%; }
       .topbar-right { gap:6px; }
     }
+
+    /* =========================
+       LOGIN — SOBRE LUXE
+       ========================= */
+    .loginStage{
+      min-height: calc(100vh - 86px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 26px 0;
+    }
+
+    .loginShell{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap:16px;
+      align-items:stretch;
+    }
+
+    .loginHero{
+      border-radius:22px;
+      padding:22px;
+      color:#fff;
+      background:
+        radial-gradient(800px 420px at 20% 10%, rgba(43,182,115,.35), transparent 55%),
+        radial-gradient(700px 380px at 90% 40%, rgba(74,125,255,.22), transparent 55%),
+        linear-gradient(135deg, #0f2a22, #12382c);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 18px 55px rgba(0,0,0,.18);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .heroTop{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .heroLogo{
+      width:44px;height:44px;
+      border-radius:14px;
+      background: rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .heroTitle{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+    .heroTitle b{ font-size:13px; opacity:.95; }
+    .heroTitle span{ font-size:12px; opacity:.82; }
+
+    .loginHero h1{
+      margin:16px 0 8px;
+      font-size:28px;
+      letter-spacing:-.02em;
+      line-height:1.1;
+    }
+    .loginHero p{
+      margin:0;
+      opacity:.9;
+      font-size:13px;
+      line-height:1.55;
+      max-width: 46ch;
+    }
+
+    .heroFoot{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      opacity:.96;
+      font-size:12px;
+    }
+    .heroChip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .loginCard{
+      background:var(--vc-card);
+      border:1px solid var(--vc-border);
+      border-radius:22px;
+      padding:20px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.08);
+    }
+
+    .loginCard h2{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:-.01em;
+    }
+    .loginCard .sub{
+      font-size:12px;
+      color:var(--vc-muted);
+    }
+
+    .loginGrid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .fieldBox{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .fieldBox label{
+      font-size:12px;
+      color:#32423d;
+      font-weight:800;
+    }
+
+    .inputWrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid #cfd8d3;
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fff;
+      transition: box-shadow .12s ease, border-color .12s ease;
+    }
+    .inputWrap:focus-within{
+      border-color: rgba(15,42,34,.55);
+      box-shadow: 0 0 0 4px rgba(15,42,34,.10);
+    }
+    .inputIcon{
+      font-size:14px;
+      opacity:.75;
+      width:18px;
+      text-align:center;
+    }
+
+    .inputWrap input{
+      border:0 !important;
+      outline:none !important;
+      width:100%;
+      padding:0 !important;
+      border-radius:0 !important;
+      background:transparent !important;
+      font-family:inherit;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+      align-items:center;
+    }
+
+    .btnPrimary{
+      background:var(--vc-dark);
+      color:#fff;
+      border:0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:900;
+      cursor:pointer;
+      transition: transform .05s ease, opacity .12s ease;
+    }
+    .btnPrimary:active{ transform: translateY(1px); }
+    .btnPrimary[disabled]{ opacity:.6; cursor:not-allowed; }
+
+    .btnGhost{
+      background:#eef1f0;
+      border:0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .alert{
+      margin-top:10px;
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:12px;
+      border:1px solid rgba(176,0,32,.22);
+      background: rgba(176,0,32,.06);
+      color:#7c0016;
+      display:none;
+      white-space:pre-wrap;
+    }
+    .alert.show{ display:block; }
+
+    .loginHint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--vc-muted);
+      line-height:1.45;
+    }
+
+    @media (max-width: 900px){
+      .loginShell{ grid-template-columns:1fr; }
+    }
   </style>
 </head>
-
 <body>
   <!-- TOP BAR -->
   <div class="topbar">
@@ -248,47 +460,91 @@
 
   <div class="wrap">
 
-    <!-- ====== LOGIN ====== -->
-    <div class="card" id="loginCard">
-      <h2 style="margin:0 0 8px">Connexion</h2>
-      <div class="small">Connecte-toi avec l’email de la boutique ou l’admin.</div>
-      <div style="height:12px"></div>
+    <!-- ====== LOGIN (SOBRE LUXE) ====== -->
+    <div class="loginStage" id="loginCard">
+      <div class="loginShell">
 
-      <div class="row">
-        <div>
-          <label>Email</label>
-          <input id="email" placeholder="boutique.toursnord@vapochill.fr">
+        <div class="loginHero">
+          <div>
+            <div class="heroTop">
+              <div class="heroLogo">VC</div>
+              <div class="heroTitle">
+                <b>Vapo’Chill</b>
+                <span>Suivi commandes interne</span>
+              </div>
+            </div>
+
+            <h1>Connexion</h1>
+            <p>
+              Accède à la gestion des commandes, statuts, historique et messages WhatsApp.
+              Interface pensée pour aller vite, sans erreurs.
+            </p>
+          </div>
+
+          <div class="heroFoot">
+            <div class="heroChip">🔐 Accès sécurisé</div>
+            <div class="heroChip">⚡ Rapide</div>
+            <div class="heroChip">📦 Suivi clair</div>
+          </div>
         </div>
-        <div>
-          <label>Mot de passe</label>
-          <input id="password" type="password" placeholder="••••••••">
+
+        <div class="loginCard">
+          <h2>Se connecter</h2>
+          <div class="sub">Email boutique ou admin.</div>
+
+          <div class="loginGrid">
+            <div class="fieldBox">
+              <label>Email</label>
+              <div class="inputWrap">
+                <div class="inputIcon">✉️</div>
+                <input id="email" placeholder="boutique.toursnord@vapochill.fr" autocomplete="username">
+              </div>
+            </div>
+
+            <div class="fieldBox">
+              <label>Mot de passe</label>
+              <div class="inputWrap">
+                <div class="inputIcon">🔒</div>
+                <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+              </div>
+            </div>
+
+            <div class="btnRow">
+              <button id="btnLogin" class="btnPrimary" type="button">Se connecter</button>
+              <button class="btnGhost" id="btnReset" type="button">Mot de passe oublié</button>
+            </div>
+
+            <div class="alert" id="authAlert"></div>
+            <div class="small" id="authMsg"></div>
+
+            <!-- Reset password block -->
+            <div class="card hidden" id="resetCard" style="margin-top:12px">
+              <b>🔒 Définir un nouveau mot de passe</b>
+              <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
+              <div style="height:10px"></div>
+              <label>Nouveau mot de passe</label>
+              <input id="newPassword" type="password" style="width:100%" placeholder="Nouveau mot de passe">
+              <div class="row" style="margin-top:10px">
+                <button class="ok" id="btnUpdatePass" type="button">Enregistrer</button>
+                <span class="small" id="resetMsg"></span>
+              </div>
+            </div>
+
+            <!-- Debug (optionnel) -->
+            <div class="card hidden" style="margin-top:12px" id="debugCard">
+              <b style="font-size:13px;">Debug</b>
+              <div class="small" id="debug">—</div>
+            </div>
+
+            <div class="loginHint">
+              Astuce : si une boutique “ne voit rien”, vérifie l’email dans la table <b>stores</b> (champ <b>email</b>).
+            </div>
+          </div>
         </div>
-        <button id="btnLogin" class="primary" type="button">Se connecter</button>
-      </div>
 
-      <div class="row" style="margin-top:10px">
-        <button class="light" id="btnReset" type="button">Mot de passe oublié</button>
-        <span class="small" id="authMsg"></span>
-      </div>
-
-      <!-- DEBUG (toujours caché) -->
-      <div class="card hidden" style="margin-top:12px" id="debugCard">
-        <b style="font-size:13px;">Debug</b>
-        <div class="small" id="debug">—</div>
-      </div>
-
-      <div class="card hidden" id="resetCard" style="margin-top:12px">
-        <b>🔒 Définir un nouveau mot de passe</b>
-        <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
-        <div style="height:10px"></div>
-        <label>Nouveau mot de passe</label>
-        <input id="newPassword" type="password" style="width:100%" placeholder="Nouveau mot de passe">
-        <div class="row" style="margin-top:10px">
-          <button class="ok" id="btnUpdatePass" type="button">Enregistrer</button>
-          <span class="small" id="resetMsg"></span>
-        </div>
       </div>
     </div>
+
     <!-- ====== APP ====== -->
     <div class="hidden" id="appRoot">
 
@@ -547,7 +803,6 @@
         </div>
       </div>
     </div>
-
     <!-- Supabase v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script nomodule>
@@ -558,28 +813,54 @@
         </div>
       `;
     </script>
+
     <script type="module">
     (async function(){
       // =========================
       // Helpers
       // =========================
       const $ = (id)=>document.getElementById(id);
-      const show = (el, yes)=> { if(el) el.classList.toggle("hidden", !yes); }; // safe
-      const setAuthMsg = (t)=> { const el=$("authMsg"); if(el) el.textContent = t || ""; };
-      const setResetMsg = (t)=> { const el=$("resetMsg"); if(el) el.textContent = t || ""; };
-      const setMsg = (t)=> { const el=$("msg"); if(el) el.textContent = t || ""; };
+      const show = (el, yes)=> el.classList.toggle("hidden", !yes);
+      const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
+      const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
+      const setMsg = (t)=> { $("msg").textContent = t || ""; };
 
-      // Debug écrit mais bloc reste caché (même admin)
+      // ✅ FIX: setDebug ne plante plus si #debug n'existe pas
       const setDebug = (t)=> {
         const el = $("debug");
         if (el) el.textContent = t || "";
       };
 
+      // ✅ Luxe login helpers
+      function setAuthAlert(message){
+        const box = $("authAlert");
+        if(!box) return;
+        box.textContent = message || "";
+        box.classList.toggle("show", Boolean(message));
+      }
+      function setLoginLoading(isLoading){
+        const btn = $("btnLogin");
+        if(!btn) return;
+        btn.disabled = Boolean(isLoading);
+        btn.textContent = isLoading ? "Connexion…" : "Se connecter";
+      }
+
+      function canWrite(){
+        return role === "shop" || role === "admin";
+      }
+
+      function escapeHtml(s) {
+        return (s || "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;");
+      }
+
       function isRecoveryFlow(){
-        const q = new URLSearchParams(location.search);
-        const type = (q.get("type") || "").toLowerCase();
         const h=(location.hash||"").toLowerCase();
-        return type === "recovery" || h.includes("access_token=") || h.includes("type=recovery");
+        const q=(location.search||"").toLowerCase();
+        return h.includes("access_token=") || q.includes("type=recovery") || q.includes("recovery");
       }
 
       // =========================
@@ -587,7 +868,9 @@
       // =========================
       const SUPABASE_URL = "https://lhddwfeaoxnlflqlihdg.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZGR3ZmVhb3hubGZscWxpaGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MTI0NjcsImV4cCI6MjA4MzE4ODQ2N30.5Po48JdTbLZhcXjyJ48Il511DpiYNPdUZq4H-HNPAa4";
-      const SITE_URL = "https://vapochill-commandes.github.io/vapochill-suivi-commandes/";
+
+      // ⚠️ IMPORTANT : mets ici ton URL GitHub Pages ACTUELLE
+      const SITE_URL = "https://TON_NOUVEAU_USERNAME.github.io/vapochill-suivi-commandes";
 
       async function loadSupabaseScript(src){
         return new Promise((resolve, reject) => {
@@ -627,9 +910,11 @@
       // =========================
       const USERS = ["Laetitia","Marco","Charlotte","Nico","Alan","Corentin","Mathieu","Romain"];
 
+      // WhatsApp modal mode
       const WA_PREVIEW_KEY = "wa_preview_mode_v1";
       if (!localStorage.getItem(WA_PREVIEW_KEY)) localStorage.setItem(WA_PREVIEW_KEY, "preview");
 
+      // Settings
       const SETTINGS_KEY = "vc_settings_v1";
 
       const DEFAULT_SETTINGS = {
@@ -698,7 +983,7 @@ Je vous confirme le reste dès réception
         const d = new Date();
         const hh = String(d.getHours()).padStart(2,"0");
         const mm = String(d.getMinutes()).padStart(2,"0");
-        const el=$("clock"); if(el) el.textContent = `${hh}:${mm}`;
+        $("clock").textContent = `${hh}:${mm}`;
       }
       setInterval(tickClock, 1000);
       tickClock();
@@ -707,22 +992,18 @@ Je vous confirme le reste dès réception
       // State
       // =========================
       let currentView = "active";
-      let role = null;
-      let profile = null;
+      let role = null; // "admin" | "shop"
+      let profile = null; // profiles row
       let myStoreId = null;
       let myStoreName = null;
       let storesCache = [];
       let ordersCache = [];
       let waPendingOrderId = null;
 
-      function canWrite(){
-        return role === "shop" || role === "admin";
-      }
-
       // =========================
       // UI: login/app
       // =========================
-      function showLogin(forceReset=false){
+      function showLogin(){
         $("uiTitle").textContent = "Vapo'Chill – Connexion";
         $("uiSub").textContent = "—";
         $("userLabel").textContent = "non connecté";
@@ -733,12 +1014,13 @@ Je vous confirme le reste dès réception
         show($("loginCard"), true);
         show($("appRoot"), false);
 
-        // reset visible si recovery
-        show($("resetCard"), forceReset || isRecoveryFlow());
-
+        show($("resetCard"), isRecoveryFlow());
         setAuthMsg("");
         setResetMsg("");
         setDebug("");
+
+        setAuthAlert("");
+        setLoginLoading(false);
 
         hasBooted = false;
       }
@@ -748,34 +1030,8 @@ Je vous confirme le reste dès réception
         show($("appRoot"), true);
         show($("btnLogout"), true);
         show($("btnSettings"), true);
+
         $("userLabel").textContent = email || "connecté";
-      }
-
-      // =========================
-      // IMPORTANT: Recovery fix Supabase v2 (PKCE)
-      // =========================
-      async function handleRecoveryIfNeeded(){
-        const params = new URLSearchParams(location.search);
-        const code = params.get("code");
-        const type = (params.get("type") || "").toLowerCase();
-
-        if (code && type === "recovery") {
-          try {
-            await supabaseClient.auth.exchangeCodeForSession(window.location.href);
-
-            // Nettoie l'URL pour éviter boucles / re-exchange
-            const cleanUrl = location.origin + location.pathname + "?type=recovery";
-            history.replaceState({}, "", cleanUrl);
-
-            // Reste sur écran reset (ne pas entrer dans l'app)
-            showLogin(true);
-            setAuthMsg("🔒 Définis ton nouveau mot de passe ci-dessous.");
-          } catch (e) {
-            console.error(e);
-            showLogin(false);
-            setAuthMsg("❌ Lien de récupération invalide ou expiré.");
-          }
-        }
       }
 
       // =========================
@@ -784,18 +1040,28 @@ Je vous confirme le reste dès réception
       async function login(){
         try{
           setAuthMsg("");
+          setAuthAlert("");
+
           const email = $("email").value.trim();
           const password = $("password").value.trim();
-          if(!email || !password){ setAuthMsg("⚠️ Mets email + mot de passe."); return; }
+          if(!email || !password){
+            setAuthAlert("⚠️ Mets email + mot de passe.");
+            return;
+          }
 
-          setAuthMsg("⏳ Connexion…");
+          setLoginLoading(true);
           allowAutoLogin = true;
 
           const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if(error){ setAuthMsg("❌ " + error.message); return; }
+          if(error){
+            setAuthAlert("❌ " + error.message);
+            return;
+          }
           setAuthMsg("✅ Connecté.");
         }catch(e){
-          setAuthMsg("❌ " + (e?.message || e));
+          setAuthAlert("❌ " + (e?.message || e));
+        }finally{
+          setLoginLoading(false);
         }
       }
 
@@ -816,7 +1082,7 @@ Je vous confirme le reste dès réception
             if (k.startsWith("sb-") && k.includes("auth")) sessionStorage.removeItem(k);
           }
 
-          showLogin(false);
+          showLogin();
           setTimeout(()=>{ isLoggingOut = false; }, 1200);
         }
       }
@@ -829,48 +1095,15 @@ Je vous confirme le reste dès réception
 
           const { error } = await supabaseClient.auth.updateUser({ password: pass });
           if(error){ setResetMsg("❌ " + error.message); return; }
-
-          setResetMsg("✅ Mot de passe modifié. Tu peux te reconnecter.");
+          setResetMsg("✅ Mot de passe modifié. Reconnecte-toi.");
         }catch(e){
           setResetMsg("❌ " + (e?.message || e));
-        }
-      }
-
-      async function sendReset(){
-        try{
-          setAuthMsg("");
-          const email = $("email").value.trim();
-          if(!email){
-            setAuthMsg("⚠️ Mets l’email puis clique ici.");
-            return;
-          }
-
-          // ✅ redirectTo avec type=recovery (important)
-          const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: SITE_URL + "/?type=recovery"
-          });
-
-          if(error){
-            setAuthMsg("❌ " + error.message);
-            return;
-          }
-          setAuthMsg("✅ Email de réinitialisation envoyé.");
-        }catch(e){
-          setAuthMsg("❌ " + (e?.message || e));
         }
       }
 
       // =========================
       // Data helpers
       // =========================
-      function escapeHtml(s) {
-        return (s || "")
-          .replaceAll("&","&amp;")
-          .replaceAll("<","&lt;")
-          .replaceAll(">","&gt;")
-          .replaceAll('"',"&quot;");
-      }
-
       function statusClass(statut) {
         if (statut === "Mettre en commande") return "st st-mec";
         if (statut === "Commander") return "st st-com";
@@ -958,10 +1191,6 @@ Je vous confirme le reste dès réception
         const text = encodeURIComponent(customText || "");
         const url = `https://wa.me/${num}?text=${text}`;
         window.open(url, "_blank");
-      }
-
-      function confirmDanger(msg){
-        return confirm("⚠️ " + msg);
       }
 
       // =========================
@@ -1067,10 +1296,13 @@ Je vous confirme le reste dès réception
       }
 
       async function loadOrders(){
+        setDebug("");
         setMsg("");
 
         let storeId = myStoreId;
-        if (role === "admin") storeId = $("storeSelect")?.value || "";
+        if (role === "admin") {
+          storeId = $("storeSelect")?.value || "";
+        }
 
         let query = supabaseClient
           .from("orders")
@@ -1105,7 +1337,7 @@ Je vous confirme le reste dès réception
 
         if (!storeId) {
           const email = await getCurrentUserEmail();
-          alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie stores.email ou profiles.store_id.`);
+          alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie que cet email correspond au champ email de la table stores, ou renseigne profiles.store_id.`);
           return;
         }
 
@@ -1189,6 +1421,10 @@ Je vous confirme le reste dès réception
             showWAModal(updated);
           }
         }
+      }
+
+      function confirmDanger(msg){
+        return confirm("⚠️ " + msg);
       }
 
       async function markPickedUp(id){
@@ -1521,6 +1757,26 @@ Je vous confirme le reste dès réception
       }
 
       // =========================
+      // Reset password (EMAIL)
+      // =========================
+      async function sendReset(){
+        try{
+          setAuthMsg("");
+          setAuthAlert("");
+
+          const email = $("email").value.trim();
+          if(!email){ setAuthAlert("⚠️ Mets l’email puis clique ici."); return; }
+
+          const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
+          if(error){ setAuthAlert("❌ " + error.message); return; }
+
+          setAuthMsg("✅ Email de réinitialisation envoyé.");
+        }catch(e){
+          setAuthAlert("❌ " + (e?.message || e));
+        }
+      }
+
+      // =========================
       // Events
       // =========================
       $("btnLogin").addEventListener("click", login);
@@ -1570,6 +1826,7 @@ Je vous confirme le reste dès réception
         const el = e.target;
         const action = el?.dataset?.action;
         const id = el?.dataset?.id;
+
         if(action === "picked") await markPickedUp(id);
         if(action === "delete") await deleteOrder(id);
       });
@@ -1598,21 +1855,23 @@ Je vous confirme le reste dès réception
       supabaseClient.auth.onAuthStateChange(async (_event, session) => {
         if (isLoggingOut) return;
 
-        // Si recovery => on reste sur reset (pas de redirect dans l'app)
+        const user = session?.user;
+
+        // ✅ si on est sur un lien de recovery => on affiche le reset, pas de redirection
         if (isRecoveryFlow()) {
-          showLogin(true);
+          showLogin();
+          show($("resetCard"), true);
+          allowAutoLogin = false;
           return;
         }
 
-        const user = session?.user;
-
         if (!user) {
-          showLogin(false);
+          showLogin();
           return;
         }
 
         if (!allowAutoLogin) {
-          showLogin(false);
+          showLogin();
           return;
         }
 
@@ -1624,27 +1883,25 @@ Je vous confirme le reste dès réception
         }catch(err){
           console.error(err);
           alert("❌ " + (err?.message || err));
-          showLogin(false);
+          showLogin();
           hasBooted = false;
         }
       });
 
       (async ()=>{
-        // ✅ important : échange le code recovery => session recovery
-        await handleRecoveryIfNeeded();
-
-        // Si recovery, on s'arrête ici (reset visible)
-        if (isRecoveryFlow()) {
-          showLogin(true);
+        // ✅ recovery: on reste sur l’écran de reset
+        if(isRecoveryFlow()){
+          showLogin();
+          show($("resetCard"), true);
           return;
         }
 
         const { data } = await supabaseClient.auth.getSession();
 
-        if (isLoggingOut) { showLogin(false); return; }
+        if (isLoggingOut) { showLogin(); return; }
 
         if (data?.session?.user) {
-          if (!allowAutoLogin) { showLogin(false); return; }
+          if (!allowAutoLogin) { showLogin(); return; }
           if (!hasBooted) {
             hasBooted = true;
             try{
@@ -1652,17 +1909,18 @@ Je vous confirme le reste dès réception
             }catch(err){
               console.error(err);
               alert("❌ " + (err?.message || err));
-              showLogin(false);
+              showLogin();
               hasBooted = false;
             }
           }
         } else {
-          showLogin(false);
+          showLogin();
         }
       })();
 
     })();
     </script>
+
   </div>
 </body>
 </html>
