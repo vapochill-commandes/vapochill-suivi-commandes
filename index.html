@@ -271,7 +271,7 @@
         <span class="small" id="authMsg"></span>
       </div>
 
-      <!-- ✅ DEBUG (AJOUTÉ) -->
+      <!-- DEBUG (toujours caché) -->
       <div class="card hidden" style="margin-top:12px" id="debugCard">
         <b style="font-size:13px;">Debug</b>
         <div class="small" id="debug">—</div>
@@ -564,33 +564,22 @@
       // Helpers
       // =========================
       const $ = (id)=>document.getElementById(id);
-      const show = (el, yes)=> el.classList.toggle("hidden", !yes);
-      const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
-      const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
-      const setMsg = (t)=> { $("msg").textContent = t || ""; };
+      const show = (el, yes)=> { if(el) el.classList.toggle("hidden", !yes); }; // safe
+      const setAuthMsg = (t)=> { const el=$("authMsg"); if(el) el.textContent = t || ""; };
+      const setResetMsg = (t)=> { const el=$("resetMsg"); if(el) el.textContent = t || ""; };
+      const setMsg = (t)=> { const el=$("msg"); if(el) el.textContent = t || ""; };
 
-      // ✅ FIX: setDebug ne plante plus si #debug n'existe pas
+      // Debug écrit mais bloc reste caché (même admin)
       const setDebug = (t)=> {
         const el = $("debug");
         if (el) el.textContent = t || "";
       };
 
-      function canWrite(){
-        return role === "shop" || role === "admin";
-      }
-
-      function escapeHtml(s) {
-        return (s || "")
-          .replaceAll("&","&amp;")
-          .replaceAll("<","&lt;")
-          .replaceAll(">","&gt;")
-          .replaceAll('"',"&quot;");
-      }
-
       function isRecoveryFlow(){
+        const q = new URLSearchParams(location.search);
+        const type = (q.get("type") || "").toLowerCase();
         const h=(location.hash||"").toLowerCase();
-        const q=(location.search||"").toLowerCase();
-        return h.includes("access_token=") || q.includes("type=recovery") || q.includes("recovery");
+        return type === "recovery" || h.includes("access_token=") || h.includes("type=recovery");
       }
 
       // =========================
@@ -709,7 +698,7 @@ Je vous confirme le reste dès réception
         const d = new Date();
         const hh = String(d.getHours()).padStart(2,"0");
         const mm = String(d.getMinutes()).padStart(2,"0");
-        $("clock").textContent = `${hh}:${mm}`;
+        const el=$("clock"); if(el) el.textContent = `${hh}:${mm}`;
       }
       setInterval(tickClock, 1000);
       tickClock();
@@ -726,10 +715,14 @@ Je vous confirme le reste dès réception
       let ordersCache = [];
       let waPendingOrderId = null;
 
+      function canWrite(){
+        return role === "shop" || role === "admin";
+      }
+
       // =========================
       // UI: login/app
       // =========================
-      function showLogin(){
+      function showLogin(forceReset=false){
         $("uiTitle").textContent = "Vapo'Chill – Connexion";
         $("uiSub").textContent = "—";
         $("userLabel").textContent = "non connecté";
@@ -740,7 +733,9 @@ Je vous confirme le reste dès réception
         show($("loginCard"), true);
         show($("appRoot"), false);
 
-        show($("resetCard"), isRecoveryFlow());
+        // reset visible si recovery
+        show($("resetCard"), forceReset || isRecoveryFlow());
+
         setAuthMsg("");
         setResetMsg("");
         setDebug("");
@@ -753,8 +748,34 @@ Je vous confirme le reste dès réception
         show($("appRoot"), true);
         show($("btnLogout"), true);
         show($("btnSettings"), true);
-
         $("userLabel").textContent = email || "connecté";
+      }
+
+      // =========================
+      // IMPORTANT: Recovery fix Supabase v2 (PKCE)
+      // =========================
+      async function handleRecoveryIfNeeded(){
+        const params = new URLSearchParams(location.search);
+        const code = params.get("code");
+        const type = (params.get("type") || "").toLowerCase();
+
+        if (code && type === "recovery") {
+          try {
+            await supabaseClient.auth.exchangeCodeForSession(window.location.href);
+
+            // Nettoie l'URL pour éviter boucles / re-exchange
+            const cleanUrl = location.origin + location.pathname + "?type=recovery";
+            history.replaceState({}, "", cleanUrl);
+
+            // Reste sur écran reset (ne pas entrer dans l'app)
+            showLogin(true);
+            setAuthMsg("🔒 Définis ton nouveau mot de passe ci-dessous.");
+          } catch (e) {
+            console.error(e);
+            showLogin(false);
+            setAuthMsg("❌ Lien de récupération invalide ou expiré.");
+          }
+        }
       }
 
       // =========================
@@ -769,6 +790,7 @@ Je vous confirme le reste dès réception
 
           setAuthMsg("⏳ Connexion…");
           allowAutoLogin = true;
+
           const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
           if(error){ setAuthMsg("❌ " + error.message); return; }
           setAuthMsg("✅ Connecté.");
@@ -794,7 +816,7 @@ Je vous confirme le reste dès réception
             if (k.startsWith("sb-") && k.includes("auth")) sessionStorage.removeItem(k);
           }
 
-          showLogin();
+          showLogin(false);
           setTimeout(()=>{ isLoggingOut = false; }, 1200);
         }
       }
@@ -807,15 +829,48 @@ Je vous confirme le reste dès réception
 
           const { error } = await supabaseClient.auth.updateUser({ password: pass });
           if(error){ setResetMsg("❌ " + error.message); return; }
-          setResetMsg("✅ Mot de passe modifié. Reconnecte-toi.");
+
+          setResetMsg("✅ Mot de passe modifié. Tu peux te reconnecter.");
         }catch(e){
           setResetMsg("❌ " + (e?.message || e));
+        }
+      }
+
+      async function sendReset(){
+        try{
+          setAuthMsg("");
+          const email = $("email").value.trim();
+          if(!email){
+            setAuthMsg("⚠️ Mets l’email puis clique ici.");
+            return;
+          }
+
+          // ✅ redirectTo avec type=recovery (important)
+          const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: SITE_URL + "/?type=recovery"
+          });
+
+          if(error){
+            setAuthMsg("❌ " + error.message);
+            return;
+          }
+          setAuthMsg("✅ Email de réinitialisation envoyé.");
+        }catch(e){
+          setAuthMsg("❌ " + (e?.message || e));
         }
       }
 
       // =========================
       // Data helpers
       // =========================
+      function escapeHtml(s) {
+        return (s || "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;");
+      }
+
       function statusClass(statut) {
         if (statut === "Mettre en commande") return "st st-mec";
         if (statut === "Commander") return "st st-com";
@@ -903,6 +958,10 @@ Je vous confirme le reste dès réception
         const text = encodeURIComponent(customText || "");
         const url = `https://wa.me/${num}?text=${text}`;
         window.open(url, "_blank");
+      }
+
+      function confirmDanger(msg){
+        return confirm("⚠️ " + msg);
       }
 
       // =========================
@@ -1008,14 +1067,10 @@ Je vous confirme le reste dès réception
       }
 
       async function loadOrders(){
-        setDebug("");
         setMsg("");
 
         let storeId = myStoreId;
-
-        if (role === "admin") {
-          storeId = $("storeSelect")?.value || "";
-        }
+        if (role === "admin") storeId = $("storeSelect")?.value || "";
 
         let query = supabaseClient
           .from("orders")
@@ -1050,7 +1105,7 @@ Je vous confirme le reste dès réception
 
         if (!storeId) {
           const email = await getCurrentUserEmail();
-          alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie que cet email correspond au champ email de la table stores, ou renseigne profiles.store_id.`);
+          alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie stores.email ou profiles.store_id.`);
           return;
         }
 
@@ -1134,10 +1189,6 @@ Je vous confirme le reste dès réception
             showWAModal(updated);
           }
         }
-      }
-
-      function confirmDanger(msg){
-        return confirm("⚠️ " + msg);
       }
 
       async function markPickedUp(id){
@@ -1440,11 +1491,6 @@ Je vous confirme le reste dès réception
         role = profile.role || "shop";
         myStoreId = profile.store_id || null;
 
-        const { data: u } = await supabaseClient.auth.getUser();
-        const uid = u?.user?.id || "-";
-
-        setDebug(`DEBUG: email=${email} | role=${role} | storeId=${myStoreId} | uid=${uid}`);
-
         await fetchStores();
 
         if(role === "admin"){
@@ -1471,21 +1517,6 @@ Je vous confirme le reste dès réception
           show($("addCard"), true);
 
           await loadOrders();
-        }
-      }
-
-      async function sendReset(){
-        try{
-          setAuthMsg("");
-          const email = $("email").value.trim();
-          if(!email){ setAuthMsg("⚠️ Mets l’email puis clique ici."); return; }
-
-          const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
-          if(error){ setAuthMsg("❌ " + error.message); return; }
-
-          setAuthMsg("✅ Email de réinitialisation envoyé.");
-        }catch(e){
-          setAuthMsg("❌ " + (e?.message || e));
         }
       }
 
@@ -1525,6 +1556,7 @@ Je vous confirme le reste dès réception
       $("btnReloadAdmin").addEventListener("click", loadOrders);
       $("storeSelect").addEventListener("change", loadOrders);
 
+      // Delegation actions table
       $("tbody").addEventListener("change", async (e)=>{
         const el = e.target;
         const action = el?.dataset?.action;
@@ -1538,7 +1570,6 @@ Je vous confirme le reste dès réception
         const el = e.target;
         const action = el?.dataset?.action;
         const id = el?.dataset?.id;
-
         if(action === "picked") await markPickedUp(id);
         if(action === "delete") await deleteOrder(id);
       });
@@ -1550,12 +1581,14 @@ Je vous confirme le reste dès réception
         }
       });
 
+      // ESC ferme les modals
       document.addEventListener("keydown", (e)=>{
         if (e.key !== "Escape") return;
         if ($("waBackdrop").style.display === "flex") closeWAModal();
         if ($("settingsBackdrop").style.display === "flex") closeSettings();
       });
 
+      // Debug global erreurs
       window.addEventListener("error", (e) => setDebug("JS error: " + (e.message || "inconnue")));
       window.addEventListener("unhandledrejection", (e) => setDebug("Promise error: " + (e.reason?.message || e.reason || "inconnue")));
 
@@ -1565,15 +1598,21 @@ Je vous confirme le reste dès réception
       supabaseClient.auth.onAuthStateChange(async (_event, session) => {
         if (isLoggingOut) return;
 
+        // Si recovery => on reste sur reset (pas de redirect dans l'app)
+        if (isRecoveryFlow()) {
+          showLogin(true);
+          return;
+        }
+
         const user = session?.user;
 
         if (!user) {
-          showLogin();
+          showLogin(false);
           return;
         }
 
         if (!allowAutoLogin) {
-          showLogin();
+          showLogin(false);
           return;
         }
 
@@ -1585,20 +1624,27 @@ Je vous confirme le reste dès réception
         }catch(err){
           console.error(err);
           alert("❌ " + (err?.message || err));
-          showLogin();
+          showLogin(false);
           hasBooted = false;
         }
       });
 
       (async ()=>{
-        if(isRecoveryFlow()) show($("resetCard"), true);
+        // ✅ important : échange le code recovery => session recovery
+        await handleRecoveryIfNeeded();
+
+        // Si recovery, on s'arrête ici (reset visible)
+        if (isRecoveryFlow()) {
+          showLogin(true);
+          return;
+        }
 
         const { data } = await supabaseClient.auth.getSession();
 
-        if (isLoggingOut) { showLogin(); return; }
+        if (isLoggingOut) { showLogin(false); return; }
 
         if (data?.session?.user) {
-          if (!allowAutoLogin) { showLogin(); return; }
+          if (!allowAutoLogin) { showLogin(false); return; }
           if (!hasBooted) {
             hasBooted = true;
             try{
@@ -1606,12 +1652,12 @@ Je vous confirme le reste dès réception
             }catch(err){
               console.error(err);
               alert("❌ " + (err?.message || err));
-              showLogin();
+              showLogin(false);
               hasBooted = false;
             }
           }
         } else {
-          showLogin();
+          showLogin(false);
         }
       })();
 
