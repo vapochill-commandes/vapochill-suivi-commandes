@@ -9,101 +9,326 @@
 
   <style>
     :root{
-      --vc-dark:#0f2a22;
-      --vc-green:#2bb673;
-      --vc-mint:#e6f6ef;
-      --vc-danger:#b00020;
-      --vc-card:#ffffff;
-      --vc-border:#dfe7e3;
-      --vc-text:#10211b;
-      --vc-muted:#5d6b66;
+      --bg0:#06080d;
+      --bg1:#0a0f1a;
 
-      --vc-blue:#4a7dff;
-      --vc-yellow:#f6c453;
-      --vc-red:#ff6b6b;
-      --vc-orange:#ff9a3c;
-      --vc-purple:#b9a7ff;
+      --cardA: rgba(11,18,32,.70);
+      --cardB: rgba(11,18,32,.52);
+
+      --text:#eaf0ff;
+      --muted:#9fb0d2;
+
+      --border:rgba(150, 190, 255, .18);
+
+      --neonA:#4a7dff; /* blue */
+      --neonB:#2bb673; /* green */
+      --neonC:#b9a7ff; /* violet */
+
+      --danger:#ff4d6d;
+      --warning:#f6c453;
     }
 
-    * { box-sizing:border-box; }
-    body { font-family: 'Inter', Arial, sans-serif; margin:0; background:var(--vc-mint); color:var(--vc-text); }
+    *{ box-sizing:border-box; }
+    html, body { height:100%; }
 
-    /* ===== TOP BAR (fixe) ===== */
+    body{
+      margin:0;
+      font-family: Inter, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 500px at 15% 10%, rgba(74,125,255,.18), transparent 55%),
+        radial-gradient(900px 520px at 85% 20%, rgba(43,182,115,.14), transparent 60%),
+        radial-gradient(800px 540px at 55% 90%, rgba(185,167,255,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    /* Neon grid overlay */
+    body:before{
+      content:"";
+      position:fixed; inset:-2px;
+      background:
+        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity:.10;
+      transform: perspective(900px) rotateX(55deg) translateY(-180px);
+      transform-origin: top;
+      pointer-events:none;
+      filter: blur(.2px);
+    }
+
+    /* scanline */
+    body:after{
+      content:"";
+      position:fixed; inset:0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.04),
+        rgba(255,255,255,.04) 1px,
+        transparent 1px,
+        transparent 6px
+      );
+      opacity:.04;
+      pointer-events:none;
+      mix-blend-mode: overlay;
+    }
+
+    .wrap{
+      padding: 92px 18px 18px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .hidden{ display:none !important; }
+
+    /* ===== TOP BAR ===== */
     .topbar{
       position:fixed; top:0; left:0; right:0;
-      height:64px; background:var(--vc-dark); color:#fff;
+      height:68px;
       display:flex; align-items:center; justify-content:space-between;
-      padding:0 18px; z-index:1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,.15);
+      padding:0 18px;
+      z-index:1000;
+      background: rgba(7, 10, 16, .72);
+      border-bottom: 1px solid rgba(150,190,255,.12);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 55px rgba(0,0,0,.35);
       gap:10px;
     }
     .topbar-left{ display:flex; align-items:center; gap:12px; }
-    .topbar img{ height:40px; background:#fff; padding:4px; border-radius:10px; }
+    .topbar img{
+      height:42px;
+      border-radius:12px;
+      padding:4px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(150,190,255,.14);
+    }
     .topbar-title{ display:flex; flex-direction:column; line-height:1.1; }
-    .topbar-title b{ font-size:14px; }
-    .topbar-title span{ font-size:12px; opacity:.9; }
-
+    .topbar-title b{
+      font-size:13px;
+      letter-spacing:.3px;
+    }
+    .topbar-title span{
+      font-size:12px;
+      opacity:.9;
+      color: var(--muted);
+    }
     .topbar-right{
-      display:flex; gap:10px; font-size:12px; opacity:.98;
-      align-items:center; flex-wrap:wrap; justify-content:flex-end;
+      display:flex; gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
     .chip{
-      border:1px solid rgba(255,255,255,.22);
+      border:1px solid rgba(150, 190, 255, .16);
       border-radius:999px;
-      padding:6px 10px;
+      padding:7px 10px;
       display:flex; align-items:center; gap:8px;
       background: rgba(255,255,255,.06);
+      color: var(--muted);
       white-space:nowrap;
+      backdrop-filter: blur(10px);
     }
 
-    .wrap { padding: 86px 18px 18px; max-width: 1280px; margin: 0 auto; }
-    .small { font-size: 12px; color:var(--vc-muted); white-space:pre-wrap; }
-    .card { background:var(--vc-card); border:1px solid var(--vc-border); border-radius:16px; padding:14px; margin: 12px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
-    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
-    label { font-size: 12px; color:#32423d; display:block; margin-bottom:4px; }
-
-    input, select, textarea {
-      padding: 8px; border:1px solid #cfd8d3; border-radius:12px;
-      width: 240px; background:#fff; font-family: inherit;
+    /* Buttons */
+    button{
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      font-family:inherit;
+      letter-spacing:.2px;
     }
-    textarea { width: 520px; height: 70px; }
+    .btn{
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(150,190,255,.16);
+      color: var(--text);
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+      backdrop-filter: blur(12px);
+    }
+    .btn:hover{ filter: brightness(1.08); }
+    .btn:active{ transform: translateY(1px); }
 
-    button { padding:10px 12px; border:0; border-radius:12px; cursor:pointer; font-weight:600; }
-    .primary { background:var(--vc-dark); color:#fff; }
-    .light { background:#eef1f0; }
-    .danger { background:var(--vc-danger); color:#fff; }
-    .ok { background:var(--vc-green); color:#fff; }
+    .btnPrimary{
+      padding:11px 14px;
+      border-radius:14px;
+      color:#061018;
+      background: linear-gradient(135deg, rgba(74,125,255,1), rgba(43,182,115,1));
+      box-shadow:
+        0 0 0 1px rgba(150,190,255,.12),
+        0 10px 32px rgba(74,125,255,.20),
+        0 10px 32px rgba(43,182,115,.14);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btnPrimary:hover{ filter: brightness(1.04); }
+    .btnPrimary:active{ transform: translateY(1px); }
 
-    .hidden{ display:none !important; }
+    .btnDanger{
+      background: rgba(255, 77, 109, .18);
+      border:1px solid rgba(255, 77, 109, .35);
+      color: #ffd7de;
+    }
 
+    /* Cards */
+    .card{
+      background: linear-gradient(180deg, var(--cardA), var(--cardB));
+      border:1px solid rgba(150,190,255,.16);
+      border-radius: 20px;
+      padding: 16px;
+      margin: 12px 0;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.04) inset,
+        0 24px 80px rgba(0,0,0,.45);
+      backdrop-filter: blur(14px);
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:-60px -80px auto auto;
+      width:260px; height:260px;
+      background: radial-gradient(circle, rgba(74,125,255,.22), transparent 60%);
+      filter: blur(2px);
+      pointer-events:none;
+    }
+    .card h2{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:.2px;
+    }
+    .small{
+      font-size:12px;
+      color: var(--muted);
+      white-space:pre-wrap;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:end;
+    }
+
+    label{
+      font-size:12px;
+      color: rgba(234,240,255,.75);
+      display:block;
+      margin-bottom:6px;
+    }
+
+    /* Inputs */
+    input, select, textarea{
+      width: 240px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(150,190,255,.18);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      outline: none;
+      transition: border-color .12s ease, box-shadow .12s ease, filter .12s ease;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.03) inset;
+      font-family: inherit;
+    }
+    input::placeholder, textarea::placeholder{ color: rgba(159,176,210,.7); }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(74,125,255,.55);
+      box-shadow: 0 0 0 4px rgba(74,125,255,.14);
+    }
+    textarea{ width: 520px; height: 70px; }
+
+    /* Login layout */
+    .loginGrid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:14px;
+      align-items:stretch;
+    }
+    .loginRight{
+      border-radius:18px;
+      border:1px solid rgba(150,190,255,.12);
+      background: rgba(255,255,255,.04);
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .loginRight:before{
+      content:"";
+      position:absolute; inset:-40px -40px auto auto;
+      width:220px; height:220px;
+      background: radial-gradient(circle, rgba(43,182,115,.20), transparent 60%);
+      pointer-events:none;
+    }
+    .kpiLine{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(150,190,255,.10);
+      background: rgba(255,255,255,.04);
+      margin-top:10px;
+    }
+    .kpiLine b{ font-size:12px; color: rgba(234,240,255,.85); }
+    .kpiLine span{ font-size:12px; color: var(--muted); }
+
+    .statusDot{
+      width:10px; height:10px;
+      border-radius:999px;
+      background: radial-gradient(circle, rgba(74,125,255,1), rgba(74,125,255,.15));
+      box-shadow: 0 0 12px rgba(74,125,255,.35);
+      display:inline-block;
+      margin-right:8px;
+    }
+
+    /* Table */
     table { width:100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border-bottom:1px solid #eef2f0; padding:10px; text-align:left; vertical-align: top; }
-    th { font-size: 12px; color:#3f4c48; }
+    th, td { border-bottom:1px solid rgba(150,190,255,.10); padding:10px; text-align:left; vertical-align: top; }
+    th { font-size: 12px; color: rgba(234,240,255,.75); }
 
-    .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid #d7e0db; background:#f6f8f7; }
-    .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .right { margin-left:auto; }
+    .pill{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(150,190,255,.16);
+      background: rgba(255,255,255,.05);
+      color: rgba(234,240,255,.88);
+    }
 
-    /* Statuts */
-    .st { font-weight: 800; }
-    .st-mec { border-color:rgba(246,196,83,.55); background:rgba(246,196,83,.22); color:#6b4a00; }
-    .st-com { border-color:rgba(74,125,255,.45); background:rgba(74,125,255,.16); color:#1837a8; }
-    .st-rup { border-color:rgba(255,107,107,.55); background:rgba(255,107,107,.18); color:#8a1010; }
-    .st-par { border-color:rgba(185,167,255,.55); background:rgba(185,167,255,.18); color:#3c2aa8; }
+    /* Status pills */
+    .st { font-weight: 900; letter-spacing:.15px; }
+    .st-mec { border-color:rgba(246,196,83,.35); background:rgba(246,196,83,.12); color:#ffe9b6; }
+    .st-com { border-color:rgba(74,125,255,.35); background:rgba(74,125,255,.12); color:#d6e2ff; }
+    .st-rup { border-color:rgba(255,77,109,.35); background:rgba(255,77,109,.12); color:#ffd1db; }
+    .st-par { border-color:rgba(185,167,255,.35); background:rgba(185,167,255,.12); color:#efe9ff; }
 
-    /* Reçu */
-    .receivedTag { border-color: rgba(43,182,115,.35); background: rgba(43,182,115,.12); font-weight:900; }
-    .row-received { outline: 2px solid rgba(43,182,115,.25); outline-offset: -2px; animation: flash .35s ease; }
-    @keyframes flash { from { background: rgba(43,182,115,.10); } to { background: transparent; } }
+    .receivedTag{
+      border-color: rgba(43,182,115,.35);
+      background: rgba(43,182,115,.12);
+      font-weight: 900;
+      color:#d9ffe9;
+    }
 
-    /* Tabs */
     .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .tab { padding:8px 10px; border-radius:999px; border:1px solid #d7e0db; background:#f6f8f7; cursor:pointer; font-size:12px; user-select:none; }
-    .tab.active { background:var(--vc-dark); color:#fff; border-color:var(--vc-dark); }
-
-    /* Checkbox */
-    .cb { display:flex; align-items:center; gap:8px; font-size:12px; color:#2f3a36; user-select:none; }
-    .cb input { width:auto; transform: scale(1.15); }
+    .tab{
+      padding:9px 11px;
+      border-radius:999px;
+      border:1px solid rgba(150,190,255,.14);
+      background: rgba(255,255,255,.05);
+      cursor:pointer;
+      font-size:12px;
+      user-select:none;
+      color: rgba(234,240,255,.80);
+    }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(74,125,255,.25), rgba(43,182,115,.18));
+      border-color: rgba(74,125,255,.38);
+      color: #eaf0ff;
+      box-shadow: 0 0 26px rgba(74,125,255,.10);
+    }
+    .right{ margin-left:auto; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .cb{ display:flex; align-items:center; gap:8px; font-size:12px; color: rgba(234,240,255,.78); user-select:none; }
+    .cb input{ width:auto; transform: scale(1.15); }
 
     /* Dashboard */
     .dashboard{
@@ -113,51 +338,54 @@
       margin: 12px 0;
     }
     .statCard{
-      background: var(--vc-card);
-      border:1px solid var(--vc-border);
-      border-radius:16px;
+      background: linear-gradient(180deg, var(--cardA), var(--cardB));
+      border:1px solid rgba(150,190,255,.14);
+      border-radius:18px;
       padding:14px;
-      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+      box-shadow: 0 18px 60px rgba(0,0,0,.38);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      backdrop-filter: blur(14px);
     }
-    .statCard .label{ font-size:12px; color:var(--vc-muted); font-weight:700; display:flex; align-items:center; gap:8px; }
-    .statCard .value{ font-size:22px; font-weight:900; }
+    .statCard .label{
+      font-size:12px;
+      color: var(--muted);
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .statCard .value{ font-size:22px; font-weight:900; letter-spacing:.3px; }
     .dot{ width:10px; height:10px; border-radius:50%; }
-    .dot.mec{ background: var(--vc-yellow); }
-    .dot.com{ background: var(--vc-blue); }
-    .dot.rup{ background: var(--vc-red); }
-    .dot.recu{ background: var(--vc-green); }
+    .dot.mec{ background: var(--warning); }
+    .dot.com{ background: var(--neonA); }
+    .dot.rup{ background: var(--danger); }
+    .dot.recu{ background: var(--neonB); }
 
-    /* ===== MODALS ===== */
+    /* Modals */
     .modalBackdrop{
       position:fixed; inset:0;
-      background: rgba(0,0,0,.45);
+      background: rgba(0,0,0,.55);
       display:none;
       align-items:center;
       justify-content:center;
       z-index:2000;
       padding:16px;
+      backdrop-filter: blur(8px);
     }
     .modal{
-      width:min(820px, 100%);
-      background:#fff;
-      border-radius:18px;
-      border:1px solid var(--vc-border);
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      width:min(860px, 100%);
+      background: linear-gradient(180deg, rgba(11,18,32,.88), rgba(11,18,32,.72));
+      border-radius:20px;
+      border:1px solid rgba(150,190,255,.18);
+      box-shadow: 0 30px 90px rgba(0,0,0,.55);
       overflow:hidden;
-      transform: translateY(6px);
-      animation: pop .14s ease-out;
-    }
-    @keyframes pop{
-      from{ transform: translateY(16px); opacity:.7; }
-      to{ transform: translateY(6px); opacity:1; }
     }
     .modalHeader{
-      background: #f6f8f7;
-      border-bottom:1px solid var(--vc-border);
+      background: rgba(255,255,255,.04);
+      border-bottom:1px solid rgba(150,190,255,.14);
       padding:14px 16px;
       display:flex;
       align-items:center;
@@ -172,14 +400,13 @@
       flex-wrap:wrap;
       gap:10px;
       justify-content:space-between;
-      border-top:1px solid var(--vc-border);
-      background:#fff;
+      border-top:1px solid rgba(150,190,255,.14);
+      background: rgba(255,255,255,.02);
       align-items:center;
     }
-
     .waBox{
-      border:1px solid var(--vc-border);
-      background:#fbfcfb;
+      border:1px solid rgba(150,190,255,.16);
+      background: rgba(255,255,255,.04);
       border-radius:14px;
       padding:12px;
       white-space:pre-wrap;
@@ -189,255 +416,35 @@
       min-height: 220px;
       resize:vertical;
       font-family: inherit;
+      color: var(--text);
+      outline:none;
     }
-
     .toggleRow{
       display:flex;
       align-items:center;
       gap:8px;
       margin-top:12px;
       font-size:12px;
-      color:#2f3a36;
+      color: rgba(234,240,255,.78);
     }
     .toggleRow input{ transform: scale(1.15); }
 
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .field{ display:flex; flex-direction:column; gap:6px; }
     .field input, .field textarea, .field select{ width:100%; }
 
     @media (max-width: 900px){
       .grid2{ grid-template-columns:1fr; }
+      .loginGrid{ grid-template-columns: 1fr; }
     }
     @media (max-width: 700px){
       input, select, textarea { width: 100%; }
       textarea { width: 100%; }
       .topbar-right { gap:6px; }
     }
-
-    /* =========================
-       LOGIN — SOBRE LUXE
-       ========================= */
-    .loginStage{
-      min-height: calc(100vh - 86px);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 26px 0;
-    }
-
-    .loginShell{
-      width:min(980px, 100%);
-      display:grid;
-      grid-template-columns: 1.05fr 1fr;
-      gap:16px;
-      align-items:stretch;
-    }
-
-    .loginHero{
-      border-radius:22px;
-      padding:22px;
-      color:#fff;
-      background:
-        radial-gradient(800px 420px at 20% 10%, rgba(43,182,115,.35), transparent 55%),
-        radial-gradient(700px 380px at 90% 40%, rgba(74,125,255,.22), transparent 55%),
-        linear-gradient(135deg, #0f2a22, #12382c);
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow: 0 18px 55px rgba(0,0,0,.18);
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      overflow:hidden;
-      position:relative;
-    }
-
-    .heroTop{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .heroLogo{
-      width:44px;height:44px;
-      border-radius:14px;
-      background: rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.18);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:900;
-      letter-spacing:-.02em;
-    }
-
-    .heroTitle{
-      display:flex;
-      flex-direction:column;
-      line-height:1.1;
-    }
-    .heroTitle b{ font-size:13px; opacity:.95; }
-    .heroTitle span{ font-size:12px; opacity:.82; }
-
-    .loginHero h1{
-      margin:16px 0 8px;
-      font-size:28px;
-      letter-spacing:-.02em;
-      line-height:1.1;
-    }
-    .loginHero p{
-      margin:0;
-      opacity:.9;
-      font-size:13px;
-      line-height:1.55;
-      max-width: 46ch;
-    }
-
-    .heroFoot{
-      margin-top:14px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      opacity:.96;
-      font-size:12px;
-    }
-    .heroChip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.16);
-    }
-
-    .loginCard{
-      background:var(--vc-card);
-      border:1px solid var(--vc-border);
-      border-radius:22px;
-      padding:20px;
-      box-shadow: 0 18px 55px rgba(0,0,0,.08);
-    }
-
-    .loginCard h2{
-      margin:0 0 6px;
-      font-size:18px;
-      letter-spacing:-.01em;
-    }
-    .loginCard .sub{
-      font-size:12px;
-      color:var(--vc-muted);
-    }
-
-    .loginGrid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:12px;
-      margin-top:14px;
-    }
-
-    .fieldBox{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .fieldBox label{
-      font-size:12px;
-      color:#32423d;
-      font-weight:800;
-    }
-
-    .inputWrap{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      border:1px solid #cfd8d3;
-      border-radius:14px;
-      padding:10px 12px;
-      background:#fff;
-      transition: box-shadow .12s ease, border-color .12s ease;
-    }
-    .inputWrap:focus-within{
-      border-color: rgba(15,42,34,.55);
-      box-shadow: 0 0 0 4px rgba(15,42,34,.10);
-    }
-    .inputIcon{
-      font-size:14px;
-      opacity:.75;
-      width:18px;
-      text-align:center;
-    }
-
-    .inputWrap input{
-      border:0 !important;
-      outline:none !important;
-      width:100%;
-      padding:0 !important;
-      border-radius:0 !important;
-      background:transparent !important;
-      font-family:inherit;
-    }
-
-    .btnRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:6px;
-      align-items:center;
-    }
-
-    .btnPrimary{
-      background:var(--vc-dark);
-      color:#fff;
-      border:0;
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:900;
-      cursor:pointer;
-      transition: transform .05s ease, opacity .12s ease;
-    }
-    .btnPrimary:active{ transform: translateY(1px); }
-    .btnPrimary[disabled]{ opacity:.6; cursor:not-allowed; }
-
-    .btnGhost{
-      background:#eef1f0;
-      border:0;
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .alert{
-      margin-top:10px;
-      border-radius:14px;
-      padding:10px 12px;
-      font-size:12px;
-      border:1px solid rgba(176,0,32,.22);
-      background: rgba(176,0,32,.06);
-      color:#7c0016;
-      display:none;
-      white-space:pre-wrap;
-    }
-    .alert.show{ display:block; }
-
-    .loginHint{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--vc-muted);
-      line-height:1.45;
-    }
-
-    @media (max-width: 900px){
-      .loginShell{ grid-template-columns:1fr; }
-    }
   </style>
 </head>
+
 <body>
   <!-- TOP BAR -->
   <div class="topbar">
@@ -450,101 +457,76 @@
     </div>
 
     <div class="topbar-right">
-      <button class="light hidden" style="padding:8px 10px;border-radius:999px" id="btnSettings" type="button">⚙️ Paramètres</button>
-
+      <button class="btn hidden" style="padding:9px 11px;border-radius:999px" id="btnSettings" type="button">⚙️ Paramètres</button>
       <div class="chip">🕒 <span id="clock">--:--</span></div>
       <div class="chip">👤 <span id="userLabel">non connecté</span></div>
-      <button class="light hidden" style="padding:8px 10px;border-radius:999px" id="btnLogout" type="button">Déconnexion</button>
+      <button class="btn btnDanger hidden" style="padding:9px 11px;border-radius:999px" id="btnLogout" type="button">Déconnexion</button>
     </div>
   </div>
 
   <div class="wrap">
 
-    <!-- ====== LOGIN (SOBRE LUXE) ====== -->
-    <div class="loginStage" id="loginCard">
-      <div class="loginShell">
+    <!-- ====== LOGIN ====== -->
+    <div class="card" id="loginCard">
+      <div class="loginGrid">
 
-        <div class="loginHero">
-          <div>
-            <div class="heroTop">
-              <div class="heroLogo">VC</div>
-              <div class="heroTitle">
-                <b>Vapo’Chill</b>
-                <span>Suivi commandes interne</span>
-              </div>
+        <div>
+          <h2>Connexion</h2>
+          <div class="small">Interface sécurisée — accès boutique / admin.</div>
+          <div style="height:12px"></div>
+
+          <div class="row">
+            <div>
+              <label>Email</label>
+              <input id="email" placeholder="boutique.toursnord@vapochill.fr" autocomplete="username">
             </div>
-
-            <h1>Connexion</h1>
-            <p>
-              Accède à la gestion des commandes, statuts, historique et messages WhatsApp.
-              Interface pensée pour aller vite, sans erreurs.
-            </p>
+            <div>
+              <label>Mot de passe</label>
+              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button id="btnLogin" class="btnPrimary" type="button">Se connecter</button>
           </div>
 
-          <div class="heroFoot">
-            <div class="heroChip">🔐 Accès sécurisé</div>
-            <div class="heroChip">⚡ Rapide</div>
-            <div class="heroChip">📦 Suivi clair</div>
+          <div class="row" style="margin-top:10px; align-items:center;">
+            <button class="btn" id="btnReset" type="button">Mot de passe oublié</button>
+            <span class="small" id="authMsg"></span>
+          </div>
+
+          <div class="card hidden" style="margin-top:12px" id="debugCard">
+            <b style="font-size:13px;">Debug</b>
+            <div class="small" id="debug">—</div>
+          </div>
+
+          <div class="card hidden" id="resetCard" style="margin-top:12px">
+            <b>🔒 Définir un nouveau mot de passe</b>
+            <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
+            <div style="height:10px"></div>
+            <label>Nouveau mot de passe</label>
+            <input id="newPassword" type="password" style="width:100%" placeholder="Nouveau mot de passe">
+            <div class="row" style="margin-top:10px; align-items:center;">
+              <button class="btnPrimary" id="btnUpdatePass" type="button">Enregistrer</button>
+              <span class="small" id="resetMsg"></span>
+            </div>
           </div>
         </div>
 
-        <div class="loginCard">
-          <h2>Se connecter</h2>
-          <div class="sub">Email boutique ou admin.</div>
+        <div class="loginRight">
+          <div class="small" style="margin-bottom:8px;">
+            <span class="statusDot"></span><b style="color:rgba(234,240,255,.85)">Secure Mode</b>
+            <div style="margin-top:6px;">Connexion chiffrée • Session Supabase</div>
+          </div>
 
-          <div class="loginGrid">
-            <div class="fieldBox">
-              <label>Email</label>
-              <div class="inputWrap">
-                <div class="inputIcon">✉️</div>
-                <input id="email" placeholder="boutique.toursnord@vapochill.fr" autocomplete="username">
-              </div>
-            </div>
+          <div class="kpiLine"><b>Statut système</b><span>online</span></div>
+          <div class="kpiLine"><b>Accès</b><span>Boutique / Admin</span></div>
+          <div class="kpiLine"><b>Version UI</b><span>Neon Grid</span></div>
 
-            <div class="fieldBox">
-              <label>Mot de passe</label>
-              <div class="inputWrap">
-                <div class="inputIcon">🔒</div>
-                <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
-              </div>
-            </div>
-
-            <div class="btnRow">
-              <button id="btnLogin" class="btnPrimary" type="button">Se connecter</button>
-              <button class="btnGhost" id="btnReset" type="button">Mot de passe oublié</button>
-            </div>
-
-            <div class="alert" id="authAlert"></div>
-            <div class="small" id="authMsg"></div>
-
-            <!-- Reset password block -->
-            <div class="card hidden" id="resetCard" style="margin-top:12px">
-              <b>🔒 Définir un nouveau mot de passe</b>
-              <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
-              <div style="height:10px"></div>
-              <label>Nouveau mot de passe</label>
-              <input id="newPassword" type="password" style="width:100%" placeholder="Nouveau mot de passe">
-              <div class="row" style="margin-top:10px">
-                <button class="ok" id="btnUpdatePass" type="button">Enregistrer</button>
-                <span class="small" id="resetMsg"></span>
-              </div>
-            </div>
-
-            <!-- Debug (optionnel) -->
-            <div class="card hidden" style="margin-top:12px" id="debugCard">
-              <b style="font-size:13px;">Debug</b>
-              <div class="small" id="debug">—</div>
-            </div>
-
-            <div class="loginHint">
-              Astuce : si une boutique “ne voit rien”, vérifie l’email dans la table <b>stores</b> (champ <b>email</b>).
-            </div>
+          <div class="small" style="margin-top:12px; opacity:.85;">
+            Astuce : utilise la recherche pour retrouver un client en 1 seconde.
           </div>
         </div>
 
       </div>
     </div>
-
     <!-- ====== APP ====== -->
     <div class="hidden" id="appRoot">
 
@@ -560,7 +542,7 @@
               <label>Boutique</label>
               <select id="storeSelect" style="width:320px"></select>
             </div>
-            <button class="light" id="btnReloadAdmin" type="button">Recharger</button>
+            <button class="btn" id="btnReloadAdmin" type="button">Recharger</button>
           </div>
         </div>
       </div>
@@ -603,6 +585,7 @@
       <!-- ADD ORDER -->
       <div class="card" id="addCard">
         <b>Ajouter une commande</b>
+
         <div class="row" style="margin-top:10px">
           <div>
             <label>Client</label>
@@ -646,9 +629,9 @@
           </div>
         </div>
 
-        <div class="row" style="margin-top:8px">
-          <button id="btnAdd" class="primary" type="button">Ajouter</button>
-          <button id="btnClear" class="light" type="button">Vider</button>
+        <div class="row" style="margin-top:8px; align-items:center;">
+          <button id="btnAdd" class="btnPrimary" type="button">Ajouter</button>
+          <button id="btnClear" class="btn" type="button">Vider</button>
           <span class="small" id="msg"></span>
         </div>
       </div>
@@ -660,6 +643,7 @@
             <b>Commandes</b>
             <div class="small">Gestion des commandes en cours et archivées.</div>
           </div>
+
           <div class="row" style="gap:8px">
             <input id="search" placeholder="Rechercher..." style="width:220px">
             <select id="filterStatus" style="width:180px">
@@ -703,8 +687,9 @@
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modalHeader">
           <b>WhatsApp – Préparer le message</b>
-          <button class="light" id="btnCloseWA" type="button">✖</button>
+          <button class="btn" id="btnCloseWA" type="button">✖</button>
         </div>
+
         <div class="modalBody">
           <div class="small" id="waMeta"></div>
           <div style="height:8px"></div>
@@ -727,14 +712,15 @@
             <span>Ouvrir directement WhatsApp sans prévisualisation</span>
           </div>
         </div>
+
         <div class="modalFooter">
           <div class="actions">
-            <button class="light" id="btnCancelWA" type="button">Annuler</button>
-            <button class="light" id="btnResetWA" type="button">Réinitialiser</button>
-            <button class="light" id="btnCopyWA" type="button">Copier</button>
+            <button class="btn" id="btnCancelWA" type="button">Annuler</button>
+            <button class="btn" id="btnResetWA" type="button">Réinitialiser</button>
+            <button class="btn" id="btnCopyWA" type="button">Copier</button>
           </div>
           <div class="actions">
-            <button class="primary" id="btnOpenWA" type="button">Ouvrir WhatsApp</button>
+            <button class="btnPrimary" id="btnOpenWA" type="button">Ouvrir WhatsApp</button>
           </div>
         </div>
       </div>
@@ -745,8 +731,9 @@
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modalHeader">
           <b>Paramètres WhatsApp</b>
-          <button class="light" id="btnCloseSettings" type="button">✖</button>
+          <button class="btn" id="btnCloseSettings" type="button">✖</button>
         </div>
+
         <div class="modalBody">
           <div class="row" style="align-items:end">
             <div class="field">
@@ -797,8 +784,8 @@
         <div class="modalFooter">
           <div class="small">Les paramètres WhatsApp sont sauvegardés sur ce PC (localStorage).</div>
           <div class="actions">
-            <button class="light" id="btnResetSettings" type="button">Réinitialiser</button>
-            <button class="primary" id="btnSaveSettings" type="button">Enregistrer</button>
+            <button class="btn" id="btnResetSettings" type="button">Réinitialiser</button>
+            <button class="btnPrimary" id="btnSaveSettings" type="button">Enregistrer</button>
           </div>
         </div>
       </div>
@@ -807,7 +794,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script nomodule>
       document.body.innerHTML = `
-        <div style="padding:24px;font-family:Inter,Arial,sans-serif;color:#10211b;">
+        <div style="padding:24px;font-family:Inter,Arial,sans-serif;color:#eaf0ff;background:#06080d;">
           <h2>Votre navigateur est trop ancien</h2>
           <p>Cette page utilise des fonctionnalités modernes (async/await). Merci de mettre à jour votre navigateur.</p>
         </div>
@@ -821,29 +808,19 @@
       // =========================
       const $ = (id)=>document.getElementById(id);
       const show = (el, yes)=> el.classList.toggle("hidden", !yes);
+
       const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
       const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
       const setMsg = (t)=> { $("msg").textContent = t || ""; };
 
-      // ✅ FIX: setDebug ne plante plus si #debug n'existe pas
+      // ✅ setDebug ne plante plus si #debug n'existe pas
       const setDebug = (t)=> {
         const el = $("debug");
         if (el) el.textContent = t || "";
+        // Affiche le bloc debug uniquement si du texte
+        const card = $("debugCard");
+        if (card) show(card, Boolean(t && String(t).trim()));
       };
-
-      // ✅ Luxe login helpers
-      function setAuthAlert(message){
-        const box = $("authAlert");
-        if(!box) return;
-        box.textContent = message || "";
-        box.classList.toggle("show", Boolean(message));
-      }
-      function setLoginLoading(isLoading){
-        const btn = $("btnLogin");
-        if(!btn) return;
-        btn.disabled = Boolean(isLoading);
-        btn.textContent = isLoading ? "Connexion…" : "Se connecter";
-      }
 
       function canWrite(){
         return role === "shop" || role === "admin";
@@ -857,6 +834,9 @@
           .replaceAll('"',"&quot;");
       }
 
+      // =========================
+      // Recovery flow
+      // =========================
       function isRecoveryFlow(){
         const h=(location.hash||"").toLowerCase();
         const q=(location.search||"").toLowerCase();
@@ -868,9 +848,7 @@
       // =========================
       const SUPABASE_URL = "https://lhddwfeaoxnlflqlihdg.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZGR3ZmVhb3hubGZscWxpaGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MTI0NjcsImV4cCI6MjA4MzE4ODQ2N30.5Po48JdTbLZhcXjyJ48Il511DpiYNPdUZq4H-HNPAa4";
-
-      // ⚠️ IMPORTANT : mets ici ton URL GitHub Pages ACTUELLE
-      const SITE_URL = "https://TON_NOUVEAU_USERNAME.github.io/vapochill-suivi-commandes";
+      const SITE_URL = "https://beck37360.github.io/vapochill-suivi-commandes";
 
       async function loadSupabaseScript(src){
         return new Promise((resolve, reject) => {
@@ -901,6 +879,7 @@
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       window.supabaseClient = supabaseClient;
 
+      // ✅ Flags
       let isLoggingOut = false;
       let hasBooted = false;
       let allowAutoLogin = false;
@@ -911,7 +890,7 @@
       const USERS = ["Laetitia","Marco","Charlotte","Nico","Alan","Corentin","Mathieu","Romain"];
 
       // WhatsApp modal mode
-      const WA_PREVIEW_KEY = "wa_preview_mode_v1";
+      const WA_PREVIEW_KEY = "wa_preview_mode_v1"; // "direct" ou "preview"
       if (!localStorage.getItem(WA_PREVIEW_KEY)) localStorage.setItem(WA_PREVIEW_KEY, "preview");
 
       // Settings
@@ -992,8 +971,8 @@ Je vous confirme le reste dès réception
       // State
       // =========================
       let currentView = "active";
-      let role = null; // "admin" | "shop"
-      let profile = null; // profiles row
+      let role = null;        // "admin" | "shop"
+      let profile = null;     // profiles row
       let myStoreId = null;
       let myStoreName = null;
       let storesCache = [];
@@ -1014,13 +993,13 @@ Je vous confirme le reste dès réception
         show($("loginCard"), true);
         show($("appRoot"), false);
 
+        // ✅ affiche resetCard uniquement si recovery
         show($("resetCard"), isRecoveryFlow());
+
         setAuthMsg("");
         setResetMsg("");
+        setMsg("");
         setDebug("");
-
-        setAuthAlert("");
-        setLoginLoading(false);
 
         hasBooted = false;
       }
@@ -1030,7 +1009,6 @@ Je vous confirme le reste dès réception
         show($("appRoot"), true);
         show($("btnLogout"), true);
         show($("btnSettings"), true);
-
         $("userLabel").textContent = email || "connecté";
       }
 
@@ -1040,28 +1018,19 @@ Je vous confirme le reste dès réception
       async function login(){
         try{
           setAuthMsg("");
-          setAuthAlert("");
-
           const email = $("email").value.trim();
           const password = $("password").value.trim();
-          if(!email || !password){
-            setAuthAlert("⚠️ Mets email + mot de passe.");
-            return;
-          }
+          if(!email || !password){ setAuthMsg("⚠️ Mets email + mot de passe."); return; }
 
-          setLoginLoading(true);
+          setAuthMsg("⏳ Connexion…");
           allowAutoLogin = true;
 
           const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if(error){
-            setAuthAlert("❌ " + error.message);
-            return;
-          }
+          if(error){ setAuthMsg("❌ " + error.message); return; }
+
           setAuthMsg("✅ Connecté.");
         }catch(e){
-          setAuthAlert("❌ " + (e?.message || e));
-        }finally{
-          setLoginLoading(false);
+          setAuthMsg("❌ " + (e?.message || e));
         }
       }
 
@@ -1070,18 +1039,17 @@ Je vous confirme le reste dès réception
           isLoggingOut = true;
           hasBooted = false;
           allowAutoLogin = false;
-
           await supabaseClient.auth.signOut({ scope: "local" });
         } catch (e) {
           console.warn("signOut error (ignored):", e);
         } finally {
+          // purge tokens
           for (const k of Object.keys(localStorage)) {
             if (k.startsWith("sb-") && k.includes("auth")) localStorage.removeItem(k);
           }
           for (const k of Object.keys(sessionStorage)) {
             if (k.startsWith("sb-") && k.includes("auth")) sessionStorage.removeItem(k);
           }
-
           showLogin();
           setTimeout(()=>{ isLoggingOut = false; }, 1200);
         }
@@ -1095,6 +1063,7 @@ Je vous confirme le reste dès réception
 
           const { error } = await supabaseClient.auth.updateUser({ password: pass });
           if(error){ setResetMsg("❌ " + error.message); return; }
+
           setResetMsg("✅ Mot de passe modifié. Reconnecte-toi.");
         }catch(e){
           setResetMsg("❌ " + (e?.message || e));
@@ -1281,7 +1250,9 @@ Je vous confirme le reste dès réception
       }
 
       function fillStoreSelect(){
-        $("storeSelect").innerHTML = storesCache.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
+        $("storeSelect").innerHTML = storesCache
+          .map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`)
+          .join("");
         if(storesCache[0]) $("storeSelect").value = storesCache[0].id;
       }
 
@@ -1300,8 +1271,10 @@ Je vous confirme le reste dès réception
         setMsg("");
 
         let storeId = myStoreId;
+
+        // ADMIN : si une boutique est sélectionnée, on filtre, sinon on affiche tout
         if (role === "admin") {
-          storeId = $("storeSelect")?.value || "";
+          storeId = $("storeSelect")?.value || ""; // peut être vide
         }
 
         let query = supabaseClient
@@ -1319,8 +1292,10 @@ Je vous confirme le reste dès réception
       }
 
       async function addOrder(){
+        // ✅ Déterminer la boutique sur laquelle on ajoute
         let storeId = myStoreId;
 
+        // ADMIN : doit choisir une boutique
         if (role === "admin") {
           storeId = $("storeSelect")?.value || "";
           if (!storeId) {
@@ -1329,6 +1304,7 @@ Je vous confirme le reste dès réception
           }
         }
 
+        // SHOP : sécurité
         if (!storeId) {
           const email = await getCurrentUserEmail();
           await ensureStoreId(email);
@@ -1633,6 +1609,7 @@ Je vous confirme le reste dès réception
           );
         });
 
+        // en cours : reçu en haut
         if(currentView === "active"){
           list = [...list].sort((a,b) => (Boolean(b.received_checked) - Boolean(a.received_checked)));
         }
@@ -1644,12 +1621,12 @@ Je vous confirme le reste dès réception
 
         for(const o of list){
           const tr = document.createElement("tr");
-          if(currentView === "active" && Boolean(o.received_checked)) tr.classList.add("row-received");
 
           const since = timeSince(o.created_at || o.createdAt);
           const receivedPill = (currentView === "active" && Boolean(o.received_checked))
             ? `<span class="pill receivedTag">REÇU ✅</span>` : "";
 
+          // ✅ ADMIN ne voit rien
           const receivedControl = (currentView === "active" && role === "shop")
             ? `<label class="cb"><input type="checkbox" ${Boolean(o.received_checked) ? "checked":""} data-action="received" data-id="${o.id}"> Reçu</label>`
             : `<span class="small">—</span>`;
@@ -1658,13 +1635,13 @@ Je vous confirme le reste dès réception
             ? `
               <div class="actions">
                 ${receivedControl}
-                <button class="ok" data-action="picked" data-id="${o.id}">Commande récupérée</button>
-                <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
+                <button class="btnPrimary" data-action="picked" data-id="${o.id}">Commande récupérée</button>
+                <button class="btn btnDanger" data-action="delete" data-id="${o.id}">Supprimer</button>
               </div>
             `
             : `
               <div class="actions">
-                <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
+                <button class="btn btnDanger" data-action="delete" data-id="${o.id}">Supprimer</button>
               </div>
             `;
 
@@ -1723,9 +1700,15 @@ Je vous confirme le reste dès réception
         setTodayDefault();
         resetForm();
 
+        // 🔐 Charger le profil
         profile = await fetchProfile();
         role = profile.role || "shop";
         myStoreId = profile.store_id || null;
+
+        const { data: u } = await supabaseClient.auth.getUser();
+        const uid = u?.user?.id || "-";
+
+        setDebug(`DEBUG: email=${email} | role=${role} | storeId=${myStoreId} | uid=${uid}`);
 
         await fetchStores();
 
@@ -1736,6 +1719,7 @@ Je vous confirme le reste dès réception
           fillStoreSelect();
           await loadOrders();
         } else {
+          // SHOP
           if(!myStoreId){
             await ensureStoreId(email);
           }
@@ -1757,22 +1741,25 @@ Je vous confirme le reste dès réception
       }
 
       // =========================
-      // Reset password (EMAIL)
+      // Reset password
       // =========================
       async function sendReset(){
         try{
           setAuthMsg("");
-          setAuthAlert("");
-
           const email = $("email").value.trim();
-          if(!email){ setAuthAlert("⚠️ Mets l’email puis clique ici."); return; }
+          if(!email){
+            setAuthMsg("⚠️ Mets l’email puis clique ici.");
+            return;
+          }
 
           const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
-          if(error){ setAuthAlert("❌ " + error.message); return; }
-
+          if(error){
+            setAuthMsg("❌ " + error.message);
+            return;
+          }
           setAuthMsg("✅ Email de réinitialisation envoyé.");
         }catch(e){
-          setAuthAlert("❌ " + (e?.message || e));
+          setAuthMsg("❌ " + (e?.message || e));
         }
       }
 
@@ -1803,8 +1790,18 @@ Je vous confirme le reste dès réception
       $("waBackdrop").addEventListener("click", closeWAModal);
       $("settingsBackdrop").addEventListener("click", closeSettings);
 
-      $("tabActive").addEventListener("click", ()=>{ currentView="active"; $("tabActive").classList.add("active"); $("tabHistory").classList.remove("active"); render(); });
-      $("tabHistory").addEventListener("click", ()=>{ currentView="history"; $("tabHistory").classList.add("active"); $("tabActive").classList.remove("active"); render(); });
+      $("tabActive").addEventListener("click", ()=>{
+        currentView="active";
+        $("tabActive").classList.add("active");
+        $("tabHistory").classList.remove("active");
+        render();
+      });
+      $("tabHistory").addEventListener("click", ()=>{
+        currentView="history";
+        $("tabHistory").classList.add("active");
+        $("tabActive").classList.remove("active");
+        render();
+      });
 
       $("search").addEventListener("input", render);
       $("filterStatus").addEventListener("change", render);
@@ -1855,25 +1852,18 @@ Je vous confirme le reste dès réception
       supabaseClient.auth.onAuthStateChange(async (_event, session) => {
         if (isLoggingOut) return;
 
-        const user = session?.user;
-
-        // ✅ si on est sur un lien de recovery => on affiche le reset, pas de redirection
+        // ✅ si recovery => on ne doit PAS auto-enterApp
         if (isRecoveryFlow()) {
           showLogin();
           show($("resetCard"), true);
-          allowAutoLogin = false;
+          allowAutoLogin = true; // autorise updateUser
           return;
         }
 
-        if (!user) {
-          showLogin();
-          return;
-        }
+        const user = session?.user;
 
-        if (!allowAutoLogin) {
-          showLogin();
-          return;
-        }
+        if (!user) { showLogin(); return; }
+        if (!allowAutoLogin) { showLogin(); return; }
 
         if (hasBooted) return;
         hasBooted = true;
@@ -1888,9 +1878,11 @@ Je vous confirme le reste dès réception
         }
       });
 
+      // Boot
       (async ()=>{
-        // ✅ recovery: on reste sur l’écran de reset
-        if(isRecoveryFlow()){
+        // ✅ si lien recovery : rester sur login + resetCard
+        if (isRecoveryFlow()) {
+          allowAutoLogin = true;
           showLogin();
           show($("resetCard"), true);
           return;
