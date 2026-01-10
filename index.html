@@ -9,306 +9,101 @@
 
   <style>
     :root{
-      /* Luxe clair */
-      --bgA:#fbf7ef;         /* ivoire */
-      --bgB:#f3efe7;         /* sable */
-      --card:#ffffff;
-      --text:#101213;
-      --muted:#5c625e;
-      --border:#e7dfd3;
+      --vc-dark:#0f2a22;
+      --vc-green:#2bb673;
+      --vc-mint:#e6f6ef;
+      --vc-danger:#b00020;
+      --vc-card:#ffffff;
+      --vc-border:#dfe7e3;
+      --vc-text:#10211b;
+      --vc-muted:#5d6b66;
 
-      --green:#2bb673;       /* Vapo */
-      --danger:#b00020;
-
-      /* Accent “gold” discret */
-      --goldA:#d8b56a;
-      --goldB:#f1e2b7;
-
-      --shadow: 0 18px 50px rgba(16,18,19,.08);
-      --shadow2: 0 1px 0 rgba(16,18,19,.04);
+      --vc-blue:#4a7dff;
+      --vc-yellow:#f6c453;
+      --vc-red:#ff6b6b;
+      --vc-orange:#ff9a3c;
+      --vc-purple:#b9a7ff;
     }
 
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: Inter, Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(900px 420px at 12% 10%, rgba(216,181,106,.18), transparent 60%),
-        radial-gradient(800px 380px at 88% 16%, rgba(43,182,115,.10), transparent 60%),
-        linear-gradient(180deg, var(--bgA), var(--bgB));
+    * { box-sizing:border-box; }
+    body { font-family: 'Inter', Arial, sans-serif; margin:0; background:var(--vc-mint); color:var(--vc-text); }
+
+    /* ===== TOP BAR (fixe) ===== */
+    .topbar{
+      position:fixed; top:0; left:0; right:0;
+      height:64px; background:var(--vc-dark); color:#fff;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 18px; z-index:1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,.15);
+      gap:10px;
+    }
+    .topbar-left{ display:flex; align-items:center; gap:12px; }
+    .topbar img{ height:40px; background:#fff; padding:4px; border-radius:10px; }
+    .topbar-title{ display:flex; flex-direction:column; line-height:1.1; }
+    .topbar-title b{ font-size:14px; }
+    .topbar-title span{ font-size:12px; opacity:.9; }
+
+    .topbar-right{
+      display:flex; gap:10px; font-size:12px; opacity:.98;
+      align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .chip{
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:999px;
+      padding:6px 10px;
+      display:flex; align-items:center; gap:8px;
+      background: rgba(255,255,255,.06);
+      white-space:nowrap;
     }
 
-    /* léger grain */
-    body:before{
-      content:"";
-      position:fixed; inset:0;
-      pointer-events:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
-      opacity:.10;
-      mix-blend-mode: multiply;
+    .wrap { padding: 86px 18px 18px; max-width: 1280px; margin: 0 auto; }
+    .small { font-size: 12px; color:var(--vc-muted); white-space:pre-wrap; }
+    .card { background:var(--vc-card); border:1px solid var(--vc-border); border-radius:16px; padding:14px; margin: 12px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+    label { font-size: 12px; color:#32423d; display:block; margin-bottom:4px; }
+
+    input, select, textarea {
+      padding: 8px; border:1px solid #cfd8d3; border-radius:12px;
+      width: 240px; background:#fff; font-family: inherit;
     }
+    textarea { width: 520px; height: 70px; }
+
+    button { padding:10px 12px; border:0; border-radius:12px; cursor:pointer; font-weight:600; }
+    .primary { background:var(--vc-dark); color:#fff; }
+    .light { background:#eef1f0; }
+    .danger { background:var(--vc-danger); color:#fff; }
+    .ok { background:var(--vc-green); color:#fff; }
 
     .hidden{ display:none !important; }
 
-    /* ===== TOP BAR ===== */
-    .topbar{
-      position:fixed; top:0; left:0; right:0;
-      height:66px;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 18px;
-      z-index:1000;
-
-      background: rgba(255,255,255,.78);
-      backdrop-filter: blur(14px);
-      border-bottom:1px solid rgba(231,223,211,.9);
-      box-shadow: 0 10px 30px rgba(16,18,19,.06);
-      gap:10px;
-    }
-
-    .topbar-left{ display:flex; align-items:center; gap:12px; }
-
-    .topbar img{
-      height:42px;
-      border-radius:14px;
-      padding:6px;
-      background:#fff;
-      border:1px solid rgba(231,223,211,.95);
-      box-shadow: 0 6px 18px rgba(16,18,19,.06);
-    }
-
-    .topbar-title{ display:flex; flex-direction:column; line-height:1.1; }
-    .topbar-title b{ font-size:13px; letter-spacing:.2px; }
-    .topbar-title span{ font-size:12px; color: var(--muted); }
-
-    .topbar-right{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      font-size:12px;
-    }
-
-    .chip{
-      border:1px solid rgba(231,223,211,.95);
-      border-radius:999px;
-      padding:7px 10px;
-      display:flex; align-items:center; gap:8px;
-      background: rgba(255,255,255,.65);
-      white-space:nowrap;
-      color: var(--muted);
-    }
-
-    .wrap{
-      padding: 90px 18px 18px;
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-
-    /* ===== CARDS ===== */
-    .card{
-      background: rgba(255,255,255,.88);
-      border: 1px solid rgba(231,223,211,.95);
-      border-radius: 22px;
-      padding: 16px;
-      margin: 12px 0;
-      box-shadow: var(--shadow2);
-      position:relative;
-      overflow:hidden;
-    }
-
-    /* liseré gold discret en haut */
-    .card:before{
-      content:"";
-      position:absolute; left:0; right:0; top:0;
-      height:2px;
-      background: linear-gradient(90deg, transparent, rgba(216,181,106,.75), rgba(241,226,183,.85), rgba(216,181,106,.75), transparent);
-      opacity:.8;
-    }
-
-    .small{
-      font-size:12px;
-      color: var(--muted);
-      white-space:pre-wrap;
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:end;
-    }
-
-    label{
-      font-size:12px;
-      color:#303433;
-      display:block;
-      margin-bottom:6px;
-    }
-
-    input, select, textarea{
-      width: 240px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(231,223,211,.95);
-      background: rgba(255,255,255,.9);
-      color: var(--text);
-      outline:none;
-      transition: box-shadow .12s ease, border-color .12s ease, transform .12s ease;
-      box-shadow: 0 1px 0 rgba(16,18,19,.03) inset;
-      font-family: inherit;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(216,181,106,.85);
-      box-shadow: 0 0 0 4px rgba(216,181,106,.18);
-    }
-    textarea{ width: 520px; height: 70px; }
-
-    /* Buttons */
-    button{ border:0; cursor:pointer; font-weight:800; font-family:inherit; }
-    .btn{
-      padding:10px 12px;
-      border-radius:14px;
-      background: rgba(255,255,255,.85);
-      border:1px solid rgba(231,223,211,.95);
-      color:#1b1f1e;
-      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
-      box-shadow: 0 10px 30px rgba(16,18,19,.06);
-    }
-    .btn:hover{ filter: brightness(1.02); }
-    .btn:active{ transform: translateY(1px); }
-
-    .btnPrimary{
-      padding:11px 14px;
-      border-radius:14px;
-      background: linear-gradient(135deg, rgba(43,182,115,1), rgba(43,182,115,.82));
-      color:#ffffff;
-      box-shadow: 0 14px 40px rgba(43,182,115,.18);
-    }
-    .btnDanger{
-      background: rgba(176,0,32,.08);
-      border:1px solid rgba(176,0,32,.18);
-      color: #7c0d1f;
-      box-shadow:none;
-    }
-
-    /* ===== LOGIN DESIGN ===== */
-    .loginGrid{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:14px;
-      align-items:stretch;
-    }
-
-    .loginHero{
-      border-radius:20px;
-      border:1px solid rgba(231,223,211,.95);
-      background:
-        radial-gradient(480px 240px at 22% 20%, rgba(241,226,183,.55), transparent 60%),
-        radial-gradient(520px 260px at 80% 30%, rgba(43,182,115,.10), transparent 60%),
-        rgba(255,255,255,.86);
-      box-shadow: var(--shadow);
-      padding:16px;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .loginBadge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.78);
-      border:1px solid rgba(231,223,211,.95);
-      color: var(--muted);
-      font-size:12px;
-    }
-
-    .goldDot{
-      width:10px; height:10px;
-      border-radius:999px;
-      background: radial-gradient(circle, rgba(216,181,106,1), rgba(216,181,106,.35));
-      box-shadow: 0 0 14px rgba(216,181,106,.32);
-    }
-
-    .loginTitle{
-      margin:10px 0 6px;
-      font-size:22px;
-      letter-spacing:.2px;
-    }
-
-    .loginRight{
-      border-radius:20px;
-      border:1px solid rgba(231,223,211,.95);
-      background: rgba(255,255,255,.86);
-      box-shadow: var(--shadow);
-      padding:16px;
-    }
-
-    .kpi{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px 10px;
-      border-radius:14px;
-      border:1px solid rgba(231,223,211,.95);
-      background: rgba(255,255,255,.78);
-      margin-top:10px;
-      color: var(--muted);
-      font-size:12px;
-    }
-    .kpi b{ color:#1b1f1e; }
-
-    /* ===== TABLE + UI ===== */
     table { width:100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border-bottom:1px solid rgba(231,223,211,.75); padding:10px; text-align:left; vertical-align: top; }
-    th { font-size: 12px; color:#444a47; }
+    th, td { border-bottom:1px solid #eef2f0; padding:10px; text-align:left; vertical-align: top; }
+    th { font-size: 12px; color:#3f4c48; }
 
-    .pill{
-      display:inline-block;
-      padding:5px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid rgba(231,223,211,.95);
-      background: rgba(255,255,255,.78);
-    }
-
-    .actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .right{ margin-left:auto; }
+    .pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid #d7e0db; background:#f6f8f7; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .right { margin-left:auto; }
 
     /* Statuts */
-    .st{ font-weight: 900; }
-    .st-mec{ border-color:rgba(246,196,83,.60); background:rgba(246,196,83,.22); color:#6b4a00; }
-    .st-com{ border-color:rgba(43,182,115,.45); background:rgba(43,182,115,.14); color:#0f5132; }
-    .st-rup{ border-color:rgba(176,0,32,.25); background:rgba(176,0,32,.08); color:#7c0d1f; }
-    .st-par{ border-color:rgba(216,181,106,.45); background:rgba(216,181,106,.12); color:#6a5520; }
+    .st { font-weight: 800; }
+    .st-mec { border-color:rgba(246,196,83,.55); background:rgba(246,196,83,.22); color:#6b4a00; }
+    .st-com { border-color:rgba(74,125,255,.45); background:rgba(74,125,255,.16); color:#1837a8; }
+    .st-rup { border-color:rgba(255,107,107,.55); background:rgba(255,107,107,.18); color:#8a1010; }
+    .st-par { border-color:rgba(185,167,255,.55); background:rgba(185,167,255,.18); color:#3c2aa8; }
 
     /* Reçu */
-    .receivedTag{ border-color: rgba(43,182,115,.35); background: rgba(43,182,115,.12); font-weight:900; color:#0f5132; }
+    .receivedTag { border-color: rgba(43,182,115,.35); background: rgba(43,182,115,.12); font-weight:900; }
+    .row-received { outline: 2px solid rgba(43,182,115,.25); outline-offset: -2px; animation: flash .35s ease; }
+    @keyframes flash { from { background: rgba(43,182,115,.10); } to { background: transparent; } }
 
     /* Tabs */
-    .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .tab{
-      padding:9px 11px;
-      border-radius:999px;
-      border:1px solid rgba(231,223,211,.95);
-      background: rgba(255,255,255,.78);
-      cursor:pointer;
-      font-size:12px;
-      user-select:none;
-      color:#3c4240;
-    }
-    .tab.active{
-      background: linear-gradient(90deg, rgba(241,226,183,.65), rgba(255,255,255,.90));
-      border-color: rgba(216,181,106,.55);
-      box-shadow: 0 10px 30px rgba(216,181,106,.12);
-    }
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .tab { padding:8px 10px; border-radius:999px; border:1px solid #d7e0db; background:#f6f8f7; cursor:pointer; font-size:12px; user-select:none; }
+    .tab.active { background:var(--vc-dark); color:#fff; border-color:var(--vc-dark); }
 
     /* Checkbox */
-    .cb{ display:flex; align-items:center; gap:8px; font-size:12px; color:#2f3a36; user-select:none; }
-    .cb input{ width:auto; transform: scale(1.15); }
+    .cb { display:flex; align-items:center; gap:8px; font-size:12px; color:#2f3a36; user-select:none; }
+    .cb input { width:auto; transform: scale(1.15); }
 
     /* Dashboard */
     .dashboard{
@@ -318,46 +113,51 @@
       margin: 12px 0;
     }
     .statCard{
-      background: rgba(255,255,255,.88);
-      border:1px solid rgba(231,223,211,.95);
-      border-radius:20px;
+      background: var(--vc-card);
+      border:1px solid var(--vc-border);
+      border-radius:16px;
       padding:14px;
-      box-shadow: var(--shadow2);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
     }
-    .statCard .label{ font-size:12px; color:var(--muted); font-weight:800; display:flex; align-items:center; gap:8px; }
+    .statCard .label{ font-size:12px; color:var(--vc-muted); font-weight:700; display:flex; align-items:center; gap:8px; }
     .statCard .value{ font-size:22px; font-weight:900; }
     .dot{ width:10px; height:10px; border-radius:50%; }
-    .dot.mec{ background: var(--goldA); }
-    .dot.com{ background: var(--green); }
-    .dot.rup{ background: var(--danger); }
-    .dot.recu{ background: rgba(43,182,115,.75); }
+    .dot.mec{ background: var(--vc-yellow); }
+    .dot.com{ background: var(--vc-blue); }
+    .dot.rup{ background: var(--vc-red); }
+    .dot.recu{ background: var(--vc-green); }
 
     /* ===== MODALS ===== */
     .modalBackdrop{
       position:fixed; inset:0;
-      background: rgba(16,18,19,.35);
+      background: rgba(0,0,0,.45);
       display:none;
       align-items:center;
       justify-content:center;
       z-index:2000;
       padding:16px;
-      backdrop-filter: blur(8px);
     }
     .modal{
-      width:min(860px, 100%);
-      background: rgba(255,255,255,.94);
-      border-radius:22px;
-      border:1px solid rgba(231,223,211,.95);
-      box-shadow: var(--shadow);
+      width:min(820px, 100%);
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--vc-border);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
       overflow:hidden;
+      transform: translateY(6px);
+      animation: pop .14s ease-out;
+    }
+    @keyframes pop{
+      from{ transform: translateY(16px); opacity:.7; }
+      to{ transform: translateY(6px); opacity:1; }
     }
     .modalHeader{
-      background: rgba(255,255,255,.92);
-      border-bottom:1px solid rgba(231,223,211,.95);
+      background: #f6f8f7;
+      border-bottom:1px solid var(--vc-border);
       padding:14px 16px;
       display:flex;
       align-items:center;
@@ -372,14 +172,14 @@
       flex-wrap:wrap;
       gap:10px;
       justify-content:space-between;
-      border-top:1px solid rgba(231,223,211,.95);
-      background: rgba(255,255,255,.92);
+      border-top:1px solid var(--vc-border);
+      background:#fff;
       align-items:center;
     }
 
     .waBox{
-      border:1px solid rgba(231,223,211,.95);
-      background: rgba(255,255,255,.90);
+      border:1px solid var(--vc-border);
+      background:#fbfcfb;
       border-radius:14px;
       padding:12px;
       white-space:pre-wrap;
@@ -389,8 +189,6 @@
       min-height: 220px;
       resize:vertical;
       font-family: inherit;
-      color: var(--text);
-      outline:none;
     }
 
     .toggleRow{
@@ -403,22 +201,243 @@
     }
     .toggleRow input{ transform: scale(1.15); }
 
-    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    .field{ display:flex; flex-direction:column; gap:6px; }
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
     .field input, .field textarea, .field select{ width:100%; }
 
     @media (max-width: 900px){
       .grid2{ grid-template-columns:1fr; }
-      .loginGrid{ grid-template-columns: 1fr; }
     }
     @media (max-width: 700px){
       input, select, textarea { width: 100%; }
       textarea { width: 100%; }
       .topbar-right { gap:6px; }
     }
+
+    /* =========================
+       LOGIN — SOBRE LUXE
+       ========================= */
+    .loginStage{
+      min-height: calc(100vh - 86px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 26px 0;
+    }
+
+    .loginShell{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap:16px;
+      align-items:stretch;
+    }
+
+    .loginHero{
+      border-radius:22px;
+      padding:22px;
+      color:#fff;
+      background:
+        radial-gradient(800px 420px at 20% 10%, rgba(43,182,115,.35), transparent 55%),
+        radial-gradient(700px 380px at 90% 40%, rgba(74,125,255,.22), transparent 55%),
+        linear-gradient(135deg, #0f2a22, #12382c);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 18px 55px rgba(0,0,0,.18);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .heroTop{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .heroLogo{
+      width:44px;height:44px;
+      border-radius:14px;
+      background: rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .heroTitle{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+    .heroTitle b{ font-size:13px; opacity:.95; }
+    .heroTitle span{ font-size:12px; opacity:.82; }
+
+    .loginHero h1{
+      margin:16px 0 8px;
+      font-size:28px;
+      letter-spacing:-.02em;
+      line-height:1.1;
+    }
+    .loginHero p{
+      margin:0;
+      opacity:.9;
+      font-size:13px;
+      line-height:1.55;
+      max-width: 46ch;
+    }
+
+    .heroFoot{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      opacity:.96;
+      font-size:12px;
+    }
+    .heroChip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .loginCard{
+      background:var(--vc-card);
+      border:1px solid var(--vc-border);
+      border-radius:22px;
+      padding:20px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.08);
+    }
+
+    .loginCard h2{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:-.01em;
+    }
+    .loginCard .sub{
+      font-size:12px;
+      color:var(--vc-muted);
+    }
+
+    .loginGrid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .fieldBox{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .fieldBox label{
+      font-size:12px;
+      color:#32423d;
+      font-weight:800;
+    }
+
+    .inputWrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid #cfd8d3;
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fff;
+      transition: box-shadow .12s ease, border-color .12s ease;
+    }
+    .inputWrap:focus-within{
+      border-color: rgba(15,42,34,.55);
+      box-shadow: 0 0 0 4px rgba(15,42,34,.10);
+    }
+    .inputIcon{
+      font-size:14px;
+      opacity:.75;
+      width:18px;
+      text-align:center;
+    }
+
+    .inputWrap input{
+      border:0 !important;
+      outline:none !important;
+      width:100%;
+      padding:0 !important;
+      border-radius:0 !important;
+      background:transparent !important;
+      font-family:inherit;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+      align-items:center;
+    }
+
+    .btnPrimary{
+      background:var(--vc-dark);
+      color:#fff;
+      border:0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:900;
+      cursor:pointer;
+      transition: transform .05s ease, opacity .12s ease;
+    }
+    .btnPrimary:active{ transform: translateY(1px); }
+    .btnPrimary[disabled]{ opacity:.6; cursor:not-allowed; }
+
+    .btnGhost{
+      background:#eef1f0;
+      border:0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .alert{
+      margin-top:10px;
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:12px;
+      border:1px solid rgba(176,0,32,.22);
+      background: rgba(176,0,32,.06);
+      color:#7c0016;
+      display:none;
+      white-space:pre-wrap;
+    }
+    .alert.show{ display:block; }
+
+    .loginHint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--vc-muted);
+      line-height:1.45;
+    }
+
+    @media (max-width: 900px){
+      .loginShell{ grid-template-columns:1fr; }
+    }
   </style>
 </head>
-
 <body>
   <!-- TOP BAR -->
   <div class="topbar">
@@ -431,94 +450,117 @@
     </div>
 
     <div class="topbar-right">
-      <button class="btn hidden" style="padding:9px 11px;border-radius:999px" id="btnSettings" type="button">⚙️ Paramètres</button>
+      <button class="light hidden" style="padding:8px 10px;border-radius:999px" id="btnSettings" type="button">⚙️ Paramètres</button>
+
       <div class="chip">🕒 <span id="clock">--:--</span></div>
       <div class="chip">👤 <span id="userLabel">non connecté</span></div>
-      <button class="btn btnDanger hidden" style="padding:9px 11px;border-radius:999px" id="btnLogout" type="button">Déconnexion</button>
+      <button class="light hidden" style="padding:8px 10px;border-radius:999px" id="btnLogout" type="button">Déconnexion</button>
     </div>
   </div>
 
   <div class="wrap">
 
-    <!-- ====== LOGIN ====== -->
-    <div class="card" id="loginCard">
-      <div class="loginGrid">
+    <!-- ====== LOGIN (SOBRE LUXE) ====== -->
+    <div class="loginStage" id="loginCard">
+      <div class="loginShell">
 
         <div class="loginHero">
-          <div class="loginBadge"><span class="goldDot"></span> Accès sécurisé</div>
-          <div class="loginTitle"><b>Connexion</b></div>
-          <div class="small">Interface premium — accès boutique / admin.</div>
-
-          <div style="height:14px"></div>
-
-          <div class="row">
-            <div>
-              <label>Email</label>
-              <input id="email" placeholder="boutique.toursnord@vapochill.fr" autocomplete="username">
+          <div>
+            <div class="heroTop">
+              <div class="heroLogo">VC</div>
+              <div class="heroTitle">
+                <b>Vapo’Chill</b>
+                <span>Suivi commandes interne</span>
+              </div>
             </div>
 
-            <div>
-              <label>Mot de passe</label>
-              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
-            </div>
-
-            <button id="btnLogin" class="btnPrimary" type="button">Se connecter</button>
+            <h1>Connexion</h1>
+            <p>
+              Accède à la gestion des commandes, statuts, historique et messages WhatsApp.
+              Interface pensée pour aller vite, sans erreurs.
+            </p>
           </div>
 
-          <div class="row" style="margin-top:10px; align-items:center;">
-            <button class="btn" id="btnReset" type="button">Mot de passe oublié</button>
-            <span class="small" id="authMsg"></span>
-          </div>
-
-          <div class="card hidden" style="margin-top:12px" id="debugCard">
-            <b style="font-size:13px;">Debug</b>
-            <div class="small" id="debug">—</div>
-          </div>
-
-          <div class="card hidden" id="resetCard" style="margin-top:12px">
-            <b>🔒 Définir un nouveau mot de passe</b>
-            <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
-            <div style="height:10px"></div>
-            <label>Nouveau mot de passe</label>
-            <input id="newPassword" type="password" style="width:100%" placeholder="Nouveau mot de passe">
-            <div class="row" style="margin-top:10px; align-items:center;">
-              <button class="btnPrimary" id="btnUpdatePass" type="button">Enregistrer</button>
-              <span class="small" id="resetMsg"></span>
-            </div>
+          <div class="heroFoot">
+            <div class="heroChip">🔐 Accès sécurisé</div>
+            <div class="heroChip">⚡ Rapide</div>
+            <div class="heroChip">📦 Suivi clair</div>
           </div>
         </div>
 
-        <div class="loginRight">
-          <b style="font-size:14px;">Vapo'Chill — Suivi</b>
-          <div class="small" style="margin-top:6px;">Design “luxe discret” (ivoire + gold)</div>
+        <div class="loginCard">
+          <h2>Se connecter</h2>
+          <div class="sub">Email boutique ou admin.</div>
 
-          <div class="kpi"><b>Statut système</b><span>online</span></div>
-          <div class="kpi"><b>Accès</b><span>Boutique / Admin</span></div>
-          <div class="kpi"><b>Conseil</b><span>Utilise la recherche client</span></div>
+          <div class="loginGrid">
+            <div class="fieldBox">
+              <label>Email</label>
+              <div class="inputWrap">
+                <div class="inputIcon">✉️</div>
+                <input id="email" placeholder="boutique.toursnord@vapochill.fr" autocomplete="username">
+              </div>
+            </div>
 
-          <div class="small" style="margin-top:12px;">
-            Astuce : coche “Reçu” pour envoyer le message WhatsApp automatiquement (si activé).
+            <div class="fieldBox">
+              <label>Mot de passe</label>
+              <div class="inputWrap">
+                <div class="inputIcon">🔒</div>
+                <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+              </div>
+            </div>
+
+            <div class="btnRow">
+              <button id="btnLogin" class="btnPrimary" type="button">Se connecter</button>
+              <button class="btnGhost" id="btnReset" type="button">Mot de passe oublié</button>
+            </div>
+
+            <div class="alert" id="authAlert"></div>
+            <div class="small" id="authMsg"></div>
+
+            <!-- Reset password block -->
+            <div class="card hidden" id="resetCard" style="margin-top:12px">
+              <b>🔒 Définir un nouveau mot de passe</b>
+              <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
+              <div style="height:10px"></div>
+              <label>Nouveau mot de passe</label>
+              <input id="newPassword" type="password" style="width:100%" placeholder="Nouveau mot de passe">
+              <div class="row" style="margin-top:10px">
+                <button class="ok" id="btnUpdatePass" type="button">Enregistrer</button>
+                <span class="small" id="resetMsg"></span>
+              </div>
+            </div>
+
+            <!-- Debug (optionnel) -->
+            <div class="card hidden" style="margin-top:12px" id="debugCard">
+              <b style="font-size:13px;">Debug</b>
+              <div class="small" id="debug">—</div>
+            </div>
+
+            <div class="loginHint">
+              Astuce : si une boutique “ne voit rien”, vérifie l’email dans la table <b>stores</b> (champ <b>email</b>).
+            </div>
           </div>
         </div>
 
       </div>
     </div>
+
     <!-- ====== APP ====== -->
     <div class="hidden" id="appRoot">
 
-      <!-- ADMIN -->
+      <!-- ADMIN : select boutique -->
       <div class="card hidden" id="adminCard">
         <div class="row" style="justify-content:space-between; align-items:end;">
           <div>
             <b>Mode admin</b>
-            <div class="small">Sélectionne une boutique.</div>
+            <div class="small">Choisis une boutique pour afficher ses commandes.</div>
           </div>
           <div class="row">
             <div>
               <label>Boutique</label>
               <select id="storeSelect" style="width:320px"></select>
             </div>
-            <button class="btn" id="btnReloadAdmin" type="button">Recharger</button>
+            <button class="light" id="btnReloadAdmin" type="button">Recharger</button>
           </div>
         </div>
       </div>
@@ -535,48 +577,47 @@
 
         <div class="statCard">
           <div>
-            <div class="label"><span class="dot com"></span> Commandée</div>
+            <div class="label"><span class="dot com"></span> Commander</div>
             <div class="value" id="statCOM">0</div>
           </div>
-          <div class="pill st st-com">OK</div>
+          <div class="pill st st-com">Commandée</div>
         </div>
 
         <div class="statCard">
           <div>
-            <div class="label"><span class="dot rup"></span> Rupture</div>
+            <div class="label"><span class="dot rup"></span> Rupture de stock</div>
             <div class="value" id="statRUP">0</div>
           </div>
-          <div class="pill st st-rup">Bloquée</div>
+          <div class="pill st st-rup">Rupture</div>
         </div>
 
         <div class="statCard">
           <div>
-            <div class="label"><span class="dot recu"></span> Reçu</div>
+            <div class="label"><span class="dot recu"></span> Reçu (coché)</div>
             <div class="value" id="statRECU">0</div>
           </div>
-          <div class="pill receivedTag">Réceptionné</div>
+          <div class="pill receivedTag">Reçu ✅</div>
         </div>
       </div>
 
-      <!-- AJOUT COMMANDE -->
+      <!-- ADD ORDER -->
       <div class="card" id="addCard">
-        <b>Nouvelle commande</b>
-
+        <b>Ajouter une commande</b>
         <div class="row" style="margin-top:10px">
           <div>
             <label>Client</label>
-            <input id="client">
+            <input id="client" placeholder="Nom client">
           </div>
           <div>
-            <label>Téléphone</label>
-            <input id="tel">
+            <label>Numéro</label>
+            <input id="tel" placeholder="06 12 34 56 78">
           </div>
           <div>
             <label>Article</label>
-            <input id="article">
+            <input id="article" placeholder="Article commandé">
           </div>
           <div>
-            <label>Qté</label>
+            <label>Quantité</label>
             <input id="qty" type="number" min="1" value="1">
           </div>
           <div>
@@ -601,37 +642,36 @@
         <div class="row" style="margin-top:8px">
           <div>
             <label>Notes</label>
-            <textarea id="notes"></textarea>
+            <textarea id="notes" placeholder="Notes internes"></textarea>
           </div>
         </div>
 
-        <div class="row" style="margin-top:8px; align-items:center;">
-          <button id="btnAdd" class="btnPrimary" type="button">Ajouter</button>
-          <button id="btnClear" class="btn" type="button">Vider</button>
+        <div class="row" style="margin-top:8px">
+          <button id="btnAdd" class="primary" type="button">Ajouter</button>
+          <button id="btnClear" class="light" type="button">Vider</button>
           <span class="small" id="msg"></span>
         </div>
       </div>
 
-      <!-- LISTE COMMANDES -->
+      <!-- TABLE -->
       <div class="card">
-        <div class="row" style="justify-content:space-between; align-items:center;">
+        <div class="row" style="align-items:center; justify-content:space-between;">
           <div>
             <b>Commandes</b>
-            <div class="small">Suivi & historique</div>
+            <div class="small">Gestion des commandes en cours et archivées.</div>
           </div>
-
-          <div class="row">
-            <input id="search" placeholder="Recherche...">
-            <select id="filterStatus">
-              <option value="">Tous</option>
+          <div class="row" style="gap:8px">
+            <input id="search" placeholder="Rechercher..." style="width:220px">
+            <select id="filterStatus" style="width:180px">
+              <option value="">Tous statuts</option>
               <option>Mettre en commande</option>
               <option>Commander</option>
               <option>Rupture de stock</option>
               <option>Reçu partiellement</option>
             </select>
             <select id="antiError">
-              <option value="on">Anti-erreur ON</option>
-              <option value="off">OFF</option>
+              <option value="on">Anti-erreur: ON</option>
+              <option value="off">Anti-erreur: OFF</option>
             </select>
           </div>
         </div>
@@ -639,7 +679,7 @@
         <div class="tabs">
           <div class="tab active" id="tabActive">En cours (<span id="countActive">0</span>)</div>
           <div class="tab" id="tabHistory">Historique (<span id="countHistory">0</span>)</div>
-          <div class="tab right">Affichées : <b id="countShown">0</b></div>
+          <div class="tab right">Affichées: <b id="countShown">0</b></div>
         </div>
 
         <table>
@@ -656,79 +696,110 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
-    </div>
+    </div> <!-- /appRoot -->
 
-    <!-- ====== WHATSAPP ====== -->
+    <!-- ====== WHATSAPP MODAL ====== -->
     <div class="modalBackdrop" id="waBackdrop">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modalHeader">
-          <b>WhatsApp</b>
-          <button class="btn" id="btnCloseWA">✖</button>
+          <b>WhatsApp – Préparer le message</b>
+          <button class="light" id="btnCloseWA" type="button">✖</button>
         </div>
-
         <div class="modalBody">
           <div class="small" id="waMeta"></div>
+          <div style="height:8px"></div>
+
           <label>Template</label>
-          <select id="waTemplate">
-            <option value="arrivee">Arrivée</option>
-            <option value="rupture">Rupture</option>
-            <option value="relance">Relance</option>
-            <option value="partiel">Partiel</option>
+          <select id="waTemplate" style="width:100%">
+            <option value="arrivee">✅ Arrivée boutique</option>
+            <option value="rupture">❌ Rupture / délai</option>
+            <option value="relance">⏳ Relance fournisseur</option>
+            <option value="partiel">📦 Reçu partiellement</option>
           </select>
+
+          <div style="height:8px"></div>
 
           <label>Message</label>
           <textarea id="waText" class="waBox"></textarea>
 
           <div class="toggleRow">
-            <input type="checkbox" id="waNoPreview">
-            <span>Ouverture directe WhatsApp</span>
+            <input id="waNoPreview" type="checkbox">
+            <span>Ouvrir directement WhatsApp sans prévisualisation</span>
           </div>
         </div>
-
         <div class="modalFooter">
           <div class="actions">
-            <button class="btn" id="btnCancelWA">Annuler</button>
-            <button class="btn" id="btnCopyWA">Copier</button>
+            <button class="light" id="btnCancelWA" type="button">Annuler</button>
+            <button class="light" id="btnResetWA" type="button">Réinitialiser</button>
+            <button class="light" id="btnCopyWA" type="button">Copier</button>
           </div>
-          <button class="btnPrimary" id="btnOpenWA">Ouvrir WhatsApp</button>
+          <div class="actions">
+            <button class="primary" id="btnOpenWA" type="button">Ouvrir WhatsApp</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ====== SETTINGS ====== -->
+    <!-- ====== SETTINGS MODAL ====== -->
     <div class="modalBackdrop" id="settingsBackdrop">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modalHeader">
           <b>Paramètres WhatsApp</b>
-          <button class="btn" id="btnCloseSettings">✖</button>
+          <button class="light" id="btnCloseSettings" type="button">✖</button>
         </div>
-
         <div class="modalBody">
-          <label>Nom boutique</label>
-          <input id="setShopName">
+          <div class="row" style="align-items:end">
+            <div class="field">
+              <label>Nom boutique</label>
+              <input id="setShopName" placeholder="Vapo'Chill">
+            </div>
+            <div class="field">
+              <label>Horaires (optionnel, ajouté dans la signature)</label>
+              <input id="setHours" placeholder="Ex: Lun-Sam 10h-19h">
+            </div>
+          </div>
 
-          <label>Horaires</label>
-          <input id="setHours">
+          <div style="height:10px"></div>
 
-          <label>Signature</label>
-          <input id="setSignature">
+          <div class="field">
+            <label>Signature (utilise {vendeur})</label>
+            <input id="setSignature" placeholder="{vendeur} - Vapochill">
+            <div class="small">Ex: <b>{vendeur} - Vapo'Chill</b> ou juste <b>Vapo'Chill</b></div>
+          </div>
 
-          <label>Template arrivée</label>
-          <textarea id="tplArrivee" class="waBox"></textarea>
+          <div style="height:14px"></div>
 
-          <label>Template rupture</label>
-          <textarea id="tplRupture" class="waBox"></textarea>
+          <b style="font-size:13px;">Templates WhatsApp</b>
+          <div class="small">Variables : <b>{article}</b> <b>{client}</b> <b>{vendeur}</b> <b>{boutique}</b> <b>{horaires}</b></div>
 
-          <label>Template relance</label>
-          <textarea id="tplRelance" class="waBox"></textarea>
+          <div style="height:10px"></div>
 
-          <label>Template partiel</label>
-          <textarea id="tplPartiel" class="waBox"></textarea>
+          <div class="grid2">
+            <div class="field">
+              <label>✅ Arrivée boutique</label>
+              <textarea id="tplArrivee" class="waBox" style="min-height:150px"></textarea>
+            </div>
+            <div class="field">
+              <label>❌ Rupture / délai</label>
+              <textarea id="tplRupture" class="waBox" style="min-height:150px"></textarea>
+            </div>
+            <div class="field">
+              <label>⏳ Relance fournisseur</label>
+              <textarea id="tplRelance" class="waBox" style="min-height:150px"></textarea>
+            </div>
+            <div class="field">
+              <label>📦 Reçu partiellement</label>
+              <textarea id="tplPartiel" class="waBox" style="min-height:150px"></textarea>
+            </div>
+          </div>
         </div>
 
         <div class="modalFooter">
-          <button class="btn" id="btnResetSettings">Réinitialiser</button>
-          <button class="btnPrimary" id="btnSaveSettings">Enregistrer</button>
+          <div class="small">Les paramètres WhatsApp sont sauvegardés sur ce PC (localStorage).</div>
+          <div class="actions">
+            <button class="light" id="btnResetSettings" type="button">Réinitialiser</button>
+            <button class="primary" id="btnSaveSettings" type="button">Enregistrer</button>
+          </div>
         </div>
       </div>
     </div>
@@ -736,7 +807,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script nomodule>
       document.body.innerHTML = `
-        <div style="padding:24px;font-family:Inter,Arial,sans-serif;color:#101213;background:#fbf7ef;">
+        <div style="padding:24px;font-family:Inter,Arial,sans-serif;color:#10211b;">
           <h2>Votre navigateur est trop ancien</h2>
           <p>Cette page utilise des fonctionnalités modernes (async/await). Merci de mettre à jour votre navigateur.</p>
         </div>
@@ -750,18 +821,29 @@
       // =========================
       const $ = (id)=>document.getElementById(id);
       const show = (el, yes)=> el.classList.toggle("hidden", !yes);
-
       const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
       const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
       const setMsg = (t)=> { $("msg").textContent = t || ""; };
 
-      // ✅ setDebug safe
+      // ✅ FIX: setDebug ne plante plus si #debug n'existe pas
       const setDebug = (t)=> {
         const el = $("debug");
         if (el) el.textContent = t || "";
-        const card = $("debugCard");
-        if (card) show(card, Boolean(t && String(t).trim()));
       };
+
+      // ✅ Luxe login helpers
+      function setAuthAlert(message){
+        const box = $("authAlert");
+        if(!box) return;
+        box.textContent = message || "";
+        box.classList.toggle("show", Boolean(message));
+      }
+      function setLoginLoading(isLoading){
+        const btn = $("btnLogin");
+        if(!btn) return;
+        btn.disabled = Boolean(isLoading);
+        btn.textContent = isLoading ? "Connexion…" : "Se connecter";
+      }
 
       function canWrite(){
         return role === "shop" || role === "admin";
@@ -786,7 +868,9 @@
       // =========================
       const SUPABASE_URL = "https://lhddwfeaoxnlflqlihdg.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZGR3ZmVhb3hubGZscWxpaGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MTI0NjcsImV4cCI6MjA4MzE4ODQ2N30.5Po48JdTbLZhcXjyJ48Il511DpiYNPdUZq4H-HNPAa4";
-      const SITE_URL = "https://beck37360.github.io/vapochill-suivi-commandes";
+
+      // ⚠️ IMPORTANT : mets ici ton URL GitHub Pages ACTUELLE
+      const SITE_URL = "https://TON_NOUVEAU_USERNAME.github.io/vapochill-suivi-commandes";
 
       async function loadSupabaseScript(src){
         return new Promise((resolve, reject) => {
@@ -817,7 +901,6 @@
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       window.supabaseClient = supabaseClient;
 
-      // Flags
       let isLoggingOut = false;
       let hasBooted = false;
       let allowAutoLogin = false;
@@ -828,7 +911,7 @@
       const USERS = ["Laetitia","Marco","Charlotte","Nico","Alan","Corentin","Mathieu","Romain"];
 
       // WhatsApp modal mode
-      const WA_PREVIEW_KEY = "wa_preview_mode_v1"; // "direct" ou "preview"
+      const WA_PREVIEW_KEY = "wa_preview_mode_v1";
       if (!localStorage.getItem(WA_PREVIEW_KEY)) localStorage.setItem(WA_PREVIEW_KEY, "preview");
 
       // Settings
@@ -909,8 +992,8 @@ Je vous confirme le reste dès réception
       // State
       // =========================
       let currentView = "active";
-      let role = null;        // "admin" | "shop"
-      let profile = null;     // profiles row
+      let role = null; // "admin" | "shop"
+      let profile = null; // profiles row
       let myStoreId = null;
       let myStoreName = null;
       let storesCache = [];
@@ -932,11 +1015,12 @@ Je vous confirme le reste dès réception
         show($("appRoot"), false);
 
         show($("resetCard"), isRecoveryFlow());
-
         setAuthMsg("");
         setResetMsg("");
-        setMsg("");
         setDebug("");
+
+        setAuthAlert("");
+        setLoginLoading(false);
 
         hasBooted = false;
       }
@@ -956,17 +1040,28 @@ Je vous confirme le reste dès réception
       async function login(){
         try{
           setAuthMsg("");
+          setAuthAlert("");
+
           const email = $("email").value.trim();
           const password = $("password").value.trim();
-          if(!email || !password){ setAuthMsg("⚠️ Mets email + mot de passe."); return; }
+          if(!email || !password){
+            setAuthAlert("⚠️ Mets email + mot de passe.");
+            return;
+          }
 
-          setAuthMsg("⏳ Connexion…");
+          setLoginLoading(true);
           allowAutoLogin = true;
+
           const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if(error){ setAuthMsg("❌ " + error.message); return; }
+          if(error){
+            setAuthAlert("❌ " + error.message);
+            return;
+          }
           setAuthMsg("✅ Connecté.");
         }catch(e){
-          setAuthMsg("❌ " + (e?.message || e));
+          setAuthAlert("❌ " + (e?.message || e));
+        }finally{
+          setLoginLoading(false);
         }
       }
 
@@ -980,7 +1075,6 @@ Je vous confirme le reste dès réception
         } catch (e) {
           console.warn("signOut error (ignored):", e);
         } finally {
-          // purge tokens
           for (const k of Object.keys(localStorage)) {
             if (k.startsWith("sb-") && k.includes("auth")) localStorage.removeItem(k);
           }
@@ -1187,9 +1281,7 @@ Je vous confirme le reste dès réception
       }
 
       function fillStoreSelect(){
-        $("storeSelect").innerHTML = storesCache
-          .map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`)
-          .join("");
+        $("storeSelect").innerHTML = storesCache.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
         if(storesCache[0]) $("storeSelect").value = storesCache[0].id;
       }
 
@@ -1208,10 +1300,8 @@ Je vous confirme le reste dès réception
         setMsg("");
 
         let storeId = myStoreId;
-
-        // ADMIN : si une boutique est sélectionnée, on filtre, sinon on affiche tout
         if (role === "admin") {
-          storeId = $("storeSelect")?.value || ""; // peut être vide
+          storeId = $("storeSelect")?.value || "";
         }
 
         let query = supabaseClient
@@ -1554,6 +1644,7 @@ Je vous confirme le reste dès réception
 
         for(const o of list){
           const tr = document.createElement("tr");
+          if(currentView === "active" && Boolean(o.received_checked)) tr.classList.add("row-received");
 
           const since = timeSince(o.created_at || o.createdAt);
           const receivedPill = (currentView === "active" && Boolean(o.received_checked))
@@ -1567,13 +1658,13 @@ Je vous confirme le reste dès réception
             ? `
               <div class="actions">
                 ${receivedControl}
-                <button class="btnPrimary" data-action="picked" data-id="${o.id}">Commande récupérée</button>
-                <button class="btn btnDanger" data-action="delete" data-id="${o.id}">Supprimer</button>
+                <button class="ok" data-action="picked" data-id="${o.id}">Commande récupérée</button>
+                <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
               </div>
             `
             : `
               <div class="actions">
-                <button class="btn btnDanger" data-action="delete" data-id="${o.id}">Supprimer</button>
+                <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
               </div>
             `;
 
@@ -1636,10 +1727,6 @@ Je vous confirme le reste dès réception
         role = profile.role || "shop";
         myStoreId = profile.store_id || null;
 
-        const { data: u } = await supabaseClient.auth.getUser();
-        const uid = u?.user?.id || "-";
-        setDebug(`DEBUG: email=${email} | role=${role} | storeId=${myStoreId} | uid=${uid}`);
-
         await fetchStores();
 
         if(role === "admin"){
@@ -1649,7 +1736,9 @@ Je vous confirme le reste dès réception
           fillStoreSelect();
           await loadOrders();
         } else {
-          if(!myStoreId) await ensureStoreId(email);
+          if(!myStoreId){
+            await ensureStoreId(email);
+          }
           if(!myStoreId){
             throw new Error("Ton profil n’a pas de store_id (profiles.store_id) et aucun store ne correspond à ton email.");
           }
@@ -1668,25 +1757,22 @@ Je vous confirme le reste dès réception
       }
 
       // =========================
-      // Reset password
+      // Reset password (EMAIL)
       // =========================
       async function sendReset(){
         try{
           setAuthMsg("");
+          setAuthAlert("");
+
           const email = $("email").value.trim();
-          if(!email){
-            setAuthMsg("⚠️ Mets l’email puis clique ici.");
-            return;
-          }
+          if(!email){ setAuthAlert("⚠️ Mets l’email puis clique ici."); return; }
 
           const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
-          if(error){
-            setAuthMsg("❌ " + error.message);
-            return;
-          }
+          if(error){ setAuthAlert("❌ " + error.message); return; }
+
           setAuthMsg("✅ Email de réinitialisation envoyé.");
         }catch(e){
-          setAuthMsg("❌ " + (e?.message || e));
+          setAuthAlert("❌ " + (e?.message || e));
         }
       }
 
@@ -1709,6 +1795,7 @@ Je vous confirme le reste dès réception
 
       $("btnCloseWA").addEventListener("click", closeWAModal);
       $("btnCancelWA").addEventListener("click", closeWAModal);
+      $("btnResetWA").addEventListener("click", applySelectedTemplate);
       $("btnCopyWA").addEventListener("click", copyWAText);
       $("btnOpenWA").addEventListener("click", confirmOpenWhatsApp);
       $("waTemplate").addEventListener("change", applySelectedTemplate);
@@ -1768,18 +1855,25 @@ Je vous confirme le reste dès réception
       supabaseClient.auth.onAuthStateChange(async (_event, session) => {
         if (isLoggingOut) return;
 
-        // ✅ lien recovery : rester sur la page reset
+        const user = session?.user;
+
+        // ✅ si on est sur un lien de recovery => on affiche le reset, pas de redirection
         if (isRecoveryFlow()) {
-          allowAutoLogin = true;
           showLogin();
           show($("resetCard"), true);
+          allowAutoLogin = false;
           return;
         }
 
-        const user = session?.user;
+        if (!user) {
+          showLogin();
+          return;
+        }
 
-        if (!user) { showLogin(); return; }
-        if (!allowAutoLogin) { showLogin(); return; }
+        if (!allowAutoLogin) {
+          showLogin();
+          return;
+        }
 
         if (hasBooted) return;
         hasBooted = true;
@@ -1794,10 +1888,9 @@ Je vous confirme le reste dès réception
         }
       });
 
-      // Boot
       (async ()=>{
-        if (isRecoveryFlow()) {
-          allowAutoLogin = true;
+        // ✅ recovery: on reste sur l’écran de reset
+        if(isRecoveryFlow()){
           showLogin();
           show($("resetCard"), true);
           return;
