@@ -57,7 +57,7 @@
     }
 
     .wrap { padding: 86px 18px 18px; max-width: 1280px; margin: 0 auto; }
-    .small { font-size: 12px; color:var(--vc-muted); }
+    .small { font-size: 12px; color:var(--vc-muted); white-space:pre-wrap; }
     .card { background:var(--vc-card); border:1px solid var(--vc-border); border-radius:16px; padding:14px; margin: 12px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
     .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
     label { font-size: 12px; color:#32423d; display:block; margin-bottom:4px; }
@@ -271,6 +271,12 @@
         <span class="small" id="authMsg"></span>
       </div>
 
+      <!-- ✅ DEBUG (AJOUTÉ) -->
+      <div class="card" style="margin-top:12px">
+        <b style="font-size:13px;">Debug</b>
+        <div class="small" id="debug">—</div>
+      </div>
+
       <div class="card hidden" id="resetCard" style="margin-top:12px">
         <b>🔒 Définir un nouveau mot de passe</b>
         <div class="small" style="margin-top:6px">Ce bloc s’affiche quand tu arrives via un lien de récupération.</div>
@@ -283,7 +289,6 @@
         </div>
       </div>
     </div>
-
     <!-- ====== APP ====== -->
     <div class="hidden" id="appRoot">
 
@@ -391,6 +396,7 @@
           <span class="small" id="msg"></span>
         </div>
       </div>
+
       <!-- TABLE -->
       <div class="card">
         <div class="row" style="align-items:center; justify-content:space-between;">
@@ -552,7 +558,6 @@
         </div>
       `;
     </script>
-
     <script type="module">
     (async function(){
       // =========================
@@ -563,11 +568,16 @@
       const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
       const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
       const setMsg = (t)=> { $("msg").textContent = t || ""; };
-      const setDebug = (t)=> { $("debug").textContent = t || ""; };
 
-    function canWrite(){
-      return role === "shop" || role === "admin";
-    }
+      // ✅ FIX: setDebug ne plante plus si #debug n'existe pas
+      const setDebug = (t)=> {
+        const el = $("debug");
+        if (el) el.textContent = t || "";
+      };
+
+      function canWrite(){
+        return role === "shop" || role === "admin";
+      }
 
       function escapeHtml(s) {
         return (s || "")
@@ -603,17 +613,9 @@
 
       async function ensureSupabaseLoaded(){
         if (window.supabase?.createClient) return true;
-        try{
-          await loadSupabaseScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
-        }catch(e){
-          console.warn(e);
-        }
+        try{ await loadSupabaseScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"); }catch(e){ console.warn(e); }
         if (window.supabase?.createClient) return true;
-        try{
-          await loadSupabaseScript("https://unpkg.com/@supabase/supabase-js@2");
-        }catch(e){
-          console.warn(e);
-        }
+        try{ await loadSupabaseScript("https://unpkg.com/@supabase/supabase-js@2"); }catch(e){ console.warn(e); }
         return Boolean(window.supabase?.createClient);
       }
 
@@ -627,21 +629,18 @@
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       window.supabaseClient = supabaseClient;
 
-  let isLoggingOut = false;      // bloque enterApp pendant la déconnexion
-  let hasBooted = false;         // évite de boot 2 fois (bootstrap + listener)
-  let allowAutoLogin = false;    // bloque l'auto-connexion tant que l'utilisateur n'a pas choisi
-
+      let isLoggingOut = false;
+      let hasBooted = false;
+      let allowAutoLogin = false;
 
       // =========================
       // App config
       // =========================
       const USERS = ["Laetitia","Marco","Charlotte","Nico","Alan","Corentin","Mathieu","Romain"];
 
-      // WhatsApp modal mode
-      const WA_PREVIEW_KEY = "wa_preview_mode_v1"; // "direct" ou "preview"
+      const WA_PREVIEW_KEY = "wa_preview_mode_v1";
       if (!localStorage.getItem(WA_PREVIEW_KEY)) localStorage.setItem(WA_PREVIEW_KEY, "preview");
 
-      // Settings
       const SETTINGS_KEY = "vc_settings_v1";
 
       const DEFAULT_SETTINGS = {
@@ -650,33 +649,33 @@
         signature: "{vendeur} - Vapochill",
         templates: {
           arrivee:
-  `Bonjour,
+`Bonjour,
 
-  Votre commande {article} est bien arrivée en boutique
-  Vous pouvez passer quand vous voulez
+Votre commande {article} est bien arrivée en boutique
+Vous pouvez passer quand vous voulez
 
-  {signature}`,
+{signature}`,
           rupture:
-  `Bonjour,
+`Bonjour,
 
-  Petit retour pour votre commande {article} : elle est en rupture chez le fournisseur.
-  Je vous tiens au courant dès que j’ai une date
+Petit retour pour votre commande {article} : elle est en rupture chez le fournisseur.
+Je vous tiens au courant dès que j’ai une date
 
-  {signature}`,
+{signature}`,
           relance:
-  `Bonjour,
+`Bonjour,
 
-  Je reviens vers vous : votre commande {article} est toujours en attente.
-  On relance le fournisseur et on vous tient informé
+Je reviens vers vous : votre commande {article} est toujours en attente.
+On relance le fournisseur et on vous tient informé
 
-  {signature}`,
+{signature}`,
           partiel:
-  `Bonjour,
+`Bonjour,
 
-  Une partie de votre commande {article} est arrivée en boutique
-  Je vous confirme le reste dès réception
+Une partie de votre commande {article} est arrivée en boutique
+Je vous confirme le reste dès réception
 
-  {signature}`
+{signature}`
         }
       };
 
@@ -701,7 +700,6 @@
         const s = loadSettings();
         const name = shopNameOverride || s.shopName || "Vapo'Chill";
         $("uiTitle").textContent = `${name} – Suivi commandes`;
-        // uiSub est piloté par rôle (plus bas)
       }
 
       // =========================
@@ -720,8 +718,8 @@
       // State
       // =========================
       let currentView = "active";
-      let role = null; // "admin" | "shop"
-      let profile = null; // profiles row
+      let role = null;
+      let profile = null;
       let myStoreId = null;
       let myStoreName = null;
       let storesCache = [];
@@ -747,8 +745,7 @@
         setResetMsg("");
         setDebug("");
 
-  hasBooted = false;
-
+        hasBooted = false;
       }
 
       function showApp(email){
@@ -780,39 +777,27 @@
         }
       }
 
-  async function logout(){
-    try{
-      isLoggingOut = true;
-      hasBooted = false;
-      allowAutoLogin = false;
+      async function logout(){
+        try{
+          isLoggingOut = true;
+          hasBooted = false;
+          allowAutoLogin = false;
 
-      // 1) tente la déconnexion
-      await supabaseClient.auth.signOut({ scope: "local" });
+          await supabaseClient.auth.signOut({ scope: "local" });
+        } catch (e) {
+          console.warn("signOut error (ignored):", e);
+        } finally {
+          for (const k of Object.keys(localStorage)) {
+            if (k.startsWith("sb-") && k.includes("auth")) localStorage.removeItem(k);
+          }
+          for (const k of Object.keys(sessionStorage)) {
+            if (k.startsWith("sb-") && k.includes("auth")) sessionStorage.removeItem(k);
+          }
 
-    } catch (e) {
-      console.warn("signOut error (ignored):", e);
-    } finally {
-      // 2) purge HARD tokens supabase
-      for (const k of Object.keys(localStorage)) {
-        if (k.startsWith("sb-") && k.includes("auth")) {
-          localStorage.removeItem(k);
+          showLogin();
+          setTimeout(()=>{ isLoggingOut = false; }, 1200);
         }
       }
-      for (const k of Object.keys(sessionStorage)) {
-        if (k.startsWith("sb-") && k.includes("auth")) {
-          sessionStorage.removeItem(k);
-        }
-      }
-
-      // 3) retour login
-      showLogin();
-
-      // 4) empêche re-trigger immédiat
-      setTimeout(()=>{ isLoggingOut = false; }, 1200);
-    }
-  }
-
-
 
       async function updatePassword(){
         try{
@@ -982,14 +967,10 @@
         const userEmail = normalizeEmail(email || await getCurrentUserEmail());
         if (!userEmail) return null;
 
-        if (!storesCache.length) {
-          await fetchStores();
-        }
+        if (!storesCache.length) await fetchStores();
 
         let matchedStore = findStoreByEmail(userEmail);
-        if (!matchedStore) {
-          matchedStore = await fetchStoreByEmail(userEmail);
-        }
+        if (!matchedStore) matchedStore = await fetchStoreByEmail(userEmail);
         if (!matchedStore?.id) return null;
 
         myStoreId = matchedStore.id;
@@ -1017,7 +998,6 @@
       }
 
       function getActiveAndHistory(list){
-        // History si picked_up_at existe (non null)
         const active = [];
         const history = [];
         for(const o of list){
@@ -1028,66 +1008,51 @@
       }
 
       async function loadOrders(){
-    setDebug("");
-    setMsg("");
+        setDebug("");
+        setMsg("");
 
-    // 1) déterminer le storeId selon le rôle
-    let storeId = myStoreId;
+        let storeId = myStoreId;
 
-    // ADMIN : si une boutique est sélectionnée, on filtre, sinon on affiche tout
-    if (role === "admin") {
-      storeId = $("storeSelect")?.value || ""; // peut être vide
-    }
+        if (role === "admin") {
+          storeId = $("storeSelect")?.value || "";
+        }
 
-    // 2) construire la requête
-    let query = supabaseClient
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
+        let query = supabaseClient
+          .from("orders")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-    // 3) appliquer le filtre UNIQUEMENT si storeId existe
-    if (storeId) {
-      query = query.eq("store_id", storeId);
-    }
+        if (storeId) query = query.eq("store_id", storeId);
 
-    const { data, error } = await query;
+        const { data, error } = await query;
+        if (error) { setDebug("orders: " + error.message); return; }
 
-    if (error) {
-      setDebug("orders: " + error.message);
-      return;
-    }
-
-    ordersCache = data || [];
-    render();
-  }
-
+        ordersCache = data || [];
+        render();
+      }
 
       async function addOrder(){
-          // ✅ Déterminer la boutique sur laquelle on ajoute
-    let storeId = myStoreId;
+        let storeId = myStoreId;
 
-    // ADMIN : doit choisir une boutique
-    if (role === "admin") {
-      storeId = $("storeSelect")?.value || "";
-      if (!storeId) {
-        alert("⚠️ Admin : sélectionne une boutique avant d’ajouter une commande.");
-        return;
-      }
-    }
+        if (role === "admin") {
+          storeId = $("storeSelect")?.value || "";
+          if (!storeId) {
+            alert("⚠️ Admin : sélectionne une boutique avant d’ajouter une commande.");
+            return;
+          }
+        }
 
-    // SHOP : sécurité
-    if (!storeId) {
-      const email = await getCurrentUserEmail();
-      await ensureStoreId(email);
-      storeId = myStoreId;
-    }
+        if (!storeId) {
+          const email = await getCurrentUserEmail();
+          await ensureStoreId(email);
+          storeId = myStoreId;
+        }
 
-    if (!storeId) {
-      const email = await getCurrentUserEmail();
-      alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie que cet email correspond au champ email de la table stores, ou renseigne profiles.store_id.`);
-      return;
-    }
-
+        if (!storeId) {
+          const email = await getCurrentUserEmail();
+          alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie que cet email correspond au champ email de la table stores, ou renseigne profiles.store_id.`);
+          return;
+        }
 
         const client = $("client").value.trim();
         const tel = $("tel").value.trim();
@@ -1098,18 +1063,13 @@
         const notes = $("notes").value.trim();
         const seller = $("seller").value;
 
-        if (!client || !tel || !article) {
-          setMsg("⚠️ Client, Numéro et Article obligatoires.");
-          return;
-        }
-        if (qty <= 0) {
-          setMsg("⚠️ Qté minimum = 1.");
-          return;
-        }
+        if (!client || !tel || !article) { setMsg("⚠️ Client, Numéro et Article obligatoires."); return; }
+        if (qty <= 0) { setMsg("⚠️ Qté minimum = 1."); return; }
 
         setMsg("⏳ Ajout…");
-       const payload = {
-       store_id: storeId,
+
+        const payload = {
+          store_id: storeId,
           client, tel, article, qty, date, statut, notes,
           seller,
           received_checked: false,
@@ -1129,116 +1089,105 @@
         await loadOrders();
       }
 
-    async function updateStatus(id, newStatus){
-    if (!canWrite()) return;
+      async function updateStatus(id, newStatus){
+        if (!canWrite()) return;
 
-    const seller = $("seller").value;
-    const audit = { updated_at: new Date().toISOString() };
-    if (isUuid(seller)) audit.updated_by = seller;
-    const { error } = await supabaseClient
-      .from("orders")
-      .update({ statut: newStatus, ...audit })
-      .eq("id", id);
+        const seller = $("seller").value;
+        const audit = { updated_at: new Date().toISOString() };
+        if (isUuid(seller)) audit.updated_by = seller;
 
-    if(error){
-      alert("❌ " + error.message);
-      return;
-    }
-    await loadOrders();
-  }
+        const { error } = await supabaseClient
+          .from("orders")
+          .update({ statut: newStatus, ...audit })
+          .eq("id", id);
 
-
-  async function toggleReceived(id){
-    if (!canWrite()) return;
-
-    const o = ordersCache.find(x => String(x.id) === String(id));
-    if(!o) return;
-
-    const newVal = !Boolean(o.received_checked);
-    const seller = $("seller").value;
-    const audit = { updated_at: new Date().toISOString() };
-    if (isUuid(seller)) audit.updated_by = seller;
-
-    const { error } = await supabaseClient
-      .from("orders")
-      .update({ received_checked: newVal, ...audit })
-      .eq("id", id);
-
-    if(error){
-      alert("❌ " + error.message);
-      return;
-    }
-
-    await loadOrders();
-
-    const updated = ordersCache.find(x => String(x.id) === String(id));
-    if(updated && updated.received_checked){
-      if (getWAPreviewMode() === "direct") {
-        const msg = templateToMessage(getTemplateByKey("arrivee"), updated);
-        openWhatsAppWithText(updated, msg);
-      } else {
-        showWAModal(updated);
+        if(error){ alert("❌ " + error.message); return; }
+        await loadOrders();
       }
-    }
-  }
 
+      async function toggleReceived(id){
+        if (!canWrite()) return;
 
-   async function markPickedUp(id){
-    if (!canWrite()) return;
+        const o = ordersCache.find(x => String(x.id) === String(id));
+        if(!o) return;
 
-    const o = ordersCache.find(x => String(x.id) === String(id));
-    if(!o) return;
+        const newVal = !Boolean(o.received_checked);
+        const seller = $("seller").value;
+        const audit = { updated_at: new Date().toISOString() };
+        if (isUuid(seller)) audit.updated_by = seller;
 
-    if (antiErrorOn() && !Boolean(o.received_checked)) {
-      alert("⚠️ Coche d’abord la case “Reçu”.");
-      return;
-    }
+        const { error } = await supabaseClient
+          .from("orders")
+          .update({ received_checked: newVal, ...audit })
+          .eq("id", id);
 
-    if (!confirmDanger("Confirmer : commande récupérée / terminée ? (envoi à l’historique)")) return;
+        if(error){ alert("❌ " + error.message); return; }
 
-    const seller = $("seller").value;
-    const audit = { updated_at: new Date().toISOString() };
-    if (isUuid(seller)) audit.updated_by = seller;
-    const pickedBy = isUuid(seller) ? { picked_up_by: seller } : {};
+        await loadOrders();
 
-    const { error } = await supabaseClient
-      .from("orders")
-      .update({
-        picked_up_at: new Date().toISOString(),
-        ...pickedBy,
-        ...audit
-      })
-      .eq("id", id);
+        const updated = ordersCache.find(x => String(x.id) === String(id));
+        if(updated && updated.received_checked){
+          if (getWAPreviewMode() === "direct") {
+            const msg = templateToMessage(getTemplateByKey("arrivee"), updated);
+            openWhatsAppWithText(updated, msg);
+          } else {
+            showWAModal(updated);
+          }
+        }
+      }
 
-    if(error){
-      alert("❌ " + error.message);
-      return;
-    }
-    await loadOrders();
-  }
+      function confirmDanger(msg){
+        return confirm("⚠️ " + msg);
+      }
 
+      async function markPickedUp(id){
+        if (!canWrite()) return;
 
-     async function deleteOrder(id){
-    if (!canWrite()) return;
+        const o = ordersCache.find(x => String(x.id) === String(id));
+        if(!o) return;
 
-    const o = ordersCache.find(x => String(x.id) === String(id));
-    if(!o) return;
+        if (antiErrorOn() && !Boolean(o.received_checked)) {
+          alert("⚠️ Coche d’abord la case “Reçu”.");
+          return;
+        }
 
-    if (antiErrorOn() && currentView === "active" && !Boolean(o.received_checked)) {
-      alert("⚠️ Anti-erreur : impossible de supprimer tant que “Reçu” n’est pas coché.\n(Si tu veux vraiment, mets Anti-erreur sur OFF.)");
-      return;
-    }
+        if (!confirmDanger("Confirmer : commande récupérée / terminée ? (envoi à l’historique)")) return;
 
-    if (!confirmDanger("Supprimer définitivement ?")) return;
+        const seller = $("seller").value;
+        const audit = { updated_at: new Date().toISOString() };
+        if (isUuid(seller)) audit.updated_by = seller;
+        const pickedBy = isUuid(seller) ? { picked_up_by: seller } : {};
 
-    const { error } = await supabaseClient.from("orders").delete().eq("id", id);
-    if(error){
-      alert("❌ " + error.message);
-      return;
-    }
-    await loadOrders();
-  }
+        const { error } = await supabaseClient
+          .from("orders")
+          .update({
+            picked_up_at: new Date().toISOString(),
+            ...pickedBy,
+            ...audit
+          })
+          .eq("id", id);
 
+        if(error){ alert("❌ " + error.message); return; }
+        await loadOrders();
+      }
+
+      async function deleteOrder(id){
+        if (!canWrite()) return;
+
+        const o = ordersCache.find(x => String(x.id) === String(id));
+        if(!o) return;
+
+        if (antiErrorOn() && currentView === "active" && !Boolean(o.received_checked)) {
+          alert("⚠️ Anti-erreur : impossible de supprimer tant que “Reçu” n’est pas coché.\n(Si tu veux vraiment, mets Anti-erreur sur OFF.)");
+          return;
+        }
+
+        if (!confirmDanger("Supprimer définitivement ?")) return;
+
+        const { error } = await supabaseClient.from("orders").delete().eq("id", id);
+        if(error){ alert("❌ " + error.message); return; }
+        await loadOrders();
+      }
 
       // =========================
       // WhatsApp modal
@@ -1339,23 +1288,23 @@
         alert("✅ Paramètres enregistrés.");
         closeSettings();
       }
-  function resetForm(){
-    $("client").value = "";
-    $("tel").value = "";
-    $("article").value = "";
-    $("qty").value = 1;
-    $("notes").value = "";
-    $("statut").value = "Mettre en commande";
 
-    // Date = aujourd’hui
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    $("date").value = `${yyyy}-${mm}-${dd}`;
+      function resetForm(){
+        $("client").value = "";
+        $("tel").value = "";
+        $("article").value = "";
+        $("qty").value = 1;
+        $("notes").value = "";
+        $("statut").value = "Mettre en commande";
 
-    setMsg("");
-  }
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        $("date").value = `${yyyy}-${mm}-${dd}`;
+
+        setMsg("");
+      }
 
       // =========================
       // Render
@@ -1397,7 +1346,6 @@
           );
         });
 
-        // en cours : reçu en haut
         if(currentView === "active"){
           list = [...list].sort((a,b) => (Boolean(b.received_checked) - Boolean(a.received_checked)));
         }
@@ -1481,89 +1429,65 @@
         $("seller").value = USERS[0];
       }
 
-   async function enterApp(email){
-    showApp(email);
+      async function enterApp(email){
+        showApp(email);
 
-    initUsers();
-    setTodayDefault();
-    resetForm();
+        initUsers();
+        setTodayDefault();
+        resetForm();
 
-  // 🔐 Charger le profil UNE SEULE FOIS
-  profile = await fetchProfile();
-  role = profile.role || "shop";
-  myStoreId = profile.store_id || null;
+        profile = await fetchProfile();
+        role = profile.role || "shop";
+        myStoreId = profile.store_id || null;
 
-  const { data: u } = await supabaseClient.auth.getUser();
-  const uid = u?.user?.id || "-";
+        const { data: u } = await supabaseClient.auth.getUser();
+        const uid = u?.user?.id || "-";
 
-  setDebug(`DEBUG: email=${email} | role=${role} | storeId=${myStoreId} | uid=${uid}`);
+        setDebug(`DEBUG: email=${email} | role=${role} | storeId=${myStoreId} | uid=${uid}`);
 
-  console.warn("=== ENTER APP ===");
-  console.warn("email:", email);
-  console.warn("profile:", profile);
-  console.warn("role:", role);
-  console.warn("storeId:", myStoreId);
-  console.warn("uid:", uid);
+        await fetchStores();
 
+        if(role === "admin"){
+          $("uiSub").textContent = "ADMIN – toutes boutiques";
+          show($("adminCard"), true);
+          show($("addCard"), false);
+          fillStoreSelect();
+          await loadOrders();
+        } else {
+          if(!myStoreId){
+            await ensureStoreId(email);
+          }
+          if(!myStoreId){
+            throw new Error("Ton profil n’a pas de store_id (profiles.store_id) et aucun store ne correspond à ton email.");
+          }
 
-    // 🪵 LOG TEMPORAIRE (DEBUG)
-    console.log("ROLE =", role);
-    console.log("STORE =", myStoreId);
-    console.log("EMAIL =", email);
+          const s = storesCache.find(x => x.id === myStoreId);
+          myStoreName = s?.name || "Boutique";
+          $("uiSub").textContent = myStoreName;
 
-    await fetchStores();
+          applySettingsToUI(myStoreName);
 
-    if(role === "admin"){
-      $("uiSub").textContent = "ADMIN – toutes boutiques";
-      show($("adminCard"), true);
-      show($("addCard"), false);
-      fillStoreSelect();
-      await loadOrders();
-    } else {
-      // 🏪 SHOP
-      if(!myStoreId){
-        await ensureStoreId(email);
-      }
-      if(!myStoreId){
-        throw new Error("Ton profil n’a pas de store_id (profiles.store_id) et aucun store ne correspond à ton email.");
+          show($("adminCard"), false);
+          show($("addCard"), true);
+
+          await loadOrders();
+        }
       }
 
-      const s = storesCache.find(x => x.id === myStoreId);
-      myStoreName = s?.name || "Boutique";
-      $("uiSub").textContent = myStoreName;
+      async function sendReset(){
+        try{
+          setAuthMsg("");
+          const email = $("email").value.trim();
+          if(!email){ setAuthMsg("⚠️ Mets l’email puis clique ici."); return; }
 
-      applySettingsToUI(myStoreName);
+          const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
+          if(error){ setAuthMsg("❌ " + error.message); return; }
 
-      show($("adminCard"), false);
-      show($("addCard"), true);
-
-      await loadOrders();
-    }
-  }
-
-  // =========================
-  // Reset password
-  // =========================
-  async function sendReset(){
-    try{
-      setAuthMsg("");
-      const email = $("email").value.trim();
-      if(!email){
-        setAuthMsg("⚠️ Mets l’email puis clique ici.");
-        return;
+          setAuthMsg("✅ Email de réinitialisation envoyé.");
+        }catch(e){
+          setAuthMsg("❌ " + (e?.message || e));
+        }
       }
-
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
-      if(error){
-        setAuthMsg("❌ " + error.message);
-        return;
-      }
-      setAuthMsg("✅ Email de réinitialisation envoyé.");
-    }catch(e){
-      setAuthMsg("❌ " + (e?.message || e));
-    }
-  }
-
 
       // =========================
       // Events
@@ -1601,7 +1525,6 @@
       $("btnReloadAdmin").addEventListener("click", loadOrders);
       $("storeSelect").addEventListener("change", loadOrders);
 
-      // Delegation actions table
       $("tbody").addEventListener("change", async (e)=>{
         const el = e.target;
         const action = el?.dataset?.action;
@@ -1627,87 +1550,73 @@
         }
       });
 
-      // ESC ferme les modals
       document.addEventListener("keydown", (e)=>{
         if (e.key !== "Escape") return;
         if ($("waBackdrop").style.display === "flex") closeWAModal();
         if ($("settingsBackdrop").style.display === "flex") closeSettings();
       });
 
-      // Debug global erreurs
       window.addEventListener("error", (e) => setDebug("JS error: " + (e.message || "inconnue")));
       window.addEventListener("unhandledrejection", (e) => setDebug("Promise error: " + (e.reason?.message || e.reason || "inconnue")));
 
       // =========================
       // Auth listener + boot
       // =========================
+      supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+        if (isLoggingOut) return;
 
-  supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-    // Si on est en train de se déconnecter, on ignore tout
-    if (isLoggingOut) return;
+        const user = session?.user;
 
-    const user = session?.user;
+        if (!user) {
+          showLogin();
+          return;
+        }
 
-    // Si plus de session => login
-    if (!user) {
-      showLogin();
-      return;
-    }
+        if (!allowAutoLogin) {
+          showLogin();
+          return;
+        }
 
-    if (!allowAutoLogin) {
-      showLogin();
-      return;
-    }
+        if (hasBooted) return;
+        hasBooted = true;
 
-    // Empêche double lancement (bootstrap + auth listener)
-    if (hasBooted) return;
-    hasBooted = true;
-
-    try{
-      await enterApp(user.email || "connecté");
-    }catch(err){
-      console.error(err);
-      alert("❌ " + (err?.message || err));
-      showLogin();
-      hasBooted = false; // on autorise un nouvel essai
-    }
-  });
-
+        try{
+          await enterApp(user.email || "connecté");
+        }catch(err){
+          console.error(err);
+          alert("❌ " + (err?.message || err));
+          showLogin();
+          hasBooted = false;
+        }
+      });
 
       (async ()=>{
         if(isRecoveryFlow()) show($("resetCard"), true);
 
-       const { data } = await supabaseClient.auth.getSession();
+        const { data } = await supabaseClient.auth.getSession();
 
-  if (isLoggingOut) {
-    showLogin();
-    return;
-  }
+        if (isLoggingOut) { showLogin(); return; }
 
-  if (data?.session?.user) {
-    if (!allowAutoLogin) {
-      showLogin();
-      return;
-    }
-    // Evite double lancement si le listener a déjà boot
-    if (!hasBooted) {
-      hasBooted = true;
-      try{
-        await enterApp(data.session.user.email || "connecté");
-      }catch(err){
-        console.error(err);
-        alert("❌ " + (err?.message || err));
-        showLogin();
-        hasBooted = false;
-      }
-    }
-  } else {
-    showLogin();
-  }
-
+        if (data?.session?.user) {
+          if (!allowAutoLogin) { showLogin(); return; }
+          if (!hasBooted) {
+            hasBooted = true;
+            try{
+              await enterApp(data.session.user.email || "connecté");
+            }catch(err){
+              console.error(err);
+              alert("❌ " + (err?.message || err));
+              showLogin();
+              hasBooted = false;
+            }
+          }
+        } else {
+          showLogin();
+        }
       })();
 
     })();
     </script>
-  </body>
-  </html>
+  </div>
+</body>
+</html>
