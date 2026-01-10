@@ -9,194 +9,124 @@
 
   <style>
     :root{
-      --bg0:#06080d;
-      --bg1:#0a0f1a;
+      /* Luxe clair */
+      --bgA:#fbf7ef;         /* ivoire */
+      --bgB:#f3efe7;         /* sable */
+      --card:#ffffff;
+      --text:#101213;
+      --muted:#5c625e;
+      --border:#e7dfd3;
 
-      --cardA: rgba(11,18,32,.70);
-      --cardB: rgba(11,18,32,.52);
+      --green:#2bb673;       /* Vapo */
+      --danger:#b00020;
 
-      --text:#eaf0ff;
-      --muted:#9fb0d2;
+      /* Accent “gold” discret */
+      --goldA:#d8b56a;
+      --goldB:#f1e2b7;
 
-      --border:rgba(150, 190, 255, .18);
-
-      --neonA:#4a7dff; /* blue */
-      --neonB:#2bb673; /* green */
-      --neonC:#b9a7ff; /* violet */
-
-      --danger:#ff4d6d;
-      --warning:#f6c453;
+      --shadow: 0 18px 50px rgba(16,18,19,.08);
+      --shadow2: 0 1px 0 rgba(16,18,19,.04);
     }
 
     *{ box-sizing:border-box; }
-    html, body { height:100%; }
-
     body{
       margin:0;
       font-family: Inter, Arial, sans-serif;
-      color:var(--text);
+      color: var(--text);
       background:
-        radial-gradient(1000px 500px at 15% 10%, rgba(74,125,255,.18), transparent 55%),
-        radial-gradient(900px 520px at 85% 20%, rgba(43,182,115,.14), transparent 60%),
-        radial-gradient(800px 540px at 55% 90%, rgba(185,167,255,.12), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
+        radial-gradient(900px 420px at 12% 10%, rgba(216,181,106,.18), transparent 60%),
+        radial-gradient(800px 380px at 88% 16%, rgba(43,182,115,.10), transparent 60%),
+        linear-gradient(180deg, var(--bgA), var(--bgB));
     }
 
-    /* Neon grid overlay */
+    /* léger grain */
     body:before{
       content:"";
-      position:fixed; inset:-2px;
-      background:
-        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
-      background-size: 48px 48px;
-      opacity:.10;
-      transform: perspective(900px) rotateX(55deg) translateY(-180px);
-      transform-origin: top;
-      pointer-events:none;
-      filter: blur(.2px);
-    }
-
-    /* scanline */
-    body:after{
-      content:"";
       position:fixed; inset:0;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,.04),
-        rgba(255,255,255,.04) 1px,
-        transparent 1px,
-        transparent 6px
-      );
-      opacity:.04;
       pointer-events:none;
-      mix-blend-mode: overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+      opacity:.10;
+      mix-blend-mode: multiply;
     }
 
-    .wrap{
-      padding: 92px 18px 18px;
-      max-width: 1280px;
-      margin: 0 auto;
-    }
     .hidden{ display:none !important; }
 
     /* ===== TOP BAR ===== */
     .topbar{
       position:fixed; top:0; left:0; right:0;
-      height:68px;
+      height:66px;
       display:flex; align-items:center; justify-content:space-between;
       padding:0 18px;
       z-index:1000;
-      background: rgba(7, 10, 16, .72);
-      border-bottom: 1px solid rgba(150,190,255,.12);
+
+      background: rgba(255,255,255,.78);
       backdrop-filter: blur(14px);
-      box-shadow: 0 18px 55px rgba(0,0,0,.35);
+      border-bottom:1px solid rgba(231,223,211,.9);
+      box-shadow: 0 10px 30px rgba(16,18,19,.06);
       gap:10px;
     }
+
     .topbar-left{ display:flex; align-items:center; gap:12px; }
+
     .topbar img{
       height:42px;
-      border-radius:12px;
-      padding:4px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(150,190,255,.14);
+      border-radius:14px;
+      padding:6px;
+      background:#fff;
+      border:1px solid rgba(231,223,211,.95);
+      box-shadow: 0 6px 18px rgba(16,18,19,.06);
     }
+
     .topbar-title{ display:flex; flex-direction:column; line-height:1.1; }
-    .topbar-title b{
-      font-size:13px;
-      letter-spacing:.3px;
-    }
-    .topbar-title span{
-      font-size:12px;
-      opacity:.9;
-      color: var(--muted);
-    }
+    .topbar-title b{ font-size:13px; letter-spacing:.2px; }
+    .topbar-title span{ font-size:12px; color: var(--muted); }
+
     .topbar-right{
-      display:flex; gap:10px;
+      display:flex;
+      gap:10px;
       align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
+      font-size:12px;
     }
+
     .chip{
-      border:1px solid rgba(150, 190, 255, .16);
+      border:1px solid rgba(231,223,211,.95);
       border-radius:999px;
       padding:7px 10px;
       display:flex; align-items:center; gap:8px;
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
+      background: rgba(255,255,255,.65);
       white-space:nowrap;
-      backdrop-filter: blur(10px);
+      color: var(--muted);
     }
 
-    /* Buttons */
-    button{
-      border:0;
-      cursor:pointer;
-      font-weight:700;
-      font-family:inherit;
-      letter-spacing:.2px;
-    }
-    .btn{
-      padding:10px 12px;
-      border-radius:14px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(150,190,255,.16);
-      color: var(--text);
-      transition: transform .12s ease, filter .12s ease, background .12s ease;
-      backdrop-filter: blur(12px);
-    }
-    .btn:hover{ filter: brightness(1.08); }
-    .btn:active{ transform: translateY(1px); }
-
-    .btnPrimary{
-      padding:11px 14px;
-      border-radius:14px;
-      color:#061018;
-      background: linear-gradient(135deg, rgba(74,125,255,1), rgba(43,182,115,1));
-      box-shadow:
-        0 0 0 1px rgba(150,190,255,.12),
-        0 10px 32px rgba(74,125,255,.20),
-        0 10px 32px rgba(43,182,115,.14);
-      transition: transform .12s ease, filter .12s ease;
-    }
-    .btnPrimary:hover{ filter: brightness(1.04); }
-    .btnPrimary:active{ transform: translateY(1px); }
-
-    .btnDanger{
-      background: rgba(255, 77, 109, .18);
-      border:1px solid rgba(255, 77, 109, .35);
-      color: #ffd7de;
+    .wrap{
+      padding: 90px 18px 18px;
+      max-width: 1280px;
+      margin: 0 auto;
     }
 
-    /* Cards */
+    /* ===== CARDS ===== */
     .card{
-      background: linear-gradient(180deg, var(--cardA), var(--cardB));
-      border:1px solid rgba(150,190,255,.16);
-      border-radius: 20px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(231,223,211,.95);
+      border-radius: 22px;
       padding: 16px;
       margin: 12px 0;
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,.04) inset,
-        0 24px 80px rgba(0,0,0,.45);
-      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow2);
       position:relative;
       overflow:hidden;
     }
+
+    /* liseré gold discret en haut */
     .card:before{
       content:"";
-      position:absolute;
-      inset:-60px -80px auto auto;
-      width:260px; height:260px;
-      background: radial-gradient(circle, rgba(74,125,255,.22), transparent 60%);
-      filter: blur(2px);
-      pointer-events:none;
+      position:absolute; left:0; right:0; top:0;
+      height:2px;
+      background: linear-gradient(90deg, transparent, rgba(216,181,106,.75), rgba(241,226,183,.85), rgba(216,181,106,.75), transparent);
+      opacity:.8;
     }
-    .card h2{
-      margin:0 0 6px;
-      font-size:18px;
-      letter-spacing:.2px;
-    }
+
     .small{
       font-size:12px;
       color: var(--muted);
@@ -212,122 +142,172 @@
 
     label{
       font-size:12px;
-      color: rgba(234,240,255,.75);
+      color:#303433;
       display:block;
       margin-bottom:6px;
     }
 
-    /* Inputs */
     input, select, textarea{
       width: 240px;
       padding: 10px 12px;
       border-radius: 14px;
-      border: 1px solid rgba(150,190,255,.18);
-      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(231,223,211,.95);
+      background: rgba(255,255,255,.9);
       color: var(--text);
-      outline: none;
-      transition: border-color .12s ease, box-shadow .12s ease, filter .12s ease;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.03) inset;
+      outline:none;
+      transition: box-shadow .12s ease, border-color .12s ease, transform .12s ease;
+      box-shadow: 0 1px 0 rgba(16,18,19,.03) inset;
       font-family: inherit;
     }
-    input::placeholder, textarea::placeholder{ color: rgba(159,176,210,.7); }
     input:focus, select:focus, textarea:focus{
-      border-color: rgba(74,125,255,.55);
-      box-shadow: 0 0 0 4px rgba(74,125,255,.14);
+      border-color: rgba(216,181,106,.85);
+      box-shadow: 0 0 0 4px rgba(216,181,106,.18);
     }
     textarea{ width: 520px; height: 70px; }
 
-    /* Login layout */
+    /* Buttons */
+    button{ border:0; cursor:pointer; font-weight:800; font-family:inherit; }
+    .btn{
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,.85);
+      border:1px solid rgba(231,223,211,.95);
+      color:#1b1f1e;
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+      box-shadow: 0 10px 30px rgba(16,18,19,.06);
+    }
+    .btn:hover{ filter: brightness(1.02); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btnPrimary{
+      padding:11px 14px;
+      border-radius:14px;
+      background: linear-gradient(135deg, rgba(43,182,115,1), rgba(43,182,115,.82));
+      color:#ffffff;
+      box-shadow: 0 14px 40px rgba(43,182,115,.18);
+    }
+    .btnDanger{
+      background: rgba(176,0,32,.08);
+      border:1px solid rgba(176,0,32,.18);
+      color: #7c0d1f;
+      box-shadow:none;
+    }
+
+    /* ===== LOGIN DESIGN ===== */
     .loginGrid{
       display:grid;
-      grid-template-columns: 1.15fr .85fr;
+      grid-template-columns: 1.2fr .8fr;
       gap:14px;
       align-items:stretch;
     }
-    .loginRight{
-      border-radius:18px;
-      border:1px solid rgba(150,190,255,.12);
-      background: rgba(255,255,255,.04);
-      padding: 14px;
+
+    .loginHero{
+      border-radius:20px;
+      border:1px solid rgba(231,223,211,.95);
+      background:
+        radial-gradient(480px 240px at 22% 20%, rgba(241,226,183,.55), transparent 60%),
+        radial-gradient(520px 260px at 80% 30%, rgba(43,182,115,.10), transparent 60%),
+        rgba(255,255,255,.86);
+      box-shadow: var(--shadow);
+      padding:16px;
       position:relative;
       overflow:hidden;
     }
-    .loginRight:before{
-      content:"";
-      position:absolute; inset:-40px -40px auto auto;
-      width:220px; height:220px;
-      background: radial-gradient(circle, rgba(43,182,115,.20), transparent 60%);
-      pointer-events:none;
-    }
-    .kpiLine{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:10px 10px;
-      border-radius:14px;
-      border:1px solid rgba(150,190,255,.10);
-      background: rgba(255,255,255,.04);
-      margin-top:10px;
-    }
-    .kpiLine b{ font-size:12px; color: rgba(234,240,255,.85); }
-    .kpiLine span{ font-size:12px; color: var(--muted); }
 
-    .statusDot{
+    .loginBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.78);
+      border:1px solid rgba(231,223,211,.95);
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .goldDot{
       width:10px; height:10px;
       border-radius:999px;
-      background: radial-gradient(circle, rgba(74,125,255,1), rgba(74,125,255,.15));
-      box-shadow: 0 0 12px rgba(74,125,255,.35);
-      display:inline-block;
-      margin-right:8px;
+      background: radial-gradient(circle, rgba(216,181,106,1), rgba(216,181,106,.35));
+      box-shadow: 0 0 14px rgba(216,181,106,.32);
     }
 
-    /* Table */
+    .loginTitle{
+      margin:10px 0 6px;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+
+    .loginRight{
+      border-radius:20px;
+      border:1px solid rgba(231,223,211,.95);
+      background: rgba(255,255,255,.86);
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+
+    .kpi{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(231,223,211,.95);
+      background: rgba(255,255,255,.78);
+      margin-top:10px;
+      color: var(--muted);
+      font-size:12px;
+    }
+    .kpi b{ color:#1b1f1e; }
+
+    /* ===== TABLE + UI ===== */
     table { width:100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border-bottom:1px solid rgba(150,190,255,.10); padding:10px; text-align:left; vertical-align: top; }
-    th { font-size: 12px; color: rgba(234,240,255,.75); }
+    th, td { border-bottom:1px solid rgba(231,223,211,.75); padding:10px; text-align:left; vertical-align: top; }
+    th { font-size: 12px; color:#444a47; }
 
     .pill{
       display:inline-block;
       padding:5px 10px;
       border-radius:999px;
       font-size:12px;
-      border:1px solid rgba(150,190,255,.16);
-      background: rgba(255,255,255,.05);
-      color: rgba(234,240,255,.88);
+      border:1px solid rgba(231,223,211,.95);
+      background: rgba(255,255,255,.78);
     }
 
-    /* Status pills */
-    .st { font-weight: 900; letter-spacing:.15px; }
-    .st-mec { border-color:rgba(246,196,83,.35); background:rgba(246,196,83,.12); color:#ffe9b6; }
-    .st-com { border-color:rgba(74,125,255,.35); background:rgba(74,125,255,.12); color:#d6e2ff; }
-    .st-rup { border-color:rgba(255,77,109,.35); background:rgba(255,77,109,.12); color:#ffd1db; }
-    .st-par { border-color:rgba(185,167,255,.35); background:rgba(185,167,255,.12); color:#efe9ff; }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .right{ margin-left:auto; }
 
-    .receivedTag{
-      border-color: rgba(43,182,115,.35);
-      background: rgba(43,182,115,.12);
-      font-weight: 900;
-      color:#d9ffe9;
-    }
+    /* Statuts */
+    .st{ font-weight: 900; }
+    .st-mec{ border-color:rgba(246,196,83,.60); background:rgba(246,196,83,.22); color:#6b4a00; }
+    .st-com{ border-color:rgba(43,182,115,.45); background:rgba(43,182,115,.14); color:#0f5132; }
+    .st-rup{ border-color:rgba(176,0,32,.25); background:rgba(176,0,32,.08); color:#7c0d1f; }
+    .st-par{ border-color:rgba(216,181,106,.45); background:rgba(216,181,106,.12); color:#6a5520; }
 
-    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    /* Reçu */
+    .receivedTag{ border-color: rgba(43,182,115,.35); background: rgba(43,182,115,.12); font-weight:900; color:#0f5132; }
+
+    /* Tabs */
+    .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
     .tab{
       padding:9px 11px;
       border-radius:999px;
-      border:1px solid rgba(150,190,255,.14);
-      background: rgba(255,255,255,.05);
+      border:1px solid rgba(231,223,211,.95);
+      background: rgba(255,255,255,.78);
       cursor:pointer;
       font-size:12px;
       user-select:none;
-      color: rgba(234,240,255,.80);
+      color:#3c4240;
     }
     .tab.active{
-      background: linear-gradient(135deg, rgba(74,125,255,.25), rgba(43,182,115,.18));
-      border-color: rgba(74,125,255,.38);
-      color: #eaf0ff;
-      box-shadow: 0 0 26px rgba(74,125,255,.10);
+      background: linear-gradient(90deg, rgba(241,226,183,.65), rgba(255,255,255,.90));
+      border-color: rgba(216,181,106,.55);
+      box-shadow: 0 10px 30px rgba(216,181,106,.12);
     }
-    .right{ margin-left:auto; }
-    .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .cb{ display:flex; align-items:center; gap:8px; font-size:12px; color: rgba(234,240,255,.78); user-select:none; }
+
+    /* Checkbox */
+    .cb{ display:flex; align-items:center; gap:8px; font-size:12px; color:#2f3a36; user-select:none; }
     .cb input{ width:auto; transform: scale(1.15); }
 
     /* Dashboard */
@@ -338,36 +318,28 @@
       margin: 12px 0;
     }
     .statCard{
-      background: linear-gradient(180deg, var(--cardA), var(--cardB));
-      border:1px solid rgba(150,190,255,.14);
-      border-radius:18px;
+      background: rgba(255,255,255,.88);
+      border:1px solid rgba(231,223,211,.95);
+      border-radius:20px;
       padding:14px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.38);
+      box-shadow: var(--shadow2);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      backdrop-filter: blur(14px);
     }
-    .statCard .label{
-      font-size:12px;
-      color: var(--muted);
-      font-weight:800;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .statCard .value{ font-size:22px; font-weight:900; letter-spacing:.3px; }
+    .statCard .label{ font-size:12px; color:var(--muted); font-weight:800; display:flex; align-items:center; gap:8px; }
+    .statCard .value{ font-size:22px; font-weight:900; }
     .dot{ width:10px; height:10px; border-radius:50%; }
-    .dot.mec{ background: var(--warning); }
-    .dot.com{ background: var(--neonA); }
+    .dot.mec{ background: var(--goldA); }
+    .dot.com{ background: var(--green); }
     .dot.rup{ background: var(--danger); }
-    .dot.recu{ background: var(--neonB); }
+    .dot.recu{ background: rgba(43,182,115,.75); }
 
-    /* Modals */
+    /* ===== MODALS ===== */
     .modalBackdrop{
       position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
+      background: rgba(16,18,19,.35);
       display:none;
       align-items:center;
       justify-content:center;
@@ -377,15 +349,15 @@
     }
     .modal{
       width:min(860px, 100%);
-      background: linear-gradient(180deg, rgba(11,18,32,.88), rgba(11,18,32,.72));
-      border-radius:20px;
-      border:1px solid rgba(150,190,255,.18);
-      box-shadow: 0 30px 90px rgba(0,0,0,.55);
+      background: rgba(255,255,255,.94);
+      border-radius:22px;
+      border:1px solid rgba(231,223,211,.95);
+      box-shadow: var(--shadow);
       overflow:hidden;
     }
     .modalHeader{
-      background: rgba(255,255,255,.04);
-      border-bottom:1px solid rgba(150,190,255,.14);
+      background: rgba(255,255,255,.92);
+      border-bottom:1px solid rgba(231,223,211,.95);
       padding:14px 16px;
       display:flex;
       align-items:center;
@@ -400,13 +372,14 @@
       flex-wrap:wrap;
       gap:10px;
       justify-content:space-between;
-      border-top:1px solid rgba(150,190,255,.14);
-      background: rgba(255,255,255,.02);
+      border-top:1px solid rgba(231,223,211,.95);
+      background: rgba(255,255,255,.92);
       align-items:center;
     }
+
     .waBox{
-      border:1px solid rgba(150,190,255,.16);
-      background: rgba(255,255,255,.04);
+      border:1px solid rgba(231,223,211,.95);
+      background: rgba(255,255,255,.90);
       border-radius:14px;
       padding:12px;
       white-space:pre-wrap;
@@ -419,13 +392,14 @@
       color: var(--text);
       outline:none;
     }
+
     .toggleRow{
       display:flex;
       align-items:center;
       gap:8px;
       margin-top:12px;
       font-size:12px;
-      color: rgba(234,240,255,.78);
+      color:#2f3a36;
     }
     .toggleRow input{ transform: scale(1.15); }
 
@@ -470,20 +444,24 @@
     <div class="card" id="loginCard">
       <div class="loginGrid">
 
-        <div>
-          <h2>Connexion</h2>
-          <div class="small">Interface sécurisée — accès boutique / admin.</div>
-          <div style="height:12px"></div>
+        <div class="loginHero">
+          <div class="loginBadge"><span class="goldDot"></span> Accès sécurisé</div>
+          <div class="loginTitle"><b>Connexion</b></div>
+          <div class="small">Interface premium — accès boutique / admin.</div>
+
+          <div style="height:14px"></div>
 
           <div class="row">
             <div>
               <label>Email</label>
               <input id="email" placeholder="boutique.toursnord@vapochill.fr" autocomplete="username">
             </div>
+
             <div>
               <label>Mot de passe</label>
               <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
             </div>
+
             <button id="btnLogin" class="btnPrimary" type="button">Se connecter</button>
           </div>
 
@@ -511,17 +489,15 @@
         </div>
 
         <div class="loginRight">
-          <div class="small" style="margin-bottom:8px;">
-            <span class="statusDot"></span><b style="color:rgba(234,240,255,.85)">Secure Mode</b>
-            <div style="margin-top:6px;">Connexion chiffrée • Session Supabase</div>
-          </div>
+          <b style="font-size:14px;">Vapo'Chill — Suivi</b>
+          <div class="small" style="margin-top:6px;">Design “luxe discret” (ivoire + gold)</div>
 
-          <div class="kpiLine"><b>Statut système</b><span>online</span></div>
-          <div class="kpiLine"><b>Accès</b><span>Boutique / Admin</span></div>
-          <div class="kpiLine"><b>Version UI</b><span>Neon Grid</span></div>
+          <div class="kpi"><b>Statut système</b><span>online</span></div>
+          <div class="kpi"><b>Accès</b><span>Boutique / Admin</span></div>
+          <div class="kpi"><b>Conseil</b><span>Utilise la recherche client</span></div>
 
-          <div class="small" style="margin-top:12px; opacity:.85;">
-            Astuce : utilise la recherche pour retrouver un client en 1 seconde.
+          <div class="small" style="margin-top:12px;">
+            Astuce : coche “Reçu” pour envoyer le message WhatsApp automatiquement (si activé).
           </div>
         </div>
 
@@ -530,12 +506,12 @@
     <!-- ====== APP ====== -->
     <div class="hidden" id="appRoot">
 
-      <!-- ADMIN : select boutique -->
+      <!-- ADMIN -->
       <div class="card hidden" id="adminCard">
         <div class="row" style="justify-content:space-between; align-items:end;">
           <div>
             <b>Mode admin</b>
-            <div class="small">Choisis une boutique pour afficher ses commandes.</div>
+            <div class="small">Sélectionne une boutique.</div>
           </div>
           <div class="row">
             <div>
@@ -559,48 +535,48 @@
 
         <div class="statCard">
           <div>
-            <div class="label"><span class="dot com"></span> Commander</div>
+            <div class="label"><span class="dot com"></span> Commandée</div>
             <div class="value" id="statCOM">0</div>
           </div>
-          <div class="pill st st-com">Commandée</div>
+          <div class="pill st st-com">OK</div>
         </div>
 
         <div class="statCard">
           <div>
-            <div class="label"><span class="dot rup"></span> Rupture de stock</div>
+            <div class="label"><span class="dot rup"></span> Rupture</div>
             <div class="value" id="statRUP">0</div>
           </div>
-          <div class="pill st st-rup">Rupture</div>
+          <div class="pill st st-rup">Bloquée</div>
         </div>
 
         <div class="statCard">
           <div>
-            <div class="label"><span class="dot recu"></span> Reçu (coché)</div>
+            <div class="label"><span class="dot recu"></span> Reçu</div>
             <div class="value" id="statRECU">0</div>
           </div>
-          <div class="pill receivedTag">Reçu ✅</div>
+          <div class="pill receivedTag">Réceptionné</div>
         </div>
       </div>
 
-      <!-- ADD ORDER -->
+      <!-- AJOUT COMMANDE -->
       <div class="card" id="addCard">
-        <b>Ajouter une commande</b>
+        <b>Nouvelle commande</b>
 
         <div class="row" style="margin-top:10px">
           <div>
             <label>Client</label>
-            <input id="client" placeholder="Nom client">
+            <input id="client">
           </div>
           <div>
-            <label>Numéro</label>
-            <input id="tel" placeholder="06 12 34 56 78">
+            <label>Téléphone</label>
+            <input id="tel">
           </div>
           <div>
             <label>Article</label>
-            <input id="article" placeholder="Article commandé">
+            <input id="article">
           </div>
           <div>
-            <label>Quantité</label>
+            <label>Qté</label>
             <input id="qty" type="number" min="1" value="1">
           </div>
           <div>
@@ -625,7 +601,7 @@
         <div class="row" style="margin-top:8px">
           <div>
             <label>Notes</label>
-            <textarea id="notes" placeholder="Notes internes"></textarea>
+            <textarea id="notes"></textarea>
           </div>
         </div>
 
@@ -636,26 +612,26 @@
         </div>
       </div>
 
-      <!-- TABLE -->
+      <!-- LISTE COMMANDES -->
       <div class="card">
-        <div class="row" style="align-items:center; justify-content:space-between;">
+        <div class="row" style="justify-content:space-between; align-items:center;">
           <div>
             <b>Commandes</b>
-            <div class="small">Gestion des commandes en cours et archivées.</div>
+            <div class="small">Suivi & historique</div>
           </div>
 
-          <div class="row" style="gap:8px">
-            <input id="search" placeholder="Rechercher..." style="width:220px">
-            <select id="filterStatus" style="width:180px">
-              <option value="">Tous statuts</option>
+          <div class="row">
+            <input id="search" placeholder="Recherche...">
+            <select id="filterStatus">
+              <option value="">Tous</option>
               <option>Mettre en commande</option>
               <option>Commander</option>
               <option>Rupture de stock</option>
               <option>Reçu partiellement</option>
             </select>
             <select id="antiError">
-              <option value="on">Anti-erreur: ON</option>
-              <option value="off">Anti-erreur: OFF</option>
+              <option value="on">Anti-erreur ON</option>
+              <option value="off">OFF</option>
             </select>
           </div>
         </div>
@@ -663,7 +639,7 @@
         <div class="tabs">
           <div class="tab active" id="tabActive">En cours (<span id="countActive">0</span>)</div>
           <div class="tab" id="tabHistory">Historique (<span id="countHistory">0</span>)</div>
-          <div class="tab right">Affichées: <b id="countShown">0</b></div>
+          <div class="tab right">Affichées : <b id="countShown">0</b></div>
         </div>
 
         <table>
@@ -680,113 +656,79 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
-    </div> <!-- /appRoot -->
+    </div>
 
-    <!-- ====== WHATSAPP MODAL ====== -->
+    <!-- ====== WHATSAPP ====== -->
     <div class="modalBackdrop" id="waBackdrop">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modalHeader">
-          <b>WhatsApp – Préparer le message</b>
-          <button class="btn" id="btnCloseWA" type="button">✖</button>
+          <b>WhatsApp</b>
+          <button class="btn" id="btnCloseWA">✖</button>
         </div>
 
         <div class="modalBody">
           <div class="small" id="waMeta"></div>
-          <div style="height:8px"></div>
-
           <label>Template</label>
-          <select id="waTemplate" style="width:100%">
-            <option value="arrivee">✅ Arrivée boutique</option>
-            <option value="rupture">❌ Rupture / délai</option>
-            <option value="relance">⏳ Relance fournisseur</option>
-            <option value="partiel">📦 Reçu partiellement</option>
+          <select id="waTemplate">
+            <option value="arrivee">Arrivée</option>
+            <option value="rupture">Rupture</option>
+            <option value="relance">Relance</option>
+            <option value="partiel">Partiel</option>
           </select>
-
-          <div style="height:8px"></div>
 
           <label>Message</label>
           <textarea id="waText" class="waBox"></textarea>
 
           <div class="toggleRow">
-            <input id="waNoPreview" type="checkbox">
-            <span>Ouvrir directement WhatsApp sans prévisualisation</span>
+            <input type="checkbox" id="waNoPreview">
+            <span>Ouverture directe WhatsApp</span>
           </div>
         </div>
 
         <div class="modalFooter">
           <div class="actions">
-            <button class="btn" id="btnCancelWA" type="button">Annuler</button>
-            <button class="btn" id="btnResetWA" type="button">Réinitialiser</button>
-            <button class="btn" id="btnCopyWA" type="button">Copier</button>
+            <button class="btn" id="btnCancelWA">Annuler</button>
+            <button class="btn" id="btnCopyWA">Copier</button>
           </div>
-          <div class="actions">
-            <button class="btnPrimary" id="btnOpenWA" type="button">Ouvrir WhatsApp</button>
-          </div>
+          <button class="btnPrimary" id="btnOpenWA">Ouvrir WhatsApp</button>
         </div>
       </div>
     </div>
 
-    <!-- ====== SETTINGS MODAL ====== -->
+    <!-- ====== SETTINGS ====== -->
     <div class="modalBackdrop" id="settingsBackdrop">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modalHeader">
           <b>Paramètres WhatsApp</b>
-          <button class="btn" id="btnCloseSettings" type="button">✖</button>
+          <button class="btn" id="btnCloseSettings">✖</button>
         </div>
 
         <div class="modalBody">
-          <div class="row" style="align-items:end">
-            <div class="field">
-              <label>Nom boutique</label>
-              <input id="setShopName" placeholder="Vapo'Chill">
-            </div>
-            <div class="field">
-              <label>Horaires (optionnel, ajouté dans la signature)</label>
-              <input id="setHours" placeholder="Ex: Lun-Sam 10h-19h">
-            </div>
-          </div>
+          <label>Nom boutique</label>
+          <input id="setShopName">
 
-          <div style="height:10px"></div>
+          <label>Horaires</label>
+          <input id="setHours">
 
-          <div class="field">
-            <label>Signature (utilise {vendeur})</label>
-            <input id="setSignature" placeholder="{vendeur} - Vapochill">
-            <div class="small">Ex: <b>{vendeur} - Vapo'Chill</b> ou juste <b>Vapo'Chill</b></div>
-          </div>
+          <label>Signature</label>
+          <input id="setSignature">
 
-          <div style="height:14px"></div>
+          <label>Template arrivée</label>
+          <textarea id="tplArrivee" class="waBox"></textarea>
 
-          <b style="font-size:13px;">Templates WhatsApp</b>
-          <div class="small">Variables : <b>{article}</b> <b>{client}</b> <b>{vendeur}</b> <b>{boutique}</b> <b>{horaires}</b></div>
+          <label>Template rupture</label>
+          <textarea id="tplRupture" class="waBox"></textarea>
 
-          <div style="height:10px"></div>
+          <label>Template relance</label>
+          <textarea id="tplRelance" class="waBox"></textarea>
 
-          <div class="grid2">
-            <div class="field">
-              <label>✅ Arrivée boutique</label>
-              <textarea id="tplArrivee" class="waBox" style="min-height:150px"></textarea>
-            </div>
-            <div class="field">
-              <label>❌ Rupture / délai</label>
-              <textarea id="tplRupture" class="waBox" style="min-height:150px"></textarea>
-            </div>
-            <div class="field">
-              <label>⏳ Relance fournisseur</label>
-              <textarea id="tplRelance" class="waBox" style="min-height:150px"></textarea>
-            </div>
-            <div class="field">
-              <label>📦 Reçu partiellement</label>
-              <textarea id="tplPartiel" class="waBox" style="min-height:150px"></textarea>
-            </div>
-          </div>
+          <label>Template partiel</label>
+          <textarea id="tplPartiel" class="waBox"></textarea>
         </div>
 
         <div class="modalFooter">
-          <div class="small">Les paramètres WhatsApp sont sauvegardés sur ce PC (localStorage).</div>
-          <div class="actions">
-            <button class="btn" id="btnResetSettings" type="button">Réinitialiser</button>
-            <button class="btnPrimary" id="btnSaveSettings" type="button">Enregistrer</button>
-          </div>
+          <button class="btn" id="btnResetSettings">Réinitialiser</button>
+          <button class="btnPrimary" id="btnSaveSettings">Enregistrer</button>
         </div>
       </div>
     </div>
@@ -794,7 +736,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script nomodule>
       document.body.innerHTML = `
-        <div style="padding:24px;font-family:Inter,Arial,sans-serif;color:#eaf0ff;background:#06080d;">
+        <div style="padding:24px;font-family:Inter,Arial,sans-serif;color:#101213;background:#fbf7ef;">
           <h2>Votre navigateur est trop ancien</h2>
           <p>Cette page utilise des fonctionnalités modernes (async/await). Merci de mettre à jour votre navigateur.</p>
         </div>
@@ -813,11 +755,10 @@
       const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
       const setMsg = (t)=> { $("msg").textContent = t || ""; };
 
-      // ✅ setDebug ne plante plus si #debug n'existe pas
+      // ✅ setDebug safe
       const setDebug = (t)=> {
         const el = $("debug");
         if (el) el.textContent = t || "";
-        // Affiche le bloc debug uniquement si du texte
         const card = $("debugCard");
         if (card) show(card, Boolean(t && String(t).trim()));
       };
@@ -834,9 +775,6 @@
           .replaceAll('"',"&quot;");
       }
 
-      // =========================
-      // Recovery flow
-      // =========================
       function isRecoveryFlow(){
         const h=(location.hash||"").toLowerCase();
         const q=(location.search||"").toLowerCase();
@@ -879,7 +817,7 @@
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       window.supabaseClient = supabaseClient;
 
-      // ✅ Flags
+      // Flags
       let isLoggingOut = false;
       let hasBooted = false;
       let allowAutoLogin = false;
@@ -993,7 +931,6 @@ Je vous confirme le reste dès réception
         show($("loginCard"), true);
         show($("appRoot"), false);
 
-        // ✅ affiche resetCard uniquement si recovery
         show($("resetCard"), isRecoveryFlow());
 
         setAuthMsg("");
@@ -1009,6 +946,7 @@ Je vous confirme le reste dès réception
         show($("appRoot"), true);
         show($("btnLogout"), true);
         show($("btnSettings"), true);
+
         $("userLabel").textContent = email || "connecté";
       }
 
@@ -1024,10 +962,8 @@ Je vous confirme le reste dès réception
 
           setAuthMsg("⏳ Connexion…");
           allowAutoLogin = true;
-
           const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
           if(error){ setAuthMsg("❌ " + error.message); return; }
-
           setAuthMsg("✅ Connecté.");
         }catch(e){
           setAuthMsg("❌ " + (e?.message || e));
@@ -1039,6 +975,7 @@ Je vous confirme le reste dès réception
           isLoggingOut = true;
           hasBooted = false;
           allowAutoLogin = false;
+
           await supabaseClient.auth.signOut({ scope: "local" });
         } catch (e) {
           console.warn("signOut error (ignored):", e);
@@ -1050,6 +987,7 @@ Je vous confirme le reste dès réception
           for (const k of Object.keys(sessionStorage)) {
             if (k.startsWith("sb-") && k.includes("auth")) sessionStorage.removeItem(k);
           }
+
           showLogin();
           setTimeout(()=>{ isLoggingOut = false; }, 1200);
         }
@@ -1063,7 +1001,6 @@ Je vous confirme le reste dès réception
 
           const { error } = await supabaseClient.auth.updateUser({ password: pass });
           if(error){ setResetMsg("❌ " + error.message); return; }
-
           setResetMsg("✅ Mot de passe modifié. Reconnecte-toi.");
         }catch(e){
           setResetMsg("❌ " + (e?.message || e));
@@ -1292,10 +1229,8 @@ Je vous confirme le reste dès réception
       }
 
       async function addOrder(){
-        // ✅ Déterminer la boutique sur laquelle on ajoute
         let storeId = myStoreId;
 
-        // ADMIN : doit choisir une boutique
         if (role === "admin") {
           storeId = $("storeSelect")?.value || "";
           if (!storeId) {
@@ -1304,7 +1239,6 @@ Je vous confirme le reste dès réception
           }
         }
 
-        // SHOP : sécurité
         if (!storeId) {
           const email = await getCurrentUserEmail();
           await ensureStoreId(email);
@@ -1609,7 +1543,6 @@ Je vous confirme le reste dès réception
           );
         });
 
-        // en cours : reçu en haut
         if(currentView === "active"){
           list = [...list].sort((a,b) => (Boolean(b.received_checked) - Boolean(a.received_checked)));
         }
@@ -1626,7 +1559,6 @@ Je vous confirme le reste dès réception
           const receivedPill = (currentView === "active" && Boolean(o.received_checked))
             ? `<span class="pill receivedTag">REÇU ✅</span>` : "";
 
-          // ✅ ADMIN ne voit rien
           const receivedControl = (currentView === "active" && role === "shop")
             ? `<label class="cb"><input type="checkbox" ${Boolean(o.received_checked) ? "checked":""} data-action="received" data-id="${o.id}"> Reçu</label>`
             : `<span class="small">—</span>`;
@@ -1700,14 +1632,12 @@ Je vous confirme le reste dès réception
         setTodayDefault();
         resetForm();
 
-        // 🔐 Charger le profil
         profile = await fetchProfile();
         role = profile.role || "shop";
         myStoreId = profile.store_id || null;
 
         const { data: u } = await supabaseClient.auth.getUser();
         const uid = u?.user?.id || "-";
-
         setDebug(`DEBUG: email=${email} | role=${role} | storeId=${myStoreId} | uid=${uid}`);
 
         await fetchStores();
@@ -1719,10 +1649,7 @@ Je vous confirme le reste dès réception
           fillStoreSelect();
           await loadOrders();
         } else {
-          // SHOP
-          if(!myStoreId){
-            await ensureStoreId(email);
-          }
+          if(!myStoreId) await ensureStoreId(email);
           if(!myStoreId){
             throw new Error("Ton profil n’a pas de store_id (profiles.store_id) et aucun store ne correspond à ton email.");
           }
@@ -1782,7 +1709,6 @@ Je vous confirme le reste dès réception
 
       $("btnCloseWA").addEventListener("click", closeWAModal);
       $("btnCancelWA").addEventListener("click", closeWAModal);
-      $("btnResetWA").addEventListener("click", applySelectedTemplate);
       $("btnCopyWA").addEventListener("click", copyWAText);
       $("btnOpenWA").addEventListener("click", confirmOpenWhatsApp);
       $("waTemplate").addEventListener("change", applySelectedTemplate);
@@ -1790,18 +1716,8 @@ Je vous confirme le reste dès réception
       $("waBackdrop").addEventListener("click", closeWAModal);
       $("settingsBackdrop").addEventListener("click", closeSettings);
 
-      $("tabActive").addEventListener("click", ()=>{
-        currentView="active";
-        $("tabActive").classList.add("active");
-        $("tabHistory").classList.remove("active");
-        render();
-      });
-      $("tabHistory").addEventListener("click", ()=>{
-        currentView="history";
-        $("tabHistory").classList.add("active");
-        $("tabActive").classList.remove("active");
-        render();
-      });
+      $("tabActive").addEventListener("click", ()=>{ currentView="active"; $("tabActive").classList.add("active"); $("tabHistory").classList.remove("active"); render(); });
+      $("tabHistory").addEventListener("click", ()=>{ currentView="history"; $("tabHistory").classList.add("active"); $("tabActive").classList.remove("active"); render(); });
 
       $("search").addEventListener("input", render);
       $("filterStatus").addEventListener("change", render);
@@ -1852,11 +1768,11 @@ Je vous confirme le reste dès réception
       supabaseClient.auth.onAuthStateChange(async (_event, session) => {
         if (isLoggingOut) return;
 
-        // ✅ si recovery => on ne doit PAS auto-enterApp
+        // ✅ lien recovery : rester sur la page reset
         if (isRecoveryFlow()) {
+          allowAutoLogin = true;
           showLogin();
           show($("resetCard"), true);
-          allowAutoLogin = true; // autorise updateUser
           return;
         }
 
@@ -1880,7 +1796,6 @@ Je vous confirme le reste dès réception
 
       // Boot
       (async ()=>{
-        // ✅ si lien recovery : rester sur login + resetCard
         if (isRecoveryFlow()) {
           allowAutoLogin = true;
           showLogin();
