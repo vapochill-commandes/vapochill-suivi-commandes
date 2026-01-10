@@ -1222,18 +1222,7 @@ async function toggleReceived(id){
     return;
   }
 
-  await loadOrders();
 
-  const updated = ordersCache.find(x => String(x.id) === String(id));
-  if(updated && updated.received_checked){
-    if (getWAPreviewMode() === "direct") {
-      const msg = templateToMessage(getTemplateByKey("arrivee"), updated);
-      openWhatsAppWithText(updated, msg);
-    } else {
-      showWAModal(updated);
-    }
-  }
-}
 
 
   await loadOrders();
