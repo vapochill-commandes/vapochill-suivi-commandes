@@ -758,6 +758,11 @@
         show($("btnSettings"), true);
 
         $("userLabel").textContent = email || "connecté";
+        const antiErrorSelect = $("antiError");
+        if (antiErrorSelect) {
+          antiErrorSelect.value = "off";
+          antiErrorSelect.disabled = true;
+        }
       }
 
       // =========================
@@ -871,9 +876,10 @@
         return p;
       }
 
-      function antiErrorOn(){
-        return $("antiError")?.value === "on";
+      function isAntiErrorOn(){
+        return false;
       }
+      window.isAntiErrorOn = isAntiErrorOn;
 
       function isUuid(value){
         return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value || "");
@@ -1189,7 +1195,7 @@
     const o = ordersCache.find(x => String(x.id) === String(id));
     if(!o) return;
 
-    if (antiErrorOn() && !Boolean(o.received_checked)) {
+    if (isAntiErrorOn() && !Boolean(o.received_checked)) {
       alert("⚠️ Coche d’abord la case “Reçu”.");
       return;
     }
@@ -1224,7 +1230,7 @@
     const o = ordersCache.find(x => String(x.id) === String(id));
     if(!o) return;
 
-    if (antiErrorOn() && currentView === "active" && !Boolean(o.received_checked)) {
+    if (isAntiErrorOn() && currentView === "active" && !Boolean(o.received_checked)) {
       alert("⚠️ Anti-erreur : impossible de supprimer tant que “Reçu” n’est pas coché.\n(Si tu veux vraiment, mets Anti-erreur sur OFF.)");
       return;
     }
