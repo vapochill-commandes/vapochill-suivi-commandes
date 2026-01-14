@@ -436,6 +436,105 @@
     @media (max-width: 900px){
       .loginShell{ grid-template-columns:1fr; }
     }
+
+    /* =========================
+       HUB APPS (MENU) — NOUVEAU
+       ========================= */
+    .hubStage{
+      min-height: calc(100vh - 86px);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 26px 0;
+    }
+    .hubShell{
+      width:min(980px, 100%);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .hubHeader{
+      background: var(--vc-card);
+      border:1px solid var(--vc-border);
+      border-radius:22px;
+      padding:18px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .hubHeader b{ font-size:16px; }
+    .hubHeader .small{ margin-top:4px; }
+    .hubGrid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap:14px;
+    }
+    .appTile{
+      background: var(--vc-card);
+      border:1px solid var(--vc-border);
+      border-radius:22px;
+      padding:16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height: 160px;
+    }
+    .appTile .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .appIcon{
+      width:42px;height:42px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(15,42,34,.08);
+      border:1px solid rgba(15,42,34,.12);
+      font-size:18px;
+    }
+    .appTile h3{
+      margin:0;
+      font-size:14px;
+      letter-spacing:-.01em;
+    }
+    .appTile p{
+      margin:0;
+      font-size:12px;
+      color: var(--vc-muted);
+      line-height:1.45;
+      max-width: 60ch;
+    }
+    .appTile .actions{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* Barre retour dans les applis — NOUVEAU */
+    .appTopActions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin: 10px 0 2px;
+    }
+    .backBtn{
+      background:#eef1f0;
+      border:0;
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:900;
+      cursor:pointer;
+    }
   </style>
 </head>
 <body>
@@ -537,7 +636,7 @@
             </div>
 
             <div class="loginHint">
-              Astuce : si une boutique “ne voit rien”, actualise la page ou contact Alan.
+              Astuce : si une boutique “ne voit rien”, vérifie l’email dans la table <b>stores</b> (champ <b>email</b>).
             </div>
           </div>
         </div>
@@ -545,8 +644,72 @@
       </div>
     </div>
 
-    <!-- ====== APP ====== -->
+    <!-- ===============================
+         HUB / MENU DES APPLICATIONS
+         (NOUVEAU : s'affiche après login)
+         =============================== -->
+    <div class="hidden" id="hubRoot">
+      <div class="hubStage">
+        <div class="hubShell">
+
+          <div class="hubHeader">
+            <div>
+              <b>Applications internes</b>
+              <div class="small">Choisis l’application à ouvrir.</div>
+            </div>
+            <div class="actions">
+              <!-- Tu peux laisser vide, ou ajouter des boutons plus tard -->
+            </div>
+          </div>
+
+          <div class="hubGrid">
+            <!-- App 1 -->
+            <div class="appTile">
+              <div class="top">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="appIcon">📦</div>
+                  <div>
+                    <h3>Commandes clients</h3>
+                    <p>Créer, suivre, historiser, cocher “Reçu”, WhatsApp en 2 clics.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="actions">
+                <button id="btnOpenOrders" class="primary" type="button">Ouvrir</button>
+              </div>
+            </div>
+
+            <!-- App 2 (placeholder pour plus tard) -->
+            <div class="appTile">
+              <div class="top">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="appIcon">✨</div>
+                  <div>
+                    <h3>Nouvelle application</h3>
+                    <p>À venir : on la construira ensemble. (Cette tuile est prête.)</p>
+                  </div>
+                </div>
+              </div>
+              <div class="actions">
+                <button id="btnOpenApp2" class="light" type="button">Bientôt</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===============================
+         APP : COMMANDES CLIENTS (EXISTANT)
+         (NOUVEAU : bouton retour vers hub)
+         =============================== -->
     <div class="hidden" id="appRoot">
+
+      <!-- Barre actions / retour -->
+      <div class="appTopActions">
+        <button class="backBtn" id="btnBackToHub" type="button">← Retour aux applications</button>
+      </div>
 
       <!-- ADMIN : select boutique -->
       <div class="card hidden" id="adminCard">
@@ -803,6 +966,7 @@
         </div>
       </div>
     </div>
+
     <!-- Supabase v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script nomodule>
@@ -813,1114 +977,1158 @@
         </div>
       `;
     </script>
+<script type="module">
+(async function(){
+  // =========================
+  // Helpers
+  // =========================
+  const $ = (id)=>document.getElementById(id);
+  const show = (el, yes)=> el.classList.toggle("hidden", !yes);
+  const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
+  const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
+  const setMsg = (t)=> { $("msg").textContent = t || ""; };
 
-    <script type="module">
-    (async function(){
-      // =========================
-      // Helpers
-      // =========================
-      const $ = (id)=>document.getElementById(id);
-      const show = (el, yes)=> el.classList.toggle("hidden", !yes);
-      const setAuthMsg = (t)=> { $("authMsg").textContent = t || ""; };
-      const setResetMsg = (t)=> { $("resetMsg").textContent = t || ""; };
-      const setMsg = (t)=> { $("msg").textContent = t || ""; };
+  // ✅ FIX: setDebug ne plante plus si #debug n'existe pas
+  const setDebug = (t)=> {
+    const el = $("debug");
+    if (el) el.textContent = t || "";
+  };
 
-      // ✅ FIX: setDebug ne plante plus si #debug n'existe pas
-      const setDebug = (t)=> {
-        const el = $("debug");
-        if (el) el.textContent = t || "";
-      };
+  // ✅ Luxe login helpers
+  function setAuthAlert(message){
+    const box = $("authAlert");
+    if(!box) return;
+    box.textContent = message || "";
+    box.classList.toggle("show", Boolean(message));
+  }
+  function setLoginLoading(isLoading){
+    const btn = $("btnLogin");
+    if(!btn) return;
+    btn.disabled = Boolean(isLoading);
+    btn.textContent = isLoading ? "Connexion…" : "Se connecter";
+  }
 
-      // ✅ Luxe login helpers
-      function setAuthAlert(message){
-        const box = $("authAlert");
-        if(!box) return;
-        box.textContent = message || "";
-        box.classList.toggle("show", Boolean(message));
-      }
-      function setLoginLoading(isLoading){
-        const btn = $("btnLogin");
-        if(!btn) return;
-        btn.disabled = Boolean(isLoading);
-        btn.textContent = isLoading ? "Connexion…" : "Se connecter";
-      }
+  function canWrite(){
+    return role === "shop" || role === "admin";
+  }
 
-      function canWrite(){
-        return role === "shop" || role === "admin";
-      }
+  function escapeHtml(s) {
+    return (s || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
+  }
 
-      function escapeHtml(s) {
-        return (s || "")
-          .replaceAll("&","&amp;")
-          .replaceAll("<","&lt;")
-          .replaceAll(">","&gt;")
-          .replaceAll('"',"&quot;");
-      }
+  function isRecoveryFlow(){
+    const h=(location.hash||"").toLowerCase();
+    const q=(location.search||"").toLowerCase();
+    return h.includes("access_token=") || q.includes("type=recovery") || q.includes("recovery");
+  }
 
-      function isRecoveryFlow(){
-        const h=(location.hash||"").toLowerCase();
-        const q=(location.search||"").toLowerCase();
-        return h.includes("access_token=") || q.includes("type=recovery") || q.includes("recovery");
-      }
+  // =========================
+  // Supabase config
+  // =========================
+  const SUPABASE_URL = "https://lhddwfeaoxnlflqlihdg.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZGR3ZmVhb3hubGZscWxpaGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MTI0NjcsImV4cCI6MjA4MzE4ODQ2N30.5Po48JdTbLZhcXjyJ48Il511DpiYNPdUZq4H-HNPAa4";
 
-      // =========================
-      // Supabase config
-      // =========================
-      const SUPABASE_URL = "https://lhddwfeaoxnlflqlihdg.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZGR3ZmVhb3hubGZscWxpaGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MTI0NjcsImV4cCI6MjA4MzE4ODQ2N30.5Po48JdTbLZhcXjyJ48Il511DpiYNPdUZq4H-HNPAa4";
+  // ✅ Ton URL GitHub Pages (OK)
+  const SITE_URL = "https://vapochill-commandes.github.io/vapochill-suivi-commandes";
 
-      // ⚠️ IMPORTANT : mets ici ton URL GitHub Pages ACTUELLE
-      const SITE_URL = "https://vapochill-commandes.github.io/vapochill-suivi-commandes/";
+  async function loadSupabaseScript(src){
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("load failed: " + src));
+      document.head.appendChild(script);
+    });
+  }
 
-      async function loadSupabaseScript(src){
-        return new Promise((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = src;
-          script.async = true;
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error("load failed: " + src));
-          document.head.appendChild(script);
-        });
-      }
+  async function ensureSupabaseLoaded(){
+    if (window.supabase?.createClient) return true;
+    try{ await loadSupabaseScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"); }catch(e){ console.warn(e); }
+    if (window.supabase?.createClient) return true;
+    try{ await loadSupabaseScript("https://unpkg.com/@supabase/supabase-js@2"); }catch(e){ console.warn(e); }
+    return Boolean(window.supabase?.createClient);
+  }
 
-      async function ensureSupabaseLoaded(){
-        if (window.supabase?.createClient) return true;
-        try{ await loadSupabaseScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"); }catch(e){ console.warn(e); }
-        if (window.supabase?.createClient) return true;
-        try{ await loadSupabaseScript("https://unpkg.com/@supabase/supabase-js@2"); }catch(e){ console.warn(e); }
-        return Boolean(window.supabase?.createClient);
-      }
+  const supabaseReady = await ensureSupabaseLoaded();
+  if(!supabaseReady){
+    alert("❌ La librairie Supabase ne charge pas (CDN bloqué / réseau).");
+    setAuthMsg("❌ Supabase indisponible. Vérifie la connexion ou le bloqueur de pub.");
+    return;
+  }
 
-      const supabaseReady = await ensureSupabaseLoaded();
-      if(!supabaseReady){
-        alert("❌ La librairie Supabase ne charge pas (CDN bloqué / réseau).");
-        setAuthMsg("❌ Supabase indisponible. Vérifie la connexion ou le bloqueur de pub.");
-        return;
-      }
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  window.supabaseClient = supabaseClient;
 
-      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      window.supabaseClient = supabaseClient;
+  let isLoggingOut = false;
+  let hasBooted = false;
+  let allowAutoLogin = false;
 
-      let isLoggingOut = false;
-      let hasBooted = false;
-      let allowAutoLogin = false;
+  // =========================
+  // App config
+  // =========================
+  const USERS = ["Laetitia","Marco","Charlotte","Nico","Alan","Corentin","Mathieu","Romain"];
 
-      // =========================
-      // App config
-      // =========================
-      const USERS = ["Laetitia","Marco","Charlotte","Nico","Alan","Corentin","Mathieu","Romain"];
+  // WhatsApp modal mode
+  const WA_PREVIEW_KEY = "wa_preview_mode_v1";
+  if (!localStorage.getItem(WA_PREVIEW_KEY)) localStorage.setItem(WA_PREVIEW_KEY, "preview");
 
-      // WhatsApp modal mode
-      const WA_PREVIEW_KEY = "wa_preview_mode_v1";
-      if (!localStorage.getItem(WA_PREVIEW_KEY)) localStorage.setItem(WA_PREVIEW_KEY, "preview");
+  // Settings
+  const SETTINGS_KEY = "vc_settings_v1";
 
-      // Settings
-      const SETTINGS_KEY = "vc_settings_v1";
-
-      const DEFAULT_SETTINGS = {
-        shopName: "Vapo'Chill",
-        hours: "",
-        signature: "{vendeur} - Vapochill",
-        templates: {
-          arrivee:
+  const DEFAULT_SETTINGS = {
+    shopName: "Vapo'Chill",
+    hours: "",
+    signature: "{vendeur} - Vapochill",
+    templates: {
+      arrivee:
 `Bonjour,
 
 Votre commande {article} est bien arrivée en boutique
 Vous pouvez passer quand vous voulez
 
 {signature}`,
-          rupture:
+      rupture:
 `Bonjour,
 
 Petit retour pour votre commande {article} : elle est en rupture chez le fournisseur.
 Je vous tiens au courant dès que j’ai une date
 
 {signature}`,
-          relance:
+      relance:
 `Bonjour,
 
 Je reviens vers vous : votre commande {article} est toujours en attente.
 On relance le fournisseur et on vous tient informé
 
 {signature}`,
-          partiel:
+      partiel:
 `Bonjour,
 
 Une partie de votre commande {article} est arrivée en boutique
 Je vous confirme le reste dès réception
 
 {signature}`
-        }
+    }
+  };
+
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (!raw) return structuredClone(DEFAULT_SETTINGS);
+      const obj = JSON.parse(raw);
+      return {
+        ...structuredClone(DEFAULT_SETTINGS),
+        ...obj,
+        templates: { ...structuredClone(DEFAULT_SETTINGS.templates), ...(obj.templates || {}) }
       };
+    }catch{
+      return structuredClone(DEFAULT_SETTINGS);
+    }
+  }
+  function saveSettingsToStorage(settings){
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }
+  function applySettingsToUI(shopNameOverride){
+    const s = loadSettings();
+    const name = shopNameOverride || s.shopName || "Vapo'Chill";
+    $("uiTitle").textContent = `${name} – Suivi commandes`;
+  }
 
-      function loadSettings(){
-        try{
-          const raw = localStorage.getItem(SETTINGS_KEY);
-          if (!raw) return structuredClone(DEFAULT_SETTINGS);
-          const obj = JSON.parse(raw);
-          return {
-            ...structuredClone(DEFAULT_SETTINGS),
-            ...obj,
-            templates: { ...structuredClone(DEFAULT_SETTINGS.templates), ...(obj.templates || {}) }
-          };
-        }catch{
-          return structuredClone(DEFAULT_SETTINGS);
-        }
-      }
-      function saveSettingsToStorage(settings){
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      }
-      function applySettingsToUI(shopNameOverride){
-        const s = loadSettings();
-        const name = shopNameOverride || s.shopName || "Vapo'Chill";
-        $("uiTitle").textContent = `${name} – Suivi commandes`;
-      }
+  // =========================
+  // Clock
+  // =========================
+  function tickClock(){
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mm = String(d.getMinutes()).padStart(2,"0");
+    $("clock").textContent = `${hh}:${mm}`;
+  }
+  setInterval(tickClock, 1000);
+  tickClock();
 
-      // =========================
-      // Clock
-      // =========================
-      function tickClock(){
-        const d = new Date();
-        const hh = String(d.getHours()).padStart(2,"0");
-        const mm = String(d.getMinutes()).padStart(2,"0");
-        $("clock").textContent = `${hh}:${mm}`;
-      }
-      setInterval(tickClock, 1000);
-      tickClock();
+  // =========================
+  // State
+  // =========================
+  let currentView = "active";
+  let role = null; // "admin" | "shop"
+  let profile = null; // profiles row
+  let myStoreId = null;
+  let myStoreName = null;
+  let storesCache = [];
+  let ordersCache = [];
+  let waPendingOrderId = null;
 
-      // =========================
-      // State
-      // =========================
-      let currentView = "active";
-      let role = null; // "admin" | "shop"
-      let profile = null; // profiles row
-      let myStoreId = null;
-      let myStoreName = null;
-      let storesCache = [];
-      let ordersCache = [];
-      let waPendingOrderId = null;
+  // =========================
+  // NAVIGATION HUB / APPS
+  // =========================
+  function showLogin(){
+    $("uiTitle").textContent = "Vapo'Chill – Connexion";
+    $("uiSub").textContent = "—";
+    $("userLabel").textContent = "non connecté";
 
-      // =========================
-      // UI: login/app
-      // =========================
-      function showLogin(){
-        $("uiTitle").textContent = "Vapo'Chill – Connexion";
-        $("uiSub").textContent = "—";
-        $("userLabel").textContent = "non connecté";
+    show($("btnLogout"), false);
+    show($("btnSettings"), false);
 
-        show($("btnLogout"), false);
-        show($("btnSettings"), false);
+    show($("loginCard"), true);
+    show($("hubRoot"), false);
+    show($("appRoot"), false);
 
-        show($("loginCard"), true);
-        show($("appRoot"), false);
+    show($("resetCard"), isRecoveryFlow());
+    setAuthMsg("");
+    setResetMsg("");
+    setDebug("");
 
-        show($("resetCard"), isRecoveryFlow());
-        setAuthMsg("");
-        setResetMsg("");
-        setDebug("");
+    setAuthAlert("");
+    setLoginLoading(false);
 
-        setAuthAlert("");
-        setLoginLoading(false);
+    hasBooted = false;
+  }
 
-        hasBooted = false;
-      }
+  function showHub(email){
+    // Topbar info
+    $("userLabel").textContent = email || "connecté";
 
-      function showApp(email){
-        show($("loginCard"), false);
-        show($("appRoot"), true);
-        show($("btnLogout"), true);
-        show($("btnSettings"), true);
+    // Pages
+    show($("loginCard"), false);
+    show($("hubRoot"), true);
+    show($("appRoot"), false);
 
-        $("userLabel").textContent = email || "connecté";
-      }
+    // Buttons topbar
+    show($("btnLogout"), true);
+    show($("btnSettings"), false); // settings ne sert que dans l'app commandes
 
-      // =========================
-      // Auth actions
-      // =========================
-      async function login(){
-        try{
-          setAuthMsg("");
-          setAuthAlert("");
+    // Title/sub
+    applySettingsToUI(myStoreName || null);
+    // si admin, on peut afficher "ADMIN" sinon le nom boutique
+    if (role === "admin") $("uiSub").textContent = "ADMIN – toutes boutiques";
+    else $("uiSub").textContent = myStoreName || "Boutique";
+  }
 
-          const email = $("email").value.trim();
-          const password = $("password").value.trim();
-          if(!email || !password){
-            setAuthAlert("⚠️ Mets email + mot de passe.");
-            return;
-          }
+  function showOrdersApp(){
+    show($("loginCard"), false);
+    show($("hubRoot"), false);
+    show($("appRoot"), true);
 
-          setLoginLoading(true);
-          allowAutoLogin = true;
+    show($("btnLogout"), true);
+    show($("btnSettings"), true); // settings uniquement dans commandes
+  }
 
-          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if(error){
-            setAuthAlert("❌ " + error.message);
-            return;
-          }
-          setAuthMsg("✅ Connecté.");
-        }catch(e){
-          setAuthAlert("❌ " + (e?.message || e));
-        }finally{
-          setLoginLoading(false);
-        }
+  // =========================
+  // Auth actions
+  // =========================
+  async function login(){
+    try{
+      setAuthMsg("");
+      setAuthAlert("");
+
+      const email = $("email").value.trim();
+      const password = $("password").value.trim();
+      if(!email || !password){
+        setAuthAlert("⚠️ Mets email + mot de passe.");
+        return;
       }
 
-      async function logout(){
-        try{
-          isLoggingOut = true;
-          hasBooted = false;
-          allowAutoLogin = false;
+      setLoginLoading(true);
+      allowAutoLogin = true;
 
-          await supabaseClient.auth.signOut({ scope: "local" });
-        } catch (e) {
-          console.warn("signOut error (ignored):", e);
-        } finally {
-          for (const k of Object.keys(localStorage)) {
-            if (k.startsWith("sb-") && k.includes("auth")) localStorage.removeItem(k);
-          }
-          for (const k of Object.keys(sessionStorage)) {
-            if (k.startsWith("sb-") && k.includes("auth")) sessionStorage.removeItem(k);
-          }
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if(error){
+        setAuthAlert("❌ " + error.message);
+        return;
+      }
+      setAuthMsg("✅ Connecté.");
+    }catch(e){
+      setAuthAlert("❌ " + (e?.message || e));
+    }finally{
+      setLoginLoading(false);
+    }
+  }
 
-          showLogin();
-          setTimeout(()=>{ isLoggingOut = false; }, 1200);
-        }
+  async function logout(){
+    try{
+      isLoggingOut = true;
+      hasBooted = false;
+      allowAutoLogin = false;
+
+      await supabaseClient.auth.signOut({ scope: "local" });
+    } catch (e) {
+      console.warn("signOut error (ignored):", e);
+    } finally {
+      for (const k of Object.keys(localStorage)) {
+        if (k.startsWith("sb-") && k.includes("auth")) localStorage.removeItem(k);
+      }
+      for (const k of Object.keys(sessionStorage)) {
+        if (k.startsWith("sb-") && k.includes("auth")) sessionStorage.removeItem(k);
       }
 
-      async function updatePassword(){
-        try{
-          setResetMsg("");
-          const pass = $("newPassword").value.trim();
-          if(pass.length < 6){ setResetMsg("⚠️ Min 6 caractères."); return; }
+      showLogin();
+      setTimeout(()=>{ isLoggingOut = false; }, 1200);
+    }
+  }
 
-          const { error } = await supabaseClient.auth.updateUser({ password: pass });
-          if(error){ setResetMsg("❌ " + error.message); return; }
-          setResetMsg("✅ Mot de passe modifié. Reconnecte-toi.");
-        }catch(e){
-          setResetMsg("❌ " + (e?.message || e));
-        }
-      }
+  async function updatePassword(){
+    try{
+      setResetMsg("");
+      const pass = $("newPassword").value.trim();
+      if(pass.length < 6){ setResetMsg("⚠️ Min 6 caractères."); return; }
 
-      // =========================
-      // Data helpers
-      // =========================
-      function statusClass(statut) {
-        if (statut === "Mettre en commande") return "st st-mec";
-        if (statut === "Commander") return "st st-com";
-        if (statut === "Rupture de stock") return "st st-rup";
-        if (statut === "Reçu partiellement") return "st st-par";
-        return "st";
-      }
+      const { error } = await supabaseClient.auth.updateUser({ password: pass });
+      if(error){ setResetMsg("❌ " + error.message); return; }
+      setResetMsg("✅ Mot de passe modifié. Reconnecte-toi.");
+    }catch(e){
+      setResetMsg("❌ " + (e?.message || e));
+    }
+  }
 
-      function setTodayDefault() {
-        const d = new Date();
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        $("date").value = `${yyyy}-${mm}-${dd}`;
-      }
+  // =========================
+  // Data helpers
+  // =========================
+  function statusClass(statut) {
+    if (statut === "Mettre en commande") return "st st-mec";
+    if (statut === "Commander") return "st st-com";
+    if (statut === "Rupture de stock") return "st st-rup";
+    if (statut === "Reçu partiellement") return "st st-par";
+    return "st";
+  }
 
-      function timeSince(iso) {
-        const d = new Date(iso);
-        if (isNaN(d.getTime())) return "";
-        let diff = Math.max(0, Date.now() - d.getTime());
-        const min = Math.floor(diff / 60000);
-        const h = Math.floor(min / 60);
-        const m = min % 60;
-        const j = Math.floor(h / 24);
-        const hh = h % 24;
-        if (j > 0) return `il y a ${j}j ${hh}h`;
-        if (h > 0) return `il y a ${h}h ${m}m`;
-        return `il y a ${m}m`;
-      }
+  function setTodayDefault() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    $("date").value = `${yyyy}-${mm}-${dd}`;
+  }
 
-      function phoneToWhatsAppNumber(phone) {
-        let p = (phone || "").replace(/[^\d+]/g, "");
-        p = p.replace(/\D/g, "");
-        if (!p) return "";
-        if (p.startsWith("0") && p.length === 10) return "33" + p.slice(1);
-        if (p.startsWith("33")) return p;
-        if (p.startsWith("0033")) return "33" + p.slice(4);
-        return p;
-      }
+  function timeSince(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    let diff = Math.max(0, Date.now() - d.getTime());
+    const min = Math.floor(diff / 60000);
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    const j = Math.floor(h / 24);
+    const hh = h % 24;
+    if (j > 0) return `il y a ${j}j ${hh}h`;
+    if (h > 0) return `il y a ${h}h ${m}m`;
+    return `il y a ${m}m`;
+  }
 
-      function antiErrorOn(){
-        return $("antiError")?.value === "on";
-      }
+  function phoneToWhatsAppNumber(phone) {
+    let p = (phone || "").replace(/[^\d+]/g, "");
+    p = p.replace(/\D/g, "");
+    if (!p) return "";
+    if (p.startsWith("0") && p.length === 10) return "33" + p.slice(1);
+    if (p.startsWith("33")) return p;
+    if (p.startsWith("0033")) return "33" + p.slice(4);
+    return p;
+  }
 
-      function isUuid(value){
-        return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value || "");
-      }
+  function antiErrorOn(){
+    return $("antiError")?.value === "on";
+  }
 
-      function getWAPreviewMode(){
-        return localStorage.getItem(WA_PREVIEW_KEY) || "preview";
-      }
-      function setWAPreviewMode(mode){
-        localStorage.setItem(WA_PREVIEW_KEY, mode);
-      }
+  function isUuid(value){
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value || "");
+  }
 
-      function templateToMessage(template, order){
-        const s = loadSettings();
-        const shop = myStoreName || s.shopName || "Vapo'Chill";
-        const hours = s.hours || "";
-        const vendeur = ($("seller")?.value || "").trim();
+  function getWAPreviewMode(){
+    return localStorage.getItem(WA_PREVIEW_KEY) || "preview";
+  }
+  function setWAPreviewMode(mode){
+    localStorage.setItem(WA_PREVIEW_KEY, mode);
+  }
 
-        const signature = (s.signature || "{vendeur} - Vapochill")
-          .replaceAll("{vendeur}", vendeur)
-          .replaceAll("{boutique}", shop)
-          .replaceAll("{horaires}", hours);
+  function templateToMessage(template, order){
+    const s = loadSettings();
+    const shop = myStoreName || s.shopName || "Vapo'Chill";
+    const hours = s.hours || "";
+    const vendeur = ($("seller")?.value || "").trim();
 
-        return (template || "")
-          .replaceAll("{article}", order.article || "votre commande")
-          .replaceAll("{client}", order.client || "")
-          .replaceAll("{vendeur}", vendeur)
-          .replaceAll("{boutique}", shop)
-          .replaceAll("{horaires}", hours)
-          .replaceAll("{signature}", signature);
-      }
+    const signature = (s.signature || "{vendeur} - Vapochill")
+      .replaceAll("{vendeur}", vendeur)
+      .replaceAll("{boutique}", shop)
+      .replaceAll("{horaires}", hours);
 
-      function getTemplateByKey(key){
-        const s = loadSettings();
-        const t = s.templates || {};
-        return t[key] || "";
-      }
+    return (template || "")
+      .replaceAll("{article}", order.article || "votre commande")
+      .replaceAll("{client}", order.client || "")
+      .replaceAll("{vendeur}", vendeur)
+      .replaceAll("{boutique}", shop)
+      .replaceAll("{horaires}", hours)
+      .replaceAll("{signature}", signature);
+  }
 
-      function openWhatsAppWithText(order, customText) {
-        const num = phoneToWhatsAppNumber(order.tel);
-        if (!num) { alert("⚠️ Numéro invalide pour WhatsApp."); return; }
-        const text = encodeURIComponent(customText || "");
-        const url = `https://wa.me/${num}?text=${text}`;
-        window.open(url, "_blank");
-      }
+  function getTemplateByKey(key){
+    const s = loadSettings();
+    const t = s.templates || {};
+    return t[key] || "";
+  }
 
-      // =========================
-      // Supabase: profile / stores / orders
-      // =========================
-      async function fetchProfile(){
-        const { data: ures, error: uerr } = await supabaseClient.auth.getUser();
-        if(uerr) throw new Error(uerr.message);
-        const uid = ures?.user?.id;
-        if(!uid) return null;
+  function openWhatsAppWithText(order, customText) {
+    const num = phoneToWhatsAppNumber(order.tel);
+    if (!num) { alert("⚠️ Numéro invalide pour WhatsApp."); return; }
+    const text = encodeURIComponent(customText || "");
+    const url = `https://wa.me/${num}?text=${text}`;
+    window.open(url, "_blank");
+  }
 
-        const { data, error } = await supabaseClient
+  // =========================
+  // Supabase: profile / stores / orders
+  // =========================
+  async function fetchProfile(){
+    const { data: ures, error: uerr } = await supabaseClient.auth.getUser();
+    if(uerr) throw new Error(uerr.message);
+    const uid = ures?.user?.id;
+    if(!uid) return null;
+
+    const { data, error } = await supabaseClient
+      .from("profiles")
+      .select("role, store_id, display_name")
+      .eq("user_id", uid)
+      .maybeSingle();
+
+    if(error) throw new Error("profiles: " + error.message);
+    if(!data) throw new Error("Profil introuvable (table profiles).");
+    return data;
+  }
+
+  async function fetchStores(){
+    const { data, error } = await supabaseClient
+      .from("stores")
+      .select("id,name,slug,email")
+      .order("name");
+    if(error) throw new Error("stores: " + error.message);
+    storesCache = data || [];
+  }
+
+  function normalizeEmail(email){
+    return (email || "").trim().toLowerCase();
+  }
+
+  function findStoreByEmail(email){
+    const target = normalizeEmail(email);
+    if (!target) return null;
+    return storesCache.find(store => normalizeEmail(store.email) === target) || null;
+  }
+
+  async function fetchStoreByEmail(email){
+    const target = normalizeEmail(email);
+    if (!target) return null;
+    const { data, error } = await supabaseClient
+      .from("stores")
+      .select("id,name,email")
+      .eq("email", target)
+      .maybeSingle();
+    if (error) throw new Error("stores: " + error.message);
+    return data || null;
+  }
+
+  async function getCurrentUserEmail(){
+    const { data } = await supabaseClient.auth.getUser();
+    return data?.user?.email || "";
+  }
+
+  async function ensureStoreId(email){
+    if (myStoreId) return myStoreId;
+
+    const userEmail = normalizeEmail(email || await getCurrentUserEmail());
+    if (!userEmail) return null;
+
+    if (!storesCache.length) await fetchStores();
+
+    let matchedStore = findStoreByEmail(userEmail);
+    if (!matchedStore) matchedStore = await fetchStoreByEmail(userEmail);
+    if (!matchedStore?.id) return null;
+
+    myStoreId = matchedStore.id;
+    myStoreName = matchedStore.name || myStoreName;
+
+    try{
+      const { data } = await supabaseClient.auth.getUser();
+      const uid = data?.user?.id;
+      if (uid) {
+        await supabaseClient
           .from("profiles")
-          .select("role, store_id, display_name")
-          .eq("user_id", uid)
-          .maybeSingle();
-
-        if(error) throw new Error("profiles: " + error.message);
-        if(!data) throw new Error("Profil introuvable (table profiles).");
-        return data;
+          .update({ store_id: matchedStore.id })
+          .eq("user_id", uid);
       }
+    }catch(err){
+      console.warn("store_id update failed:", err?.message || err);
+    }
 
-      async function fetchStores(){
-        const { data, error } = await supabaseClient
-          .from("stores")
-          .select("id,name,slug,email")
-          .order("name");
-        if(error) throw new Error("stores: " + error.message);
-        storesCache = data || [];
+    return myStoreId;
+  }
+
+  function fillStoreSelect(){
+    $("storeSelect").innerHTML = storesCache.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
+    if(storesCache[0]) $("storeSelect").value = storesCache[0].id;
+  }
+
+  function getActiveAndHistory(list){
+    const active = [];
+    const history = [];
+    for(const o of list){
+      if(o.picked_up_at) history.push(o);
+      else active.push(o);
+    }
+    return { active, history };
+  }
+
+  async function loadOrders(){
+    setDebug("");
+    setMsg("");
+
+    let storeId = myStoreId;
+    if (role === "admin") {
+      storeId = $("storeSelect")?.value || "";
+    }
+
+    let query = supabaseClient
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (storeId) query = query.eq("store_id", storeId);
+
+    const { data, error } = await query;
+    if (error) { setDebug("orders: " + error.message); return; }
+
+    ordersCache = data || [];
+    render();
+  }
+
+  async function addOrder(){
+    let storeId = myStoreId;
+
+    if (role === "admin") {
+      storeId = $("storeSelect")?.value || "";
+      if (!storeId) {
+        alert("⚠️ Admin : sélectionne une boutique avant d’ajouter une commande.");
+        return;
       }
+    }
 
-      function normalizeEmail(email){
-        return (email || "").trim().toLowerCase();
+    if (!storeId) {
+      const email = await getCurrentUserEmail();
+      await ensureStoreId(email);
+      storeId = myStoreId;
+    }
+
+    if (!storeId) {
+      const email = await getCurrentUserEmail();
+      alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie que cet email correspond au champ email de la table stores, ou renseigne profiles.store_id.`);
+      return;
+    }
+
+    const client = $("client").value.trim();
+    const tel = $("tel").value.trim();
+    const article = $("article").value.trim();
+    const qty = Number($("qty").value || 1);
+    const date = $("date").value;
+    const statut = $("statut").value;
+    const notes = $("notes").value.trim();
+    const seller = $("seller").value;
+
+    if (!client || !tel || !article) { setMsg("⚠️ Client, Numéro et Article obligatoires."); return; }
+    if (qty <= 0) { setMsg("⚠️ Qté minimum = 1."); return; }
+
+    setMsg("⏳ Ajout…");
+
+    const payload = {
+      store_id: storeId,
+      client, tel, article, qty, date, statut, notes,
+      seller,
+      received_checked: false,
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabaseClient.from("orders").insert([payload]);
+    if(error){
+      setMsg("❌ " + error.message);
+      setDebug("orders insert: " + error.message);
+      alert("❌ Impossible d'ajouter : " + error.message);
+      return;
+    }
+
+    setMsg("✅ Ajoutée.");
+    resetForm();
+    await loadOrders();
+  }
+
+  async function updateStatus(id, newStatus){
+    if (!canWrite()) return;
+
+    const seller = $("seller").value;
+    const audit = { updated_at: new Date().toISOString() };
+    if (isUuid(seller)) audit.updated_by = seller;
+
+    const { error } = await supabaseClient
+      .from("orders")
+      .update({ statut: newStatus, ...audit })
+      .eq("id", id);
+
+    if(error){ alert("❌ " + error.message); return; }
+    await loadOrders();
+  }
+
+  async function toggleReceived(id){
+    if (!canWrite()) return;
+
+    const o = ordersCache.find(x => String(x.id) === String(id));
+    if(!o) return;
+
+    const newVal = !Boolean(o.received_checked);
+    const seller = $("seller").value;
+    const audit = { updated_at: new Date().toISOString() };
+    if (isUuid(seller)) audit.updated_by = seller;
+
+    const { error } = await supabaseClient
+      .from("orders")
+      .update({ received_checked: newVal, ...audit })
+      .eq("id", id);
+
+    if(error){ alert("❌ " + error.message); return; }
+
+    await loadOrders();
+
+    const updated = ordersCache.find(x => String(x.id) === String(id));
+    if(updated && updated.received_checked){
+      if (getWAPreviewMode() === "direct") {
+        const msg = templateToMessage(getTemplateByKey("arrivee"), updated);
+        openWhatsAppWithText(updated, msg);
+      } else {
+        showWAModal(updated);
       }
+    }
+  }
 
-      function findStoreByEmail(email){
-        const target = normalizeEmail(email);
-        if (!target) return null;
-        return storesCache.find(store => normalizeEmail(store.email) === target) || null;
+  function confirmDanger(msg){
+    return confirm("⚠️ " + msg);
+  }
+
+  async function markPickedUp(id){
+    if (!canWrite()) return;
+
+    const o = ordersCache.find(x => String(x.id) === String(id));
+    if(!o) return;
+
+    if (antiErrorOn() && !Boolean(o.received_checked)) {
+      alert("⚠️ Coche d’abord la case “Reçu”.");
+      return;
+    }
+
+    if (!confirmDanger("Confirmer : commande récupérée / terminée ? (envoi à l’historique)")) return;
+
+    const seller = $("seller").value;
+    const audit = { updated_at: new Date().toISOString() };
+    if (isUuid(seller)) audit.updated_by = seller;
+    const pickedBy = isUuid(seller) ? { picked_up_by: seller } : {};
+
+    const { error } = await supabaseClient
+      .from("orders")
+      .update({
+        picked_up_at: new Date().toISOString(),
+        ...pickedBy,
+        ...audit
+      })
+      .eq("id", id);
+
+    if(error){ alert("❌ " + error.message); return; }
+    await loadOrders();
+  }
+
+  async function deleteOrder(id){
+    if (!canWrite()) return;
+
+    const o = ordersCache.find(x => String(x.id) === String(id));
+    if(!o) return;
+
+    if (antiErrorOn() && currentView === "active" && !Boolean(o.received_checked)) {
+      alert("⚠️ Anti-erreur : impossible de supprimer tant que “Reçu” n’est pas coché.\n(Si tu veux vraiment, mets Anti-erreur sur OFF.)");
+      return;
+    }
+
+    if (!confirmDanger("Supprimer définitivement ?")) return;
+
+    const { error } = await supabaseClient.from("orders").delete().eq("id", id);
+    if(error){ alert("❌ " + error.message); return; }
+    await loadOrders();
+  }
+
+  // =========================
+  // WhatsApp modal
+  // =========================
+  function showWAModal(order){
+    waPendingOrderId = order.id;
+
+    $("waMeta").textContent = `Client: ${order.client || "-"} • Tel: ${order.tel || "-"} • Article: ${order.article || "-"}`;
+
+    $("waTemplate").value = "arrivee";
+    $("waText").value = templateToMessage(getTemplateByKey("arrivee"), order);
+
+    $("waNoPreview").checked = (getWAPreviewMode() === "direct");
+
+    $("waBackdrop").style.display = "flex";
+  }
+
+  function closeWAModal(){
+    if ($("waNoPreview")?.checked) setWAPreviewMode("direct");
+    else setWAPreviewMode("preview");
+
+    $("waBackdrop").style.display = "none";
+    waPendingOrderId = null;
+  }
+
+  function applySelectedTemplate(){
+    const id = waPendingOrderId;
+    if (!id) return;
+
+    const o = ordersCache.find(x => String(x.id) === String(id));
+    if (!o) return;
+
+    const key = $("waTemplate").value;
+    $("waText").value = templateToMessage(getTemplateByKey(key), o);
+  }
+
+  async function copyWAText(){
+    const val = $("waText").value || "";
+    try{
+      await navigator.clipboard.writeText(val);
+      alert("✅ Message copié.");
+    }catch{
+      $("waText").select();
+      document.execCommand("copy");
+      alert("✅ Message copié.");
+    }
+  }
+
+  function confirmOpenWhatsApp(){
+    const id = waPendingOrderId;
+    if (!id) return closeWAModal();
+
+    const o = ordersCache.find(x => String(x.id) === String(id));
+    if (!o) return closeWAModal();
+
+    openWhatsAppWithText(o, $("waText").value);
+    closeWAModal();
+  }
+
+  // =========================
+  // Settings modal
+  // =========================
+  function openSettings(){
+    const s = loadSettings();
+    $("setShopName").value = s.shopName || "";
+    $("setHours").value = s.hours || "";
+    $("setSignature").value = s.signature || "";
+
+    $("tplArrivee").value = s.templates.arrivee || "";
+    $("tplRupture").value = s.templates.rupture || "";
+    $("tplRelance").value = s.templates.relance || "";
+    $("tplPartiel").value = s.templates.partiel || "";
+
+    $("settingsBackdrop").style.display = "flex";
+  }
+  function closeSettings(){
+    $("settingsBackdrop").style.display = "none";
+  }
+  function resetSettingsDefaults(){
+    if (!confirm("Réinitialiser tous les paramètres et templates WhatsApp ?")) return;
+    saveSettingsToStorage(structuredClone(DEFAULT_SETTINGS));
+    openSettings();
+    applySettingsToUI(myStoreName || null);
+  }
+  function saveSettings(){
+    const s = loadSettings();
+    s.shopName = $("setShopName").value.trim() || DEFAULT_SETTINGS.shopName;
+    s.hours = $("setHours").value.trim();
+    s.signature = $("setSignature").value.trim() || DEFAULT_SETTINGS.signature;
+
+    s.templates.arrivee = $("tplArrivee").value;
+    s.templates.rupture = $("tplRupture").value;
+    s.templates.relance = $("tplRelance").value;
+    s.templates.partiel = $("tplPartiel").value;
+
+    saveSettingsToStorage(s);
+    applySettingsToUI(myStoreName || null);
+    alert("✅ Paramètres enregistrés.");
+    closeSettings();
+  }
+
+  function resetForm(){
+    $("client").value = "";
+    $("tel").value = "";
+    $("article").value = "";
+    $("qty").value = 1;
+    $("notes").value = "";
+    $("statut").value = "Mettre en commande";
+
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    $("date").value = `${yyyy}-${mm}-${dd}`;
+
+    setMsg("");
+  }
+
+  // =========================
+  // Render
+  // =========================
+  function updateDashboard(activeList){
+    let mec=0, com=0, rup=0, recu=0;
+    for (const o of activeList){
+      if (o.statut === "Mettre en commande") mec++;
+      if (o.statut === "Commander") com++;
+      if (o.statut === "Rupture de stock") rup++;
+      if (Boolean(o.received_checked)) recu++;
+    }
+    $("statMEC").textContent = mec;
+    $("statCOM").textContent = com;
+    $("statRUP").textContent = rup;
+    $("statRECU").textContent = recu;
+  }
+
+  function render(){
+    const { active, history } = getActiveAndHistory(ordersCache);
+
+    $("countActive").textContent = active.length;
+    $("countHistory").textContent = history.length;
+    updateDashboard(active);
+
+    const q = ($("search").value || "").trim().toLowerCase();
+    const filterStatus = $("filterStatus").value;
+
+    const base = (currentView === "history") ? history : active;
+
+    let list = base.filter(o=>{
+      if(filterStatus && o.statut !== filterStatus) return false;
+      if(!q) return true;
+      return (
+        (o.client || "").toLowerCase().includes(q) ||
+        (o.tel || "").toLowerCase().includes(q) ||
+        (o.article || "").toLowerCase().includes(q) ||
+        (o.notes || "").toLowerCase().includes(q)
+      );
+    });
+
+    if(currentView === "active"){
+      list = [...list].sort((a,b) => (Boolean(b.received_checked) - Boolean(a.received_checked)));
+    }
+
+    $("countShown").textContent = list.length;
+
+    const tbody = $("tbody");
+    tbody.innerHTML = "";
+
+    for(const o of list){
+      const tr = document.createElement("tr");
+      if(currentView === "active" && Boolean(o.received_checked)) tr.classList.add("row-received");
+
+      const since = timeSince(o.created_at || o.createdAt);
+      const receivedPill = (currentView === "active" && Boolean(o.received_checked))
+        ? `<span class="pill receivedTag">REÇU ✅</span>` : "";
+
+      const receivedControl = (currentView === "active" && role === "shop")
+        ? `<label class="cb"><input type="checkbox" ${Boolean(o.received_checked) ? "checked":""} data-action="received" data-id="${o.id}"> Reçu</label>`
+        : `<span class="small">—</span>`;
+
+      const actionsShop = (currentView === "active")
+        ? `
+          <div class="actions">
+            ${receivedControl}
+            <button class="ok" data-action="picked" data-id="${o.id}">Commande récupérée</button>
+            <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
+          </div>
+        `
+        : `
+          <div class="actions">
+            <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
+          </div>
+        `;
+
+      const actionsAdmin = `<div class="small">Lecture</div>`;
+
+      tr.innerHTML = `
+        <td>
+          <span class="pill">${escapeHtml(o.date || "")}</span><br/>
+          <span class="small">${escapeHtml(since)}</span><br/>
+          ${receivedPill}
+        </td>
+
+        <td>
+          <b>${escapeHtml(o.client || "")}</b><br/>
+          <span class="small">${escapeHtml(o.tel || "")}</span><br/>
+          <div class="small">Créée par: <b>${escapeHtml(o.seller || "-")}</b></div>
+        </td>
+
+        <td>
+          ${escapeHtml(o.article || "")}<br/>
+          <span class="small">Qté: ${Number(o.qty || 1)} • Vendeur: ${escapeHtml(o.seller || "-")}</span>
+        </td>
+
+        <td>
+          <span class="pill ${statusClass(o.statut)}">${escapeHtml(o.statut || "")}</span>
+          <div style="margin-top:6px">
+            <select ${role !== "shop" ? "disabled" : ""} data-action="status" data-id="${o.id}">
+              ${["Mettre en commande","Commander","Rupture de stock","Reçu partiellement"].map(s => `
+                <option ${o.statut===s ? "selected":""}>${escapeHtml(s)}</option>
+              `).join("")}
+            </select>
+          </div>
+        </td>
+
+        <td>${escapeHtml(o.notes || "")}</td>
+
+        <td>${role === "shop" ? actionsShop : actionsAdmin}</td>
+      `;
+
+      tbody.appendChild(tr);
+    }
+  }
+
+  // =========================
+  // Enter app (prépare données) + va sur HUB
+  // =========================
+  function initUsers(){
+    $("seller").innerHTML = USERS.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join("");
+    $("seller").value = USERS[0];
+  }
+
+  async function enterAfterLogin(email){
+    // Prépare l'app commandes (pour que quand on clique "Ouvrir", tout soit prêt)
+    initUsers();
+    setTodayDefault();
+    resetForm();
+
+    profile = await fetchProfile();
+    role = profile.role || "shop";
+    myStoreId = profile.store_id || null;
+
+    await fetchStores();
+
+    if(role === "admin"){
+      // admin : pas de storeName fixe
+      myStoreName = "Admin";
+      $("uiSub").textContent = "ADMIN – toutes boutiques";
+      fillStoreSelect();
+      // on ne charge PAS les commandes ici (on le fera quand on ouvre l'app)
+    } else {
+      if(!myStoreId){
+        await ensureStoreId(email);
       }
-
-      async function fetchStoreByEmail(email){
-        const target = normalizeEmail(email);
-        if (!target) return null;
-        const { data, error } = await supabaseClient
-          .from("stores")
-          .select("id,name,email")
-          .eq("email", target)
-          .maybeSingle();
-        if (error) throw new Error("stores: " + error.message);
-        return data || null;
+      if(!myStoreId){
+        throw new Error("Ton profil n’a pas de store_id (profiles.store_id) et aucun store ne correspond à ton email.");
       }
-
-      async function getCurrentUserEmail(){
-        const { data } = await supabaseClient.auth.getUser();
-        return data?.user?.email || "";
-      }
-
-      async function ensureStoreId(email){
-        if (myStoreId) return myStoreId;
-
-        const userEmail = normalizeEmail(email || await getCurrentUserEmail());
-        if (!userEmail) return null;
-
-        if (!storesCache.length) await fetchStores();
-
-        let matchedStore = findStoreByEmail(userEmail);
-        if (!matchedStore) matchedStore = await fetchStoreByEmail(userEmail);
-        if (!matchedStore?.id) return null;
-
-        myStoreId = matchedStore.id;
-        myStoreName = matchedStore.name || myStoreName;
-
-        try{
-          const { data } = await supabaseClient.auth.getUser();
-          const uid = data?.user?.id;
-          if (uid) {
-            await supabaseClient
-              .from("profiles")
-              .update({ store_id: matchedStore.id })
-              .eq("user_id", uid);
-          }
-        }catch(err){
-          console.warn("store_id update failed:", err?.message || err);
-        }
-
-        return myStoreId;
-      }
-
-      function fillStoreSelect(){
-        $("storeSelect").innerHTML = storesCache.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
-        if(storesCache[0]) $("storeSelect").value = storesCache[0].id;
-      }
-
-      function getActiveAndHistory(list){
-        const active = [];
-        const history = [];
-        for(const o of list){
-          if(o.picked_up_at) history.push(o);
-          else active.push(o);
-        }
-        return { active, history };
-      }
-
-      async function loadOrders(){
-        setDebug("");
-        setMsg("");
-
-        let storeId = myStoreId;
-        if (role === "admin") {
-          storeId = $("storeSelect")?.value || "";
-        }
-
-        let query = supabaseClient
-          .from("orders")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (storeId) query = query.eq("store_id", storeId);
-
-        const { data, error } = await query;
-        if (error) { setDebug("orders: " + error.message); return; }
-
-        ordersCache = data || [];
-        render();
-      }
-
-      async function addOrder(){
-        let storeId = myStoreId;
-
-        if (role === "admin") {
-          storeId = $("storeSelect")?.value || "";
-          if (!storeId) {
-            alert("⚠️ Admin : sélectionne une boutique avant d’ajouter une commande.");
-            return;
-          }
-        }
-
-        if (!storeId) {
-          const email = await getCurrentUserEmail();
-          await ensureStoreId(email);
-          storeId = myStoreId;
-        }
-
-        if (!storeId) {
-          const email = await getCurrentUserEmail();
-          alert(`⚠️ Boutique inconnue (storeId manquant).\nEmail connecté: ${email || "inconnu"}\nVérifie que cet email correspond au champ email de la table stores, ou renseigne profiles.store_id.`);
-          return;
-        }
-
-        const client = $("client").value.trim();
-        const tel = $("tel").value.trim();
-        const article = $("article").value.trim();
-        const qty = Number($("qty").value || 1);
-        const date = $("date").value;
-        const statut = $("statut").value;
-        const notes = $("notes").value.trim();
-        const seller = $("seller").value;
-
-        if (!client || !tel || !article) { setMsg("⚠️ Client, Numéro et Article obligatoires."); return; }
-        if (qty <= 0) { setMsg("⚠️ Qté minimum = 1."); return; }
-
-        setMsg("⏳ Ajout…");
-
-        const payload = {
-          store_id: storeId,
-          client, tel, article, qty, date, statut, notes,
-          seller,
-          received_checked: false,
-          updated_at: new Date().toISOString()
-        };
-
-        const { error } = await supabaseClient.from("orders").insert([payload]);
-        if(error){
-          setMsg("❌ " + error.message);
-          setDebug("orders insert: " + error.message);
-          alert("❌ Impossible d'ajouter : " + error.message);
-          return;
-        }
-
-        setMsg("✅ Ajoutée.");
-        resetForm();
-        await loadOrders();
-      }
-
-      async function updateStatus(id, newStatus){
-        if (!canWrite()) return;
-
-        const seller = $("seller").value;
-        const audit = { updated_at: new Date().toISOString() };
-        if (isUuid(seller)) audit.updated_by = seller;
-
-        const { error } = await supabaseClient
-          .from("orders")
-          .update({ statut: newStatus, ...audit })
-          .eq("id", id);
-
-        if(error){ alert("❌ " + error.message); return; }
-        await loadOrders();
-      }
-
-      async function toggleReceived(id){
-        if (!canWrite()) return;
-
-        const o = ordersCache.find(x => String(x.id) === String(id));
-        if(!o) return;
-
-        const newVal = !Boolean(o.received_checked);
-        const seller = $("seller").value;
-        const audit = { updated_at: new Date().toISOString() };
-        if (isUuid(seller)) audit.updated_by = seller;
-
-        const { error } = await supabaseClient
-          .from("orders")
-          .update({ received_checked: newVal, ...audit })
-          .eq("id", id);
-
-        if(error){ alert("❌ " + error.message); return; }
-
-        await loadOrders();
-
-        const updated = ordersCache.find(x => String(x.id) === String(id));
-        if(updated && updated.received_checked){
-          if (getWAPreviewMode() === "direct") {
-            const msg = templateToMessage(getTemplateByKey("arrivee"), updated);
-            openWhatsAppWithText(updated, msg);
-          } else {
-            showWAModal(updated);
-          }
-        }
-      }
-
-      function confirmDanger(msg){
-        return confirm("⚠️ " + msg);
-      }
-
-      async function markPickedUp(id){
-        if (!canWrite()) return;
-
-        const o = ordersCache.find(x => String(x.id) === String(id));
-        if(!o) return;
-
-        if (antiErrorOn() && !Boolean(o.received_checked)) {
-          alert("⚠️ Coche d’abord la case “Reçu”.");
-          return;
-        }
-
-        if (!confirmDanger("Confirmer : commande récupérée / terminée ? (envoi à l’historique)")) return;
-
-        const seller = $("seller").value;
-        const audit = { updated_at: new Date().toISOString() };
-        if (isUuid(seller)) audit.updated_by = seller;
-        const pickedBy = isUuid(seller) ? { picked_up_by: seller } : {};
-
-        const { error } = await supabaseClient
-          .from("orders")
-          .update({
-            picked_up_at: new Date().toISOString(),
-            ...pickedBy,
-            ...audit
-          })
-          .eq("id", id);
-
-        if(error){ alert("❌ " + error.message); return; }
-        await loadOrders();
-      }
-
-      async function deleteOrder(id){
-        if (!canWrite()) return;
-
-        const o = ordersCache.find(x => String(x.id) === String(id));
-        if(!o) return;
-
-        if (antiErrorOn() && currentView === "active" && !Boolean(o.received_checked)) {
-          alert("⚠️ Anti-erreur : impossible de supprimer tant que “Reçu” n’est pas coché.\n(Si tu veux vraiment, mets Anti-erreur sur OFF.)");
-          return;
-        }
-
-        if (!confirmDanger("Supprimer définitivement ?")) return;
-
-        const { error } = await supabaseClient.from("orders").delete().eq("id", id);
-        if(error){ alert("❌ " + error.message); return; }
-        await loadOrders();
-      }
-
-      // =========================
-      // WhatsApp modal
-      // =========================
-      function showWAModal(order){
-        waPendingOrderId = order.id;
-
-        $("waMeta").textContent = `Client: ${order.client || "-"} • Tel: ${order.tel || "-"} • Article: ${order.article || "-"}`;
-
-        $("waTemplate").value = "arrivee";
-        $("waText").value = templateToMessage(getTemplateByKey("arrivee"), order);
-
-        $("waNoPreview").checked = (getWAPreviewMode() === "direct");
-
-        $("waBackdrop").style.display = "flex";
-      }
-
-      function closeWAModal(){
-        if ($("waNoPreview")?.checked) setWAPreviewMode("direct");
-        else setWAPreviewMode("preview");
-
-        $("waBackdrop").style.display = "none";
-        waPendingOrderId = null;
-      }
-
-      function applySelectedTemplate(){
-        const id = waPendingOrderId;
-        if (!id) return;
-
-        const o = ordersCache.find(x => String(x.id) === String(id));
-        if (!o) return;
-
-        const key = $("waTemplate").value;
-        $("waText").value = templateToMessage(getTemplateByKey(key), o);
-      }
-
-      async function copyWAText(){
-        const val = $("waText").value || "";
-        try{
-          await navigator.clipboard.writeText(val);
-          alert("✅ Message copié.");
-        }catch{
-          $("waText").select();
-          document.execCommand("copy");
-          alert("✅ Message copié.");
-        }
-      }
-
-      function confirmOpenWhatsApp(){
-        const id = waPendingOrderId;
-        if (!id) return closeWAModal();
-
-        const o = ordersCache.find(x => String(x.id) === String(id));
-        if (!o) return closeWAModal();
-
-        openWhatsAppWithText(o, $("waText").value);
-        closeWAModal();
-      }
-
-      // =========================
-      // Settings modal
-      // =========================
-      function openSettings(){
-        const s = loadSettings();
-        $("setShopName").value = s.shopName || "";
-        $("setHours").value = s.hours || "";
-        $("setSignature").value = s.signature || "";
-
-        $("tplArrivee").value = s.templates.arrivee || "";
-        $("tplRupture").value = s.templates.rupture || "";
-        $("tplRelance").value = s.templates.relance || "";
-        $("tplPartiel").value = s.templates.partiel || "";
-
-        $("settingsBackdrop").style.display = "flex";
-      }
-      function closeSettings(){
-        $("settingsBackdrop").style.display = "none";
-      }
-      function resetSettingsDefaults(){
-        if (!confirm("Réinitialiser tous les paramètres et templates WhatsApp ?")) return;
-        saveSettingsToStorage(structuredClone(DEFAULT_SETTINGS));
-        openSettings();
-        applySettingsToUI(myStoreName || null);
-      }
-      function saveSettings(){
-        const s = loadSettings();
-        s.shopName = $("setShopName").value.trim() || DEFAULT_SETTINGS.shopName;
-        s.hours = $("setHours").value.trim();
-        s.signature = $("setSignature").value.trim() || DEFAULT_SETTINGS.signature;
-
-        s.templates.arrivee = $("tplArrivee").value;
-        s.templates.rupture = $("tplRupture").value;
-        s.templates.relance = $("tplRelance").value;
-        s.templates.partiel = $("tplPartiel").value;
-
-        saveSettingsToStorage(s);
-        applySettingsToUI(myStoreName || null);
-        alert("✅ Paramètres enregistrés.");
-        closeSettings();
-      }
-
-      function resetForm(){
-        $("client").value = "";
-        $("tel").value = "";
-        $("article").value = "";
-        $("qty").value = 1;
-        $("notes").value = "";
-        $("statut").value = "Mettre en commande";
-
-        const d = new Date();
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        $("date").value = `${yyyy}-${mm}-${dd}`;
-
-        setMsg("");
-      }
-
-      // =========================
-      // Render
-      // =========================
-      function updateDashboard(activeList){
-        let mec=0, com=0, rup=0, recu=0;
-        for (const o of activeList){
-          if (o.statut === "Mettre en commande") mec++;
-          if (o.statut === "Commander") com++;
-          if (o.statut === "Rupture de stock") rup++;
-          if (Boolean(o.received_checked)) recu++;
-        }
-        $("statMEC").textContent = mec;
-        $("statCOM").textContent = com;
-        $("statRUP").textContent = rup;
-        $("statRECU").textContent = recu;
-      }
-
-      function render(){
-        const { active, history } = getActiveAndHistory(ordersCache);
-
-        $("countActive").textContent = active.length;
-        $("countHistory").textContent = history.length;
-        updateDashboard(active);
-
-        const q = ($("search").value || "").trim().toLowerCase();
-        const filterStatus = $("filterStatus").value;
-
-        const base = (currentView === "history") ? history : active;
-
-        let list = base.filter(o=>{
-          if(filterStatus && o.statut !== filterStatus) return false;
-          if(!q) return true;
-          return (
-            (o.client || "").toLowerCase().includes(q) ||
-            (o.tel || "").toLowerCase().includes(q) ||
-            (o.article || "").toLowerCase().includes(q) ||
-            (o.notes || "").toLowerCase().includes(q)
-          );
-        });
-
-        if(currentView === "active"){
-          list = [...list].sort((a,b) => (Boolean(b.received_checked) - Boolean(a.received_checked)));
-        }
-
-        $("countShown").textContent = list.length;
-
-        const tbody = $("tbody");
-        tbody.innerHTML = "";
-
-        for(const o of list){
-          const tr = document.createElement("tr");
-          if(currentView === "active" && Boolean(o.received_checked)) tr.classList.add("row-received");
-
-          const since = timeSince(o.created_at || o.createdAt);
-          const receivedPill = (currentView === "active" && Boolean(o.received_checked))
-            ? `<span class="pill receivedTag">REÇU ✅</span>` : "";
-
-          const receivedControl = (currentView === "active" && role === "shop")
-            ? `<label class="cb"><input type="checkbox" ${Boolean(o.received_checked) ? "checked":""} data-action="received" data-id="${o.id}"> Reçu</label>`
-            : `<span class="small">—</span>`;
-
-          const actionsShop = (currentView === "active")
-            ? `
-              <div class="actions">
-                ${receivedControl}
-                <button class="ok" data-action="picked" data-id="${o.id}">Commande récupérée</button>
-                <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
-              </div>
-            `
-            : `
-              <div class="actions">
-                <button class="danger" data-action="delete" data-id="${o.id}">Supprimer</button>
-              </div>
-            `;
-
-          const actionsAdmin = `<div class="small">Lecture</div>`;
-
-          tr.innerHTML = `
-            <td>
-              <span class="pill">${escapeHtml(o.date || "")}</span><br/>
-              <span class="small">${escapeHtml(since)}</span><br/>
-              ${receivedPill}
-            </td>
-
-            <td>
-              <b>${escapeHtml(o.client || "")}</b><br/>
-              <span class="small">${escapeHtml(o.tel || "")}</span><br/>
-              <div class="small">Créée par: <b>${escapeHtml(o.seller || "-")}</b></div>
-            </td>
-
-            <td>
-              ${escapeHtml(o.article || "")}<br/>
-              <span class="small">Qté: ${Number(o.qty || 1)} • Vendeur: ${escapeHtml(o.seller || "-")}</span>
-            </td>
-
-            <td>
-              <span class="pill ${statusClass(o.statut)}">${escapeHtml(o.statut || "")}</span>
-              <div style="margin-top:6px">
-                <select ${role !== "shop" ? "disabled" : ""} data-action="status" data-id="${o.id}">
-                  ${["Mettre en commande","Commander","Rupture de stock","Reçu partiellement"].map(s => `
-                    <option ${o.statut===s ? "selected":""}>${escapeHtml(s)}</option>
-                  `).join("")}
-                </select>
-              </div>
-            </td>
-
-            <td>${escapeHtml(o.notes || "")}</td>
-
-            <td>${role === "shop" ? actionsShop : actionsAdmin}</td>
-          `;
-
-          tbody.appendChild(tr);
-        }
-      }
-
-      // =========================
-      // Enter app
-      // =========================
-      function initUsers(){
-        $("seller").innerHTML = USERS.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join("");
-        $("seller").value = USERS[0];
-      }
-
-      async function enterApp(email){
-        showApp(email);
-
-        initUsers();
-        setTodayDefault();
-        resetForm();
-
-        profile = await fetchProfile();
-        role = profile.role || "shop";
-        myStoreId = profile.store_id || null;
-
-        await fetchStores();
-
-        if(role === "admin"){
-          $("uiSub").textContent = "ADMIN – toutes boutiques";
-          show($("adminCard"), true);
-          show($("addCard"), false);
-          fillStoreSelect();
-          await loadOrders();
-        } else {
-          if(!myStoreId){
-            await ensureStoreId(email);
-          }
-          if(!myStoreId){
-            throw new Error("Ton profil n’a pas de store_id (profiles.store_id) et aucun store ne correspond à ton email.");
-          }
-
-          const s = storesCache.find(x => x.id === myStoreId);
-          myStoreName = s?.name || "Boutique";
-          $("uiSub").textContent = myStoreName;
-
-          applySettingsToUI(myStoreName);
-
-          show($("adminCard"), false);
-          show($("addCard"), true);
-
-          await loadOrders();
-        }
-      }
-
-      // =========================
-      // Reset password (EMAIL)
-      // =========================
-      async function sendReset(){
-        try{
-          setAuthMsg("");
-          setAuthAlert("");
-
-          const email = $("email").value.trim();
-          if(!email){ setAuthAlert("⚠️ Mets l’email puis clique ici."); return; }
-
-          const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
-          if(error){ setAuthAlert("❌ " + error.message); return; }
-
-          setAuthMsg("✅ Email de réinitialisation envoyé.");
-        }catch(e){
-          setAuthAlert("❌ " + (e?.message || e));
-        }
-      }
-
-      // =========================
-      // Events
-      // =========================
-      $("btnLogin").addEventListener("click", login);
-      $("btnLogout").addEventListener("click", logout);
-      $("btnReset").addEventListener("click", sendReset);
-      $("btnUpdatePass").addEventListener("click", updatePassword);
-
-      $("btnAdd").addEventListener("click", addOrder);
-      $("btnClear").addEventListener("click", resetForm);
-
-      $("btnSettings").addEventListener("click", openSettings);
-
-      $("btnCloseSettings").addEventListener("click", closeSettings);
-      $("btnResetSettings").addEventListener("click", resetSettingsDefaults);
-      $("btnSaveSettings").addEventListener("click", saveSettings);
-
-      $("btnCloseWA").addEventListener("click", closeWAModal);
-      $("btnCancelWA").addEventListener("click", closeWAModal);
-      $("btnResetWA").addEventListener("click", applySelectedTemplate);
-      $("btnCopyWA").addEventListener("click", copyWAText);
-      $("btnOpenWA").addEventListener("click", confirmOpenWhatsApp);
-      $("waTemplate").addEventListener("change", applySelectedTemplate);
-
-      $("waBackdrop").addEventListener("click", closeWAModal);
-      $("settingsBackdrop").addEventListener("click", closeSettings);
-
-      $("tabActive").addEventListener("click", ()=>{ currentView="active"; $("tabActive").classList.add("active"); $("tabHistory").classList.remove("active"); render(); });
-      $("tabHistory").addEventListener("click", ()=>{ currentView="history"; $("tabHistory").classList.add("active"); $("tabActive").classList.remove("active"); render(); });
-
-      $("search").addEventListener("input", render);
-      $("filterStatus").addEventListener("change", render);
-
-      $("btnReloadAdmin").addEventListener("click", loadOrders);
-      $("storeSelect").addEventListener("change", loadOrders);
-
-      // Delegation actions table
-      $("tbody").addEventListener("change", async (e)=>{
-        const el = e.target;
-        const action = el?.dataset?.action;
-        const id = el?.dataset?.id;
-        if(action === "status"){
-          await updateStatus(id, el.value);
-        }
-      });
-
-      $("tbody").addEventListener("click", async (e)=>{
-        const el = e.target;
-        const action = el?.dataset?.action;
-        const id = el?.dataset?.id;
-
-        if(action === "picked") await markPickedUp(id);
-        if(action === "delete") await deleteOrder(id);
-      });
-
-      $("tbody").addEventListener("change", async (e)=>{
-        const el = e.target;
-        if(el?.dataset?.action === "received"){
-          await toggleReceived(el.dataset.id);
-        }
-      });
-
-      // ESC ferme les modals
-      document.addEventListener("keydown", (e)=>{
-        if (e.key !== "Escape") return;
-        if ($("waBackdrop").style.display === "flex") closeWAModal();
-        if ($("settingsBackdrop").style.display === "flex") closeSettings();
-      });
-
-      // Debug global erreurs
-      window.addEventListener("error", (e) => setDebug("JS error: " + (e.message || "inconnue")));
-      window.addEventListener("unhandledrejection", (e) => setDebug("Promise error: " + (e.reason?.message || e.reason || "inconnue")));
-
-      // =========================
-      // Auth listener + boot
-      // =========================
-      supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-        if (isLoggingOut) return;
-
-        const user = session?.user;
-
-        // ✅ si on est sur un lien de recovery => on affiche le reset, pas de redirection
-        if (isRecoveryFlow()) {
-          showLogin();
-          show($("resetCard"), true);
-          allowAutoLogin = false;
-          return;
-        }
-
-        if (!user) {
-          showLogin();
-          return;
-        }
-
-        if (!allowAutoLogin) {
-          showLogin();
-          return;
-        }
-
-        if (hasBooted) return;
+      const s = storesCache.find(x => x.id === myStoreId);
+      myStoreName = s?.name || "Boutique";
+      $("uiSub").textContent = myStoreName;
+
+      applySettingsToUI(myStoreName);
+      // pas de loadOrders ici -> on charge à l'ouverture de l'app commandes
+    }
+
+    // ✅ Après login => HUB (menu apps)
+    showHub(email);
+  }
+
+  // =========================
+  // Reset password (EMAIL)
+  // =========================
+  async function sendReset(){
+    try{
+      setAuthMsg("");
+      setAuthAlert("");
+
+      const email = $("email").value.trim();
+      if(!email){ setAuthAlert("⚠️ Mets l’email puis clique ici."); return; }
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL + "/" });
+      if(error){ setAuthAlert("❌ " + error.message); return; }
+
+      setAuthMsg("✅ Email de réinitialisation envoyé.");
+    }catch(e){
+      setAuthAlert("❌ " + (e?.message || e));
+    }
+  }
+
+  // =========================
+  // Actions HUB (NOUVEAU)
+  // =========================
+  async function openOrdersFromHub(){
+    // Affiche app commandes + charge
+    showOrdersApp();
+
+    // Admin: montre adminCard + cache addCard
+    if(role === "admin"){
+      show($("adminCard"), true);
+      show($("addCard"), false);
+      // charge les commandes de la boutique sélectionnée
+      await loadOrders();
+    } else {
+      show($("adminCard"), false);
+      show($("addCard"), true);
+      await loadOrders();
+    }
+  }
+
+  function backToHub(){
+    // Revenir menu apps sans se déconnecter
+    showHub($("userLabel").textContent);
+  }
+
+  // =========================
+  // Events
+  // =========================
+  $("btnLogin").addEventListener("click", login);
+  $("btnLogout").addEventListener("click", logout);
+  $("btnReset").addEventListener("click", sendReset);
+  $("btnUpdatePass").addEventListener("click", updatePassword);
+
+  $("btnAdd").addEventListener("click", addOrder);
+  $("btnClear").addEventListener("click", resetForm);
+
+  $("btnSettings").addEventListener("click", openSettings);
+
+  $("btnCloseSettings").addEventListener("click", closeSettings);
+  $("btnResetSettings").addEventListener("click", resetSettingsDefaults);
+  $("btnSaveSettings").addEventListener("click", saveSettings);
+
+  $("btnCloseWA").addEventListener("click", closeWAModal);
+  $("btnCancelWA").addEventListener("click", closeWAModal);
+  $("btnResetWA").addEventListener("click", applySelectedTemplate);
+  $("btnCopyWA").addEventListener("click", copyWAText);
+  $("btnOpenWA").addEventListener("click", confirmOpenWhatsApp);
+  $("waTemplate").addEventListener("change", applySelectedTemplate);
+
+  $("waBackdrop").addEventListener("click", closeWAModal);
+  $("settingsBackdrop").addEventListener("click", closeSettings);
+
+  $("tabActive").addEventListener("click", ()=>{ currentView="active"; $("tabActive").classList.add("active"); $("tabHistory").classList.remove("active"); render(); });
+  $("tabHistory").addEventListener("click", ()=>{ currentView="history"; $("tabHistory").classList.add("active"); $("tabActive").classList.remove("active"); render(); });
+
+  $("search").addEventListener("input", render);
+  $("filterStatus").addEventListener("change", render);
+
+  $("btnReloadAdmin").addEventListener("click", loadOrders);
+  $("storeSelect").addEventListener("change", loadOrders);
+
+  // Delegation actions table
+  $("tbody").addEventListener("change", async (e)=>{
+    const el = e.target;
+    const action = el?.dataset?.action;
+    const id = el?.dataset?.id;
+    if(action === "status"){
+      await updateStatus(id, el.value);
+    }
+  });
+
+  $("tbody").addEventListener("click", async (e)=>{
+    const el = e.target;
+    const action = el?.dataset?.action;
+    const id = el?.dataset?.id;
+
+    if(action === "picked") await markPickedUp(id);
+    if(action === "delete") await deleteOrder(id);
+  });
+
+  $("tbody").addEventListener("change", async (e)=>{
+    const el = e.target;
+    if(el?.dataset?.action === "received"){
+      await toggleReceived(el.dataset.id);
+    }
+  });
+
+  // ESC ferme les modals
+  document.addEventListener("keydown", (e)=>{
+    if (e.key !== "Escape") return;
+    if ($("waBackdrop").style.display === "flex") closeWAModal();
+    if ($("settingsBackdrop").style.display === "flex") closeSettings();
+  });
+
+  // Debug global erreurs
+  window.addEventListener("error", (e) => setDebug("JS error: " + (e.message || "inconnue")));
+  window.addEventListener("unhandledrejection", (e) => setDebug("Promise error: " + (e.reason?.message || e.reason || "inconnue")));
+
+  // ===== HUB buttons =====
+  $("btnOpenOrders")?.addEventListener("click", openOrdersFromHub);
+  $("btnBackToHub")?.addEventListener("click", backToHub);
+  // placeholder app2
+  $("btnOpenApp2")?.addEventListener("click", ()=> alert("✨ Cette application arrive bientôt !"));
+
+  // =========================
+  // Auth listener + boot
+  // =========================
+  supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+    if (isLoggingOut) return;
+
+    const user = session?.user;
+
+    // ✅ si on est sur un lien de recovery => on affiche le reset, pas de redirection
+    if (isRecoveryFlow()) {
+      showLogin();
+      show($("resetCard"), true);
+      allowAutoLogin = false;
+      return;
+    }
+
+    if (!user) {
+      showLogin();
+      return;
+    }
+
+    if (!allowAutoLogin) {
+      showLogin();
+      return;
+    }
+
+    if (hasBooted) return;
+    hasBooted = true;
+
+    try{
+      await enterAfterLogin(user.email || "connecté");
+    }catch(err){
+      console.error(err);
+      alert("❌ " + (err?.message || err));
+      showLogin();
+      hasBooted = false;
+    }
+  });
+
+  (async ()=>{
+    // ✅ recovery: on reste sur l’écran de reset
+    if(isRecoveryFlow()){
+      showLogin();
+      show($("resetCard"), true);
+      return;
+    }
+
+    const { data } = await supabaseClient.auth.getSession();
+
+    if (isLoggingOut) { showLogin(); return; }
+
+    if (data?.session?.user) {
+      if (!allowAutoLogin) { showLogin(); return; }
+      if (!hasBooted) {
         hasBooted = true;
-
         try{
-          await enterApp(user.email || "connecté");
+          await enterAfterLogin(data.session.user.email || "connecté");
         }catch(err){
           console.error(err);
           alert("❌ " + (err?.message || err));
           showLogin();
           hasBooted = false;
         }
-      });
+      }
+    } else {
+      showLogin();
+    }
+  })();
 
-      (async ()=>{
-        // ✅ recovery: on reste sur l’écran de reset
-        if(isRecoveryFlow()){
-          showLogin();
-          show($("resetCard"), true);
-          return;
-        }
-
-        const { data } = await supabaseClient.auth.getSession();
-
-        if (isLoggingOut) { showLogin(); return; }
-
-        if (data?.session?.user) {
-          if (!allowAutoLogin) { showLogin(); return; }
-          if (!hasBooted) {
-            hasBooted = true;
-            try{
-              await enterApp(data.session.user.email || "connecté");
-            }catch(err){
-              console.error(err);
-              alert("❌ " + (err?.message || err));
-              showLogin();
-              hasBooted = false;
-            }
-          }
-        } else {
-          showLogin();
-        }
-      })();
-
-    })();
-    </script>
-
-  </div>
-</body>
-</html>
+})();
+</script>
